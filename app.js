@@ -255,15 +255,23 @@ function addSlot(){
     return;
   }
 
-  d.slots.push({
-    id: uid(),
-    startMin,
-    endMin,
-    accountId: slotAccount.value || "",
-    text: slotText.value.trim(),
-    isBreak: slotIsBreak.checked
-  });
+   const startMin = parseTimeToMinutes(slotStart.value);
+   const endMin   = parseTimeToMinutes(slotEnd.value);
 
+   if (startMin === null || endMin === null || endMin <= startMin) {
+     alert("Ogiltig start- eller stopptid.");
+     return;
+   }
+
+   d.slots.push({
+     id: uid(),
+     startMin,
+     endMin,
+     accountId: slotAccount.value || "",
+     text: slotText.value.trim(),
+     isBreak: slotIsBreak.checked
+   });
+   
   saveDays();
   renderDay();
 
