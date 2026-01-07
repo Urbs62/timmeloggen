@@ -1,15 +1,14 @@
 :root{
-  --bg:#eef3fb;              /* gymapp-bakgrund */
-  --card:#ffffff;
-  --text:#102030;
-  --muted:#5f6b82;
-  --line:#dbe3f2;
-
+  --bg:#0b1220;      /* gymapp-bakgrund */
+  --card:#111827;
+  --muted:#9ca3af;
+  --text:#e5e7eb;
+  --line:#1f2937;
   --primary:#1e63d5;         /* gymapp-blå */
   --primary-dark:#164fb0;
-
   --secondary:#e6ebf5;
-  --danger:#c53030;
+  --danger:#fb7185;
+  --good:#34d399;
 
   --shadow: 0 10px 30px rgba(0,0,0,.06);
   --r:16px;
