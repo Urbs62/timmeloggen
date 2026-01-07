@@ -108,6 +108,7 @@ button.danger{
   background: var(--danger);
   color:#fff;
 }
+
 button:disabled{ opacity:.5; cursor:default; }
 
 .muted{ color: var(--muted); }
