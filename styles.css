@@ -1,14 +1,19 @@
 :root{
-  --bg:#f3f6fb;
+  --bg:#eef3fb;              /* gymapp-bakgrund */
   --card:#ffffff;
   --text:#102030;
-  --muted:#5b667a;
-  --line:#e3e8f3;
-  --blue:#174ea6;
-  --blue2:#0f357a;
-  --danger:#b3261e;
+  --muted:#5f6b82;
+  --line:#dbe3f2;
+
+  --primary:#1e63d5;         /* gymapp-blå */
+  --primary-dark:#164fb0;
+
+  --secondary:#e6ebf5;
+  --danger:#c53030;
+
   --shadow: 0 10px 30px rgba(0,0,0,.06);
   --r:16px;
+
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
