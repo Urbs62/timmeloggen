@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Timmeloggen</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div>
+        <h1>Timmeloggen</h1>
+        <div class="sub">Konton • Tidsloggning • Historik (lokalt i din webbläsare)</div>
+      </div>
+      <div class="pill" id="todayPill"></div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="accounts">Konton</button>
+      <button class="tab" data-tab="log">Tidsloggning</button>
+      <button class="tab" data-tab="history">Historik</button>
+    </nav>
+
+    <main>
+      <!-- Konton -->
+      <section class="panel active" id="tab-accounts">
+        <div class="card">
+          <h2>Konton / projekt</h2>
+          <p class="muted">Lägg in konton du vill kunna välja när du loggar aktiviteter.</p>
+
+          <div class="row">
+            <input id="accountName" type="text" placeholder="Ex: 3010, Projekt X, Kund Y..." />
+            <button id="addAccountBtn">Lägg till</button>
+          </div>
+
+          <div class="list" id="accountList"></div>
+        </div>
+      </section>
+
+      <!-- Tidsloggning -->
+      <section class="panel" id="tab-log">
+        <div class="grid2">
+          <div class="card">
+            <h2>Dagen</h2>
+
+            <div class="row">
+              <button id="startDayBtn">Starta dag</button>
+              <button id="endDayBtn" class="secondary">Avsluta dag</button>
+            </div>
+
+            <div class="kv">
+              <div><span class="k">Start:</span> <span class="v" id="dayStartView">—</span></div>
+              <div><span class="k">Slut:</span> <span class="v" id="dayEndView">—</span></div>
+              <div><span class="k">Rast/lunch:</span> <span class="v" id="breakView">0:00</span></div>
+              <div><span class="k">Arbetstid:</span> <span class="v strong" id="workView">0:00</span></div>
+              <div class="muted" id="chimeView">Timljud: av</div>
+            </div>
+
+            <hr />
+
+            <h3>Skapa 30-minuters slot</h3>
+            <div class="row">
+              <input id="slotTime" type="time" step="1800" />
+              <select id="slotAccount"></select>
+            </div>
+            <div class="row">
+              <input id="slotText" type="text" placeholder="Fritext: vad gjorde du?" />
+            </div>
+            <div class="row">
+              <label class="checkbox">
+                <input id="slotIsBreak" type="checkbox" />
+                <span>Detta är rast/lunch (dras av)</span>
+              </label>
+              <button id="addSlotBtn">Lägg till slot</button>
+            </div>
+
+            <div class="muted tiny">
+              Tips: tid avrundas automatiskt till närmaste halvtimme.
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Dagens slots</h2>
+            <div class="muted" id="dayKeyView"></div>
+            <div class="list" id="slotList"></div>
+            <div class="row">
+              <button id="clearTodayBtn" class="danger secondary">Rensa dagens slots</button>
+              <button id="exportCsvBtn" class="secondary">Exportera CSV</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Historik -->
+      <section class="panel" id="tab-history">
+        <div class="card">
+          <h2>Historik & summering</h2>
+          <p class="muted">Summeringar per dag/vecka/månad, även per konto.</p>
+
+          <div class="row">
+            <select id="periodType">
+              <option value="day">Dag</option>
+              <option value="week">Vecka</option>
+              <option value="month">Månad</option>
+            </select>
+
+            <input id="periodDate" type="date" />
+            <button id="refreshHistoryBtn" class="secondary">Uppdatera</button>
+          </div>
+
+          <div class="grid2">
+            <div class="card inner">
+              <h3>Översikt</h3>
+              <div class="kv" id="overviewBox"></div>
+            </div>
+
+            <div class="card inner">
+              <h3>Per konto</h3>
+              <div id="perAccountBox"></div>
+            </div>
+          </div>
+
+          <hr />
+
+          <h3>Poster (i perioden)</h3>
+          <div class="list" id="historyList"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot muted tiny">
+      Data sparas lokalt (localStorage). GitHub Pages ger versionshantering men inte synk mellan datorer.
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
