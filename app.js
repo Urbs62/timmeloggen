@@ -5,6 +5,8 @@
    - Timljud varje timme efter start
    - localStorage
 */
+const slotStart = document.getElementById("slotStart");
+const slotEnd   = document.getElementById("slotEnd");
 
 const STORE = {
   accounts: "tl_accounts_v1",
@@ -241,36 +243,32 @@ function addSlot(){
   const d = getDay(key);
 
   if (!d.startTs) {
-    return alert("Starta dagen först (så får du timljud och arbetstid).");
+    alert("Starta dagen först.");
+    return;
   }
 
-  const t = slotTime.value || nowTimeHHMM();
-  let mins = parseTimeToMinutes(t);
-  if (mins === null) return alert("Välj en giltig tid.");
-  mins = roundToHalfHourMinutes(mins);
+  const startMin = parseTimeToMinutes(slotStart.value);
+  const endMin   = parseTimeToMinutes(slotEnd.value);
 
-  const accId = slotAccount.value || "";
-  const text = (slotText.value || "").trim();
-  const isBreak = !!slotIsBreak.checked;
+  if (startMin === null || endMin === null || endMin <= startMin) {
+    alert("Ogiltig start- eller stopptid.");
+    return;
+  }
 
   d.slots.push({
     id: uid(),
-    time: minutesToTime(mins),
-    minutes: mins,
-    durationMin: 30,
-    accountId: accId,
-    text,
-    isBreak
+    startMin,
+    endMin,
+    accountId: slotAccount.value || "",
+    text: slotText.value.trim(),
+    isBreak: slotIsBreak.checked
   });
-
-  // sortera på tid
-  d.slots.sort((a,b)=>a.minutes-b.minutes);
 
   saveDays();
   renderDay();
+
   slotText.value = "";
   slotIsBreak.checked = false;
-  // behåll valt konto
 }
 
 function deleteSlot(slotId){
