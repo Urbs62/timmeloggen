@@ -1,12 +1,10 @@
 /* Timmeloggen v1 – gymapp-liknande upplägg
-   - 3 flikar: Konton, Tidsloggning, Historik
-   - 30-min slots: tid + konto + text + "rast/lunch"
-   - Start/Slut dag + arbetstid = (slut-start) - rast
-   - Timljud varje timme efter start
+   - 3 flikar: Konton, Tidsloggning, Sammanställning
+   - Slots: start + stopptid + konto + text + "rast/lunch"
+   - Arbetstid = summa (icke-rast) slots
+   - Timljud varje timme efter att dagen startats
    - localStorage
 */
-const slotStart = document.getElementById("slotStart");
-const slotEnd   = document.getElementById("slotEnd");
 
 const STORE = {
   accounts: "tl_accounts_v1",
@@ -18,57 +16,60 @@ const pad2 = (n) => String(n).padStart(2, "0");
 
 function todayKey() {
   const d = new Date();
-  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
-function fmtHM(mins){
-  const h = Math.floor(mins/60);
-  const m = mins%60;
+function fmtHM(mins) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
   return `${h}:${pad2(m)}`;
 }
 
-function parseTimeToMinutes(hhmm){
+function parseTimeToMinutes(hhmm) {
   if (!hhmm || !hhmm.includes(":")) return null;
-  const [h,m] = hhmm.split(":").map(x => parseInt(x,10));
+  const [h, m] = hhmm.split(":").map((x) => parseInt(x, 10));
   if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h*60 + m;
+  return h * 60 + m;
 }
 
-function minutesToTime(mins){
-  const h = Math.floor(mins/60);
-  const m = mins%60;
+function minutesToTime(mins) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
   return `${pad2(h)}:${pad2(m)}`;
 }
 
-function roundToHalfHourMinutes(mins){
-  // närmaste 30 minuter
-  const r = Math.round(mins/30)*30;
-  // clamp 0..1430 (23:50 -> 24:00 vill vi ej)
-  return Math.max(0, Math.min(1410, r));
-}
-
-function nowTimeHHMM(){
+function nowTimeHHMM() {
   const d = new Date();
   return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 }
 
-function setText(el, text){ el.textContent = text; }
+function setText(el, text) {
+  el.textContent = text;
+}
 
-function loadJSON(key, fallback){
-  try{
+function loadJSON(key, fallback) {
+  try {
     const v = localStorage.getItem(key);
     return v ? JSON.parse(v) : fallback;
-  }catch{
+  } catch {
     return fallback;
   }
 }
 
-function saveJSON(key, value){
+function saveJSON(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-function uid(){
+function uid() {
   return Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
+
+function escapeHtml(s) {
+  return (s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 // ---------- Data model ----------
@@ -78,7 +79,7 @@ days = {
      startTs: number|null,
      endTs: number|null,
      slots: [
-       { id, time:"HH:MM", minutes: <0..1410>, accountId, text, isBreak, durationMin:30 }
+       { id, startMin, endMin, accountId, text, isBreak }
      ]
   }
 }
@@ -112,7 +113,8 @@ const workView = document.getElementById("workView");
 const chimeView = document.getElementById("chimeView");
 const dayKeyView = document.getElementById("dayKeyView");
 
-const slotTime = document.getElementById("slotTime");
+const slotStart = document.getElementById("slotStart");
+const slotEnd = document.getElementById("slotEnd");
 const slotAccount = document.getElementById("slotAccount");
 const slotText = document.getElementById("slotText");
 const slotIsBreak = document.getElementById("slotIsBreak");
@@ -122,7 +124,7 @@ const slotList = document.getElementById("slotList");
 const clearTodayBtn = document.getElementById("clearTodayBtn");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
 
-// History
+// History / Sammanställning
 const periodType = document.getElementById("periodType");
 const periodDate = document.getElementById("periodDate");
 const refreshHistoryBtn = document.getElementById("refreshHistoryBtn");
@@ -131,29 +133,22 @@ const perAccountBox = document.getElementById("perAccountBox");
 const historyList = document.getElementById("historyList");
 
 // ---------- Tabs ----------
-tabBtns.forEach(btn => {
+tabBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
-    tabBtns.forEach(b => b.classList.remove("active"));
+    tabBtns.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     const key = btn.dataset.tab;
-    Object.values(panels).forEach(p => p.classList.remove("active"));
+    Object.values(panels).forEach((p) => p.classList.remove("active"));
     panels[key].classList.add("active");
     if (key === "history") renderHistory();
   });
 });
 
 // ---------- Accounts ----------
-function ensureDefaultAccounts(){
-  if (accounts.length) return;
-  // valfritt: skapa ett default så select inte är tom
-  accounts = [];
-  saveJSON(STORE.accounts, accounts);
-}
-
-function addAccount(name){
+function addAccount(name) {
   const n = (name || "").trim();
   if (!n) return alert("Skriv ett kontonamn/nummer.");
-  if (accounts.some(a => a.name.toLowerCase() === n.toLowerCase())) {
+  if (accounts.some((a) => a.name.toLowerCase() === n.toLowerCase())) {
     return alert("Kontot finns redan.");
   }
   accounts.push({ id: uid(), name: n });
@@ -162,39 +157,71 @@ function addAccount(name){
   renderAccountSelect();
 }
 
-function deleteAccount(id){
-  // kontot kan finnas i historik; vi tar bara bort från listan
-  accounts = accounts.filter(a => a.id !== id);
+function deleteAccount(id) {
+  accounts = accounts.filter((a) => a.id !== id);
   saveJSON(STORE.accounts, accounts);
   renderAccounts();
   renderAccountSelect();
 }
 
-function renderAccounts(){
+function updateAccountName(id, newName) {
+  const n = (newName || "").trim();
+  if (!n) return;
+
+  // blockera dubbletter (exakt namn, case-insensitive)
+  if (accounts.some((a) => a.id !== id && a.name.toLowerCase() === n.toLowerCase())) {
+    alert("Det finns redan ett konto med det namnet.");
+    renderAccounts();
+    return;
+  }
+
+  const a = accounts.find((x) => x.id === id);
+  if (!a) return;
+  a.name = n;
+  saveJSON(STORE.accounts, accounts);
+  renderAccountSelect();
+}
+
+function renderAccounts() {
   accountList.innerHTML = "";
-  if (!accounts.length){
-    accountList.innerHTML = `<div class="item"><div class="left"><div class="title muted">Inga konton ännu</div><div class="meta">Lägg till ett konto ovan.</div></div></div>`;
+  if (!accounts.length) {
+    accountList.innerHTML = `
+      <div class="item">
+        <div class="left">
+          <div class="title muted">Inga konton ännu</div>
+          <div class="meta">Lägg till ett konto ovan.</div>
+        </div>
+      </div>`;
     return;
   }
 
   accounts
     .slice()
-    .sort((a,b) => a.name.localeCompare(b.name,"sv"))
-    .forEach(a => {
+    .sort((a, b) => a.name.localeCompare(b.name, "sv"))
+    .forEach((a) => {
       const el = document.createElement("div");
       el.className = "item";
       el.innerHTML = `
         <div class="left">
-          <div class="title">${escapeHtml(a.name)}</div>
+          <div class="title">
+            <input class="account-edit" data-id="${a.id}" value="${escapeHtml(a.name)}"
+                   style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:12px;" />
+          </div>
           <div class="meta">ID: ${a.id}</div>
         </div>
         <div>
           <button class="danger secondary" data-del="${a.id}">Ta bort</button>
         </div>
       `;
-      el.querySelector("[data-del]").addEventListener("click", () => {
+
+      el.querySelector(`[data-del="${a.id}"]`).addEventListener("click", () => {
         if (confirm(`Ta bort konto "${a.name}"?`)) deleteAccount(a.id);
       });
+
+      el.querySelector(`.account-edit`).addEventListener("change", (e) => {
+        updateAccountName(a.id, e.target.value);
+      });
+
       accountList.appendChild(el);
     });
 }
@@ -205,22 +232,19 @@ accountName.addEventListener("keydown", (e) => {
 });
 
 // ---------- Day / slots ----------
-function getDay(key){
+function getDay(key) {
   if (!days[key]) days[key] = { startTs: null, endTs: null, slots: [] };
   return days[key];
 }
 
-function saveDays(){
+function saveDays() {
   saveJSON(STORE.days, days);
 }
 
-function startDay(){
+function startDay() {
   const key = todayKey();
   const d = getDay(key);
-  if (d.startTs) {
-    // redan startad idag
-    return;
-  }
+  if (d.startTs) return; // redan startad
   d.startTs = Date.now();
   d.endTs = null;
   saveDays();
@@ -228,7 +252,7 @@ function startDay(){
   startChimeLoop();
 }
 
-function endDay(){
+function endDay() {
   const key = todayKey();
   const d = getDay(key);
   if (!d.startTs) return alert("Starta dagen först.");
@@ -238,7 +262,7 @@ function endDay(){
   stopChimeLoop();
 }
 
-function addSlot(){
+function addSlot() {
   const key = todayKey();
   const d = getDay(key);
 
@@ -248,88 +272,99 @@ function addSlot(){
   }
 
   const startMin = parseTimeToMinutes(slotStart.value);
-  const endMin   = parseTimeToMinutes(slotEnd.value);
+  const endMin = parseTimeToMinutes(slotEnd.value);
 
-  if (startMin === null || endMin === null || endMin <= startMin) {
-    alert("Ogiltig start- eller stopptid.");
+  if (startMin === null || endMin === null) {
+    alert("Välj både start- och stopptid.");
+    return;
+  }
+  if (endMin <= startMin) {
+    alert("Stopptid måste vara efter starttid.");
     return;
   }
 
-   const startMin = parseTimeToMinutes(slotStart.value);
-   const endMin   = parseTimeToMinutes(slotEnd.value);
+  d.slots.push({
+    id: uid(),
+    startMin,
+    endMin,
+    accountId: slotAccount.value || "",
+    text: (slotText.value || "").trim(),
+    isBreak: !!slotIsBreak.checked
+  });
 
-   if (startMin === null || endMin === null || endMin <= startMin) {
-     alert("Ogiltig start- eller stopptid.");
-     return;
-   }
+  // sortera på starttid
+  d.slots.sort((a, b) => a.startMin - b.startMin);
 
-   d.slots.push({
-     id: uid(),
-     startMin,
-     endMin,
-     accountId: slotAccount.value || "",
-     text: slotText.value.trim(),
-     isBreak: slotIsBreak.checked
-   });
-   
   saveDays();
   renderDay();
 
   slotText.value = "";
   slotIsBreak.checked = false;
+
+  // smart default: nästa start = senaste stop
+  slotStart.value = minutesToTime(endMin);
+  slotEnd.value = "";
 }
 
-function deleteSlot(slotId){
+function deleteSlot(slotId) {
   const key = todayKey();
   const d = getDay(key);
-  d.slots = d.slots.filter(s => s.id !== slotId);
+  d.slots = d.slots.filter((s) => s.id !== slotId);
   saveDays();
   renderDay();
 }
 
-function toggleBreak(slotId){
+function toggleBreak(slotId) {
   const key = todayKey();
   const d = getDay(key);
-  const s = d.slots.find(x=>x.id===slotId);
+  const s = d.slots.find((x) => x.id === slotId);
   if (!s) return;
   s.isBreak = !s.isBreak;
   saveDays();
   renderDay();
 }
 
-function editSlot(slotId){
+function editSlot(slotId) {
   const key = todayKey();
   const d = getDay(key);
-  const s = d.slots.find(x=>x.id===slotId);
+  const s = d.slots.find((x) => x.id === slotId);
   if (!s) return;
 
-  const newTime = prompt("Ny tid (HH:MM)", s.time);
-  if (newTime === null) return;
-  let mins = parseTimeToMinutes(newTime);
-  if (mins === null) return alert("Ogiltig tid.");
-  mins = roundToHalfHourMinutes(mins);
+  const currentStart = minutesToTime(s.startMin);
+  const currentEnd = minutesToTime(s.endMin);
+
+  const newStart = prompt("Ny starttid (HH:MM)", currentStart);
+  if (newStart === null) return;
+  const newEnd = prompt("Ny stopptid (HH:MM)", currentEnd);
+  if (newEnd === null) return;
+
+  const startMin = parseTimeToMinutes(newStart);
+  const endMin = parseTimeToMinutes(newEnd);
+  if (startMin === null || endMin === null || endMin <= startMin) {
+    alert("Ogiltig start/stopptid.");
+    return;
+  }
 
   const newText = prompt("Ny text", s.text || "");
   if (newText === null) return;
 
-  s.minutes = mins;
-  s.time = minutesToTime(mins);
-  s.text = newText.trim();
-
-  // konto-edit via prompt (snabb v1)
   const currentAccName = accountNameById(s.accountId);
   const newAccName = prompt("Konto (skriv exakt namn, eller tomt)", currentAccName || "");
-  if (newAccName !== null){
-    const found = accounts.find(a => a.name.toLowerCase() === newAccName.trim().toLowerCase());
+  if (newAccName !== null) {
+    const found = accounts.find((a) => a.name.toLowerCase() === newAccName.trim().toLowerCase());
     s.accountId = found ? found.id : "";
   }
 
-  d.slots.sort((a,b)=>a.minutes-b.minutes);
+  s.startMin = startMin;
+  s.endMin = endMin;
+  s.text = newText.trim();
+
+  d.slots.sort((a, b) => a.startMin - b.startMin);
   saveDays();
   renderDay();
 }
 
-function clearToday(){
+function clearToday() {
   const key = todayKey();
   const d = getDay(key);
   if (!confirm("Rensa alla slots för idag?")) return;
@@ -344,45 +379,34 @@ addSlotBtn.addEventListener("click", addSlot);
 clearTodayBtn.addEventListener("click", clearToday);
 
 // ---------- Calculations ----------
-function minutesBetween(ts1, ts2){
-  if (!ts1 || !ts2) return 0;
-  return Math.max(0, Math.round((ts2 - ts1) / 60000));
+function slotDurationMin(s) {
+  return Math.max(0, (s.endMin ?? 0) - (s.startMin ?? 0));
 }
 
-function dayBreakMinutes(day){
+function dayBreakMinutes(day) {
   return (day.slots || [])
-    .filter(s => s.isBreak)
-    .reduce((sum, s) => sum + (s.durationMin || 30), 0);
+    .filter((s) => s.isBreak)
+    .reduce((sum, s) => sum + slotDurationMin(s), 0);
 }
 
-function dayWorkMinutes(day){
-  if (!day.startTs) return 0;
-  const end = day.endTs || Date.now();
-  const base = minutesBetween(day.startTs, end);
-  const breaks = dayBreakMinutes(day);
-  return Math.max(0, base - breaks);
+function dayWorkMinutes(day) {
+  return (day.slots || [])
+    .filter((s) => !s.isBreak)
+    .reduce((sum, s) => sum + slotDurationMin(s), 0);
 }
 
-function accountNameById(id){
-  const a = accounts.find(x => x.id === id);
+function accountNameById(id) {
+  const a = accounts.find((x) => x.id === id);
   return a ? a.name : "";
 }
 
-function escapeHtml(s){
-  return (s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;");
-}
-
 // ---------- Render log tab ----------
-function renderAccountSelect(){
+function renderAccountSelect() {
   slotAccount.innerHTML = `<option value="">(Välj konto)</option>`;
   accounts
     .slice()
-    .sort((a,b)=>a.name.localeCompare(b.name,"sv"))
-    .forEach(a => {
+    .sort((a, b) => a.name.localeCompare(b.name, "sv"))
+    .forEach((a) => {
       const opt = document.createElement("option");
       opt.value = a.id;
       opt.textContent = a.name;
@@ -390,15 +414,25 @@ function renderAccountSelect(){
     });
 }
 
-function renderDay(){
+function renderDay() {
   const key = todayKey();
   const d = getDay(key);
 
   dayKeyView.textContent = `Datum: ${key}`;
   todayPill.textContent = `Idag: ${key}`;
 
-  setText(dayStartView, d.startTs ? new Date(d.startTs).toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"}) : "—");
-  setText(dayEndView, d.endTs ? new Date(d.endTs).toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"}) : "—");
+  setText(
+    dayStartView,
+    d.startTs
+      ? new Date(d.startTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+      : "—"
+  );
+  setText(
+    dayEndView,
+    d.endTs
+      ? new Date(d.endTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+      : "—"
+  );
 
   const b = dayBreakMinutes(d);
   setText(breakView, fmtHM(b));
@@ -409,22 +443,31 @@ function renderDay(){
   startDayBtn.disabled = !!d.startTs;
   endDayBtn.disabled = !d.startTs || !!d.endTs;
 
-  // default slot time = nu avrundat
+  // defaults för slot inputs
   const nowM = parseTimeToMinutes(nowTimeHHMM());
   if (nowM !== null) {
-    const rounded = roundToHalfHourMinutes(nowM);
-    slotTime.value = minutesToTime(rounded);
+    // default start = nu (ej avrundning)
+    if (!slotStart.value) slotStart.value = minutesToTime(nowM);
   }
 
   slotList.innerHTML = "";
-  if (!d.slots.length){
-    slotList.innerHTML = `<div class="item"><div class="left"><div class="title muted">Inga slots ännu</div><div class="meta">Lägg till en 30-min slot här till vänster.</div></div></div>`;
+  if (!d.slots.length) {
+    slotList.innerHTML = `
+      <div class="item">
+        <div class="left">
+          <div class="title muted">Inga slots ännu</div>
+          <div class="meta">Lägg till en slot med start + stopptid.</div>
+        </div>
+      </div>`;
     return;
   }
 
-  d.slots.forEach(s => {
+  d.slots.forEach((s) => {
     const acc = accountNameById(s.accountId) || "(ej valt)";
-    const meta = `${s.time} • ${acc}${s.isBreak ? " • Rast/Lunch" : ""}`;
+    const timeLabel = `${minutesToTime(s.startMin)}–${minutesToTime(s.endMin)}`;
+    const dur = fmtHM(slotDurationMin(s));
+    const meta = `${timeLabel} • ${dur} • ${acc}${s.isBreak ? " • Rast/Lunch" : ""}`;
+
     const el = document.createElement("div");
     el.className = "item";
     el.innerHTML = `
@@ -449,8 +492,8 @@ function renderDay(){
 let chimeTimer = null;
 let chimeNextTs = null;
 
-function playChime(){
-  try{
+function playChime() {
+  try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
 
@@ -459,11 +502,11 @@ function playChime(){
     gain.gain.value = 0.06;
     gain.connect(ctx.destination);
 
-    // Tre toner: "specifikt ljud"
+    // Tre toner (särskiljbar signal)
     const freqs = [880, 660, 880];
     let t = ctx.currentTime;
 
-    freqs.forEach((f, i) => {
+    freqs.forEach((f) => {
       const osc = ctx.createOscillator();
       osc.type = "sine";
       osc.frequency.value = f;
@@ -474,12 +517,12 @@ function playChime(){
     });
 
     setTimeout(() => ctx.close(), 1200);
-  }catch{
+  } catch {
     // ignore
   }
 }
 
-function startChimeLoop(){
+function startChimeLoop() {
   stopChimeLoop();
 
   const key = todayKey();
@@ -489,23 +532,21 @@ function startChimeLoop(){
     return;
   }
 
-  // nästa timme räknat från startTs
   const start = d.startTs;
-  chimeNextTs = start + 60*60*1000;
-  chimeView.textContent = "Timljud: på (varje hel timme efter start)";
+  chimeNextTs = start + 60 * 60 * 1000;
+  chimeView.textContent = "Timljud: på (varje timme efter start)";
 
   chimeTimer = setInterval(() => {
     const now = Date.now();
     if (!chimeNextTs) return;
-    if (now >= chimeNextTs){
-      // om vi ligger efter (dator sovit), hoppa fram
-      while (now >= chimeNextTs) chimeNextTs += 60*60*1000;
+    if (now >= chimeNextTs) {
+      while (now >= chimeNextTs) chimeNextTs += 60 * 60 * 1000;
       playChime();
     }
-  }, 20_000); // var 20s räcker
+  }, 20_000);
 }
 
-function stopChimeLoop(){
+function stopChimeLoop() {
   if (chimeTimer) clearInterval(chimeTimer);
   chimeTimer = null;
   chimeNextTs = null;
@@ -515,28 +556,43 @@ function stopChimeLoop(){
 // ---------- CSV export ----------
 exportCsvBtn.addEventListener("click", () => {
   const rows = [];
-  rows.push(["Datum","Start","Slut","SlotTid","Konto","Rast","Text"].join(";"));
+  rows.push(["Datum", "Start", "Slut", "SlotStart", "SlotSlut", "Minuter", "Konto", "Rast", "Text"].join(";"));
 
   const keys = Object.keys(days).sort();
-  for (const k of keys){
+  for (const k of keys) {
     const d = days[k];
-    const start = d.startTs ? new Date(d.startTs).toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"}) : "";
-    const end = d.endTs ? new Date(d.endTs).toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"}) : "";
+    const start = d.startTs
+      ? new Date(d.startTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+      : "";
+    const end = d.endTs
+      ? new Date(d.endTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+      : "";
 
-    if (!d.slots.length){
-      rows.push([k,start,end,"","","",""].join(";"));
+    if (!d.slots.length) {
+      rows.push([k, start, end, "", "", "", "", "", ""].join(";"));
       continue;
     }
 
-    d.slots.forEach(s => {
+    d.slots.forEach((s) => {
       const acc = accountNameById(s.accountId);
       const isBreak = s.isBreak ? "1" : "0";
-      const text = (s.text || "").replaceAll('"','""');
-      rows.push([k,start,end,s.time,acc,isBreak,`"${text}"`].join(";"));
+      const text = (s.text || "").replaceAll('"', '""');
+      const mins = slotDurationMin(s);
+      rows.push([
+        k,
+        start,
+        end,
+        minutesToTime(s.startMin),
+        minutesToTime(s.endMin),
+        mins,
+        acc,
+        isBreak,
+        `"${text}"`
+      ].join(";"));
     });
   }
 
-  const blob = new Blob([rows.join("\n")], { type:"text/csv;charset=utf-8" });
+  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -548,60 +604,53 @@ exportCsvBtn.addEventListener("click", () => {
 });
 
 // ---------- History ----------
-function isoWeekKeyFromDate(dateObj){
-  // ISO week number
+function isoWeekKeyFromDate(dateObj) {
   const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
   const dayNum = d.getUTCDay() || 7;
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   return `${d.getUTCFullYear()}-W${pad2(weekNo)}`;
 }
 
-function monthKeyFromDate(dateObj){
-  return `${dateObj.getFullYear()}-${pad2(dateObj.getMonth()+1)}`;
+function monthKeyFromDate(dateObj) {
+  return `${dateObj.getFullYear()}-${pad2(dateObj.getMonth() + 1)}`;
 }
 
-function dayKeyFromDate(dateObj){
-  return `${dateObj.getFullYear()}-${pad2(dateObj.getMonth()+1)}-${pad2(dateObj.getDate())}`;
+function dayKeyFromDate(dateObj) {
+  return `${dateObj.getFullYear()}-${pad2(dateObj.getMonth() + 1)}-${pad2(dateObj.getDate())}`;
 }
 
-function periodKeys(type, dateStr){
+function periodKeys(type, dateStr) {
   const d = dateStr ? new Date(dateStr + "T12:00:00") : new Date();
   if (Number.isNaN(d.getTime())) return [];
 
   const keys = Object.keys(days);
-  if (type === "day"){
+  if (type === "day") {
     const k = dayKeyFromDate(d);
-    return keys.filter(x => x === k);
+    return keys.filter((x) => x === k);
   }
 
-  if (type === "month"){
+  if (type === "month") {
     const mk = monthKeyFromDate(d);
-    return keys.filter(x => x.startsWith(mk + "-"));
+    return keys.filter((x) => x.startsWith(mk + "-"));
   }
 
-  // week: match ISO week of each day key
   const targetW = isoWeekKeyFromDate(d);
-  return keys.filter(k => {
+  return keys.filter((k) => {
     const kd = new Date(k + "T12:00:00");
     if (Number.isNaN(kd.getTime())) return false;
     return isoWeekKeyFromDate(kd) === targetW;
   });
 }
 
-function aggregateForKeys(keys){
-  // totals
+function aggregateForKeys(keys) {
   let totalWorkMin = 0;
   let totalBreakMin = 0;
-
-  // per account: sum of slot durations (non-break) grouped by accountId
   const perAccMin = new Map();
-
-  // collect slot rows
   const rows = [];
 
-  keys.sort().forEach(k => {
+  keys.sort().forEach((k) => {
     const day = days[k];
     const b = dayBreakMinutes(day);
     const w = dayWorkMinutes(day);
@@ -609,21 +658,22 @@ function aggregateForKeys(keys){
     totalBreakMin += b;
     totalWorkMin += w;
 
-    (day.slots || []).forEach(s => {
-      rows.push({ date:k, ...s });
+    (day.slots || []).forEach((s) => {
+      rows.push({ date: k, ...s });
 
-      if (!s.isBreak) {
-        const accId = s.accountId || "";
-        const prev = perAccMin.get(accId) || 0;
-        perAccMin.set(accId, prev + (s.durationMin || 30));
-      }
+      const dur = slotDurationMin(s);
+      if (s.isBreak) return;
+
+      const accId = s.accountId || "";
+      const prev = perAccMin.get(accId) || 0;
+      perAccMin.set(accId, prev + dur);
     });
   });
 
   return { totalWorkMin, totalBreakMin, perAccMin, rows };
 }
 
-function renderHistory(){
+function renderHistory() {
   const type = periodType.value;
   const dateStr = periodDate.value || todayKey();
   if (!periodDate.value) periodDate.value = todayKey();
@@ -631,11 +681,12 @@ function renderHistory(){
   const keys = periodKeys(type, dateStr);
   const { totalWorkMin, totalBreakMin, perAccMin, rows } = aggregateForKeys(keys);
 
-  // Overview
   const label =
-    type === "day" ? `Dag: ${dateStr}` :
-    type === "month" ? `Månad: ${dateStr.slice(0,7)}` :
-    `Vecka: ${isoWeekKeyFromDate(new Date(dateStr+"T12:00:00"))}`;
+    type === "day"
+      ? `Dag: ${dateStr}`
+      : type === "month"
+      ? `Månad: ${dateStr.slice(0, 7)}`
+      : `Vecka: ${isoWeekKeyFromDate(new Date(dateStr + "T12:00:00"))}`;
 
   overviewBox.innerHTML = `
     <div><span class="k">Period</span> <span class="v">${label}</span></div>
@@ -644,16 +695,16 @@ function renderHistory(){
     <div><span class="k">Dagar med data</span> <span class="v">${keys.length}</span></div>
   `;
 
-  // Per account
-  if (perAccMin.size === 0){
+  // Per konto
+  if (perAccMin.size === 0) {
     perAccountBox.innerHTML = `<div class="muted">Inga slots i perioden.</div>`;
   } else {
     const entries = [...perAccMin.entries()]
       .map(([accId, min]) => ({ accId, min, name: accountNameById(accId) || "(ej valt)" }))
-      .sort((a,b) => b.min - a.min);
+      .sort((a, b) => b.min - a.min);
 
     let html = `<div class="list">`;
-    entries.forEach(e => {
+    entries.forEach((e) => {
       html += `
         <div class="item">
           <div class="left">
@@ -667,17 +718,26 @@ function renderHistory(){
     perAccountBox.innerHTML = html;
   }
 
-  // Rows list (slots)
+  // Poster
   historyList.innerHTML = "";
-  if (!rows.length){
-    historyList.innerHTML = `<div class="item"><div class="left"><div class="title muted">Inga poster</div><div class="meta">Inget att visa i vald period.</div></div></div>`;
+  if (!rows.length) {
+    historyList.innerHTML = `
+      <div class="item">
+        <div class="left">
+          <div class="title muted">Inga poster</div>
+          <div class="meta">Inget att visa i vald period.</div>
+        </div>
+      </div>`;
   } else {
     rows
       .slice()
-      .sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time,"sv"))
-      .forEach(r => {
+      .sort((a, b) => (a.date + minutesToTime(a.startMin)).localeCompare(b.date + minutesToTime(b.startMin), "sv"))
+      .forEach((r) => {
         const acc = accountNameById(r.accountId) || "(ej valt)";
-        const meta = `${r.date} • ${r.time} • ${acc}${r.isBreak ? " • Rast/Lunch" : ""}`;
+        const timeLabel = `${minutesToTime(r.startMin)}–${minutesToTime(r.endMin)}`;
+        const dur = fmtHM(slotDurationMin(r));
+        const meta = `${r.date} • ${timeLabel} • ${dur} • ${acc}${r.isBreak ? " • Rast/Lunch" : ""}`;
+
         const el = document.createElement("div");
         el.className = "item";
         el.innerHTML = `
@@ -696,18 +756,14 @@ periodType.addEventListener("change", renderHistory);
 periodDate.addEventListener("change", renderHistory);
 
 // ---------- Init ----------
-function init(){
-  ensureDefaultAccounts();
-
+function init() {
   todayPill.textContent = `Idag: ${todayKey()}`;
   renderAccounts();
   renderAccountSelect();
   renderDay();
 
-  // init history date to today
   periodDate.value = todayKey();
 
-  // start chime if day already started (om du råkar ha kvar state)
   const d = getDay(todayKey());
   if (d.startTs && !d.endTs) startChimeLoop();
 }
