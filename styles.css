@@ -1,153 +1,254 @@
+/* Timmeloggen – Gymapp look & feel (dark/glas) */
+
+/* --- Gymapp tokens --- */
 :root{
-  --bg:#eef3fb;              /* gymapp-bakgrund */
-  --card:#ffffff;
-  --text:#102030;
-  --muted:#5f6b82;
-  --line:#dbe3f2;
-
-  --primary:#1e63d5;         /* gymapp-blå */
-  --primary-dark:#164fb0;
-
-  --secondary:#e6ebf5;
-  --danger:#c53030;
-
-  --shadow: 0 10px 30px rgba(0,0,0,.06);
-  --r:16px;
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg:#0b1220;
+  --card:#111827;
+  --muted:#9ca3af;
+  --text:#e5e7eb;
+  --line:#1f2937;
+  --primary:#60a5fa;
+  --danger:#fb7185;
+  --good:#34d399;
 }
 
 *{ box-sizing:border-box; }
-body{ margin:0; background:var(--bg); color:var(--text); }
-.wrap{ max-width: 980px; margin: 0 auto; padding: 16px; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(96,165,250,.18), transparent 60%),
+              radial-gradient(900px 500px at 80% 0%, rgba(52,211,153,.14), transparent 55%),
+              var(--bg);
+  color:var(--text);
+}
+
+/* --- Layout adapters (Timmeloggen markup) --- */
+.wrap{
+  max-width:980px;
+  margin:0 auto;
+  padding: 0 16px 24px;
+}
 
 .topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; padding: 6px 0 12px;
+  padding:16px 0 8px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
 }
-h1{ margin:0; font-size: 1.6rem; }
-.sub{ color:var(--muted); font-size:.95rem; margin-top:4px; }
 
+h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
+.sub{ color:var(--muted); font-size:13px; margin-top:6px; }
+
+/* Pill (datum uppe till höger) */
 .pill{
-  background: #e8f0ff;
-  color: var(--blue);
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size:.9rem;
+  border-radius:999px;
+  padding:6px 10px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
   white-space:nowrap;
+  font-size: 13px;
+  font-weight: 700;
 }
 
+/* Tabs – gymappstil (4 i rad desktop, 2+2 mobil) */
 .tabs{
-  display:flex; gap:10px; margin: 8px 0 14px;
+  max-width:980px;
+  margin:0 auto;
+  padding: 0 0 12px;
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap:8px;
 }
+.tabs button{ width:100%; white-space:nowrap; }
+
 .tab{
-  border:1px solid var(--line);
-  background:#fff;
-  padding:10px 14px;
-  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  padding:10px 12px;
+  border-radius:14px;
   cursor:pointer;
   font-weight:700;
 }
 .tab.active{
-  background: var(--blue);
-  border-color: var(--blue);
-  color:#fff;
+  border-color: rgba(96,165,250,.55);
+  background: rgba(96,165,250,.12);
+}
+
+@media (pointer: coarse){
+  .tabs{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px){
+  .tabs{
+    display:flex !important;
+    flex-wrap:wrap !important;
+    gap:8px !important;
+    justify-content:center;
+  }
+  .tabs .tab{
+    flex: 0 0 calc(50% - 4px) !important;
+    max-width: none !important;
+    width: auto !important;
+  }
+}
+@media (min-width: 721px){
+  .tabs{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    gap:8px !important;
+  }
+  .tabs .tab{
+    flex: 1 1 0 !important;
+    max-width: 220px !important;
+  }
 }
 
 .panel{ display:none; }
 .panel.active{ display:block; }
 
+/* Cards – gymapp glas */
 .card{
-  background: var(--card);
-  border:1px solid var(--line);
-  border-radius: var(--r);
-  padding: 16px;
-  box-shadow: var(--shadow);
+  background: rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;
+  padding:14px;
+  margin: 12px 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
 .card.inner{
   box-shadow:none;
-  background:#f8fbff;
+  background: rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.08);
 }
 
+/* Grid */
 .grid2{
   display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:12px;
+}
+@media (max-width: 700px){
+  .grid2{ grid-template-columns: 1fr; }
 }
 
-.row{ display:flex; gap:10px; align-items:center; margin: 10px 0; flex-wrap:wrap; }
+/* Text */
+h2{ margin: 6px 0 12px; }
+h3{ margin: 6px 0 12px; color:#f3f4f6; font-size:16px; }
 
+.muted{ color: var(--muted); font-size:13px; }
+.tiny{ font-size: 12px; color: var(--muted); }
+.strong{ font-weight: 900; }
+
+/* Inputs */
+label{ display:block; font-size:13px; color: var(--muted); }
 input, select{
   width:100%;
-  padding: 10px 12px;
-  border:1px solid var(--line);
-  border-radius: 12px;
-  font-size: 1rem;
-  background:#fff;
+  margin-top:6px;
+  padding:10px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.25);
+  color: var(--text);
+  outline:none;
 }
+input:focus, select:focus{ border-color: rgba(96,165,250,.6); }
+
 input[type="time"]{ max-width: 180px; }
 select{ max-width: 260px; }
+@media (max-width: 840px){
+  input[type="time"], select{ max-width:none; }
+}
 
+/* Rows / checkbox */
+.row{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  margin: 10px 0;
+}
+.checkbox{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  user-select:none;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.18);
+}
+
+/* Buttons – gymapp */
 button{
-  background: var(--primary);
-  color:#fff;
-  border:none;
-  padding: 10px 16px;
-  border-radius: 999px;
+  border-radius:14px;
+  padding:10px 12px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
   cursor:pointer;
-  font-weight: 800;
-}
-
-button.secondary{
-  background: var(--secondary);
-  color:#1f2d4a;
-}
-
-button.danger{
-  background: var(--danger);
-  color:#fff;
+  font-weight:700;
 }
 button:disabled{ opacity:.5; cursor:default; }
 
-.muted{ color: var(--muted); }
-.tiny{ font-size: .85rem; }
-.strong{ font-weight: 900; }
-
-hr{
-  border:0;
-  border-top:1px solid var(--line);
-  margin: 14px 0;
+button.primary{
+  border-color: rgba(96,165,250,.55);
+  background: rgba(96,165,250,.18);
+}
+button.danger{
+  border-color: rgba(251,113,133,.55);
+  background: rgba(251,113,133,.12);
 }
 
-.list{
-  margin-top: 10px;
-  border-top:1px solid var(--line);
+/* Adapter: din kod använder "secondary" ibland */
+button.secondary{
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
 }
+
+/* List */
+.list{ margin-top: 10px; }
+.list .item,
 .item{
   display:flex;
   justify-content:space-between;
-  gap:10px;
-  padding: 10px 0;
-  border-bottom:1px solid var(--line);
+  gap:12px;
+  align-items:center;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.18);
+  margin-top:10px;
 }
+.item .meta{ color: var(--muted); font-size:13px; margin-top:4px; white-space:pre-wrap; }
+.item .title{ font-weight:800; }
 .item .left{ min-width:0; }
-.item .title{ font-weight: 800; }
-.item .meta{ font-size:.9rem; color:var(--muted); margin-top:3px; white-space:pre-wrap; }
 
-.kv{ display:grid; gap:6px; margin-top:8px; }
-.kv .k{ color:var(--muted); }
+/* kv (nyckel/värde) – mappa till gymapp */
+.kv{
+  display:grid;
+  gap:8px;
+  margin-top: 8px;
+}
+.kv .k{ color: var(--muted); font-size:13px; }
 .kv .v{ font-weight:800; }
 
-.checkbox{
-  display:flex; align-items:center; gap:10px; user-select:none;
-  padding: 8px 10px; border:1px solid var(--line); border-radius: 12px;
-  background:#fff;
+/* Divider */
+hr, .sep{
+  border:0;
+  height:1px;
+  background: rgba(255,255,255,.10);
+  margin: 14px 0;
 }
 
-.foot{ margin: 14px 2px 6px; }
-
-@media (max-width: 840px){
-  .grid2{ grid-template-columns: 1fr; }
-  input[type="time"], select{ max-width:none; }
+/* Footer */
+.foot{
+  max-width:980px;
+  margin: 0 auto 16px;
+  padding: 0 0;
+  color: var(--muted);
+  font-size:12px;
+  opacity: 0.85;
 }
