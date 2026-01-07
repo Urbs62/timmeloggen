@@ -90,19 +90,20 @@ input[type="time"]{ max-width: 180px; }
 select{ max-width: 260px; }
 
 button{
-  background: var(--blue);
+  background: var(--primary);
   color:#fff;
   border:none;
-  padding: 10px 14px;
+  padding: 10px 16px;
   border-radius: 999px;
   cursor:pointer;
   font-weight: 800;
-  white-space:nowrap;
 }
+
 button.secondary{
-  background:#e9eef8;
-  color:#21324a;
+  background: var(--secondary);
+  color:#1f2d4a;
 }
+
 button.danger{
   background: var(--danger);
   color:#fff;
