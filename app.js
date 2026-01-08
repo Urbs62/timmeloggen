@@ -6,6 +6,9 @@
    - localStorage
 */
 
+const activeDate = document.getElementById("activeDate");
+let activeDayKey = todayKey();
+
 const STORE = {
   accounts: "tl_accounts_v1",
   days: "tl_days_v1"
@@ -754,6 +757,12 @@ function renderHistory() {
 refreshHistoryBtn.addEventListener("click", renderHistory);
 periodType.addEventListener("change", renderHistory);
 periodDate.addEventListener("change", renderHistory);
+
+activeDate.value = activeDayKey;
+activeDate.addEventListener("change", () => {
+  activeDayKey = activeDate.value || todayKey();
+  renderDay();
+});
 
 // ---------- Init ----------
 function init() {
