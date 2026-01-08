@@ -6,9 +6,6 @@
    - localStorage
 */
 
-const activeDate = document.getElementById("activeDate");
-let activeDayKey = todayKey();
-
 const STORE = {
   accounts: "tl_accounts_v1",
   days: "tl_days_v1"
@@ -100,6 +97,8 @@ const panels = {
   log: document.getElementById("tab-log"),
   history: document.getElementById("tab-history"),
 };
+const activeDate = document.getElementById("activeDate");
+let activeDayKey = todayKey();
 
 // Accounts
 const accountName = document.getElementById("accountName");
@@ -266,7 +265,7 @@ function endDay() {
 }
 
 function addSlot() {
-  const key = todayKey();
+  const key = activeDayKey();
   const d = getDay(key);
 
   if (!d.startTs) {
@@ -310,7 +309,7 @@ function addSlot() {
 }
 
 function deleteSlot(slotId) {
-  const key = todayKey();
+  const key = activeDayKey();
   const d = getDay(key);
   d.slots = d.slots.filter((s) => s.id !== slotId);
   saveDays();
@@ -318,7 +317,7 @@ function deleteSlot(slotId) {
 }
 
 function toggleBreak(slotId) {
-  const key = todayKey();
+  const key = activeDayKey();
   const d = getDay(key);
   const s = d.slots.find((x) => x.id === slotId);
   if (!s) return;
@@ -328,7 +327,7 @@ function toggleBreak(slotId) {
 }
 
 function editSlot(slotId) {
-  const key = todayKey();
+  const key = activeDayKey();
   const d = getDay(key);
   const s = d.slots.find((x) => x.id === slotId);
   if (!s) return;
@@ -368,7 +367,7 @@ function editSlot(slotId) {
 }
 
 function clearToday() {
-  const key = todayKey();
+  const key = activeDayKey();
   const d = getDay(key);
   if (!confirm("Rensa alla slots för idag?")) return;
   d.slots = [];
@@ -418,7 +417,7 @@ function renderAccountSelect() {
 }
 
 function renderDay() {
-  const key = todayKey();
+  const key = activeDayKey();
   const d = getDay(key);
 
   dayKeyView.textContent = `Datum: ${key}`;
