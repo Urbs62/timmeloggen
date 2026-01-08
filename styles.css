@@ -41,6 +41,22 @@ body{
 h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
 .sub{ color:var(--muted); font-size:13px; margin-top:6px; }
 
+.brand{
+  display:flex; gap:12px; align-items:center;
+  max-width:980px; margin:0 auto;
+}
+.logo{
+  width:40px; height:40px; display:grid; place-items:center;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
+}
+.logoMark{
+  font-weight:900;
+  letter-spacing:.6px;
+  color: var(--text);
+}
+
 /* Pill (datum uppe till höger) */
 .pill{
   border-radius:999px;
