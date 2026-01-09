@@ -1,14 +1,14 @@
 /* Timmeloggen v1 – gymapp-liknande upplägg
    - 3 flikar: Konton, Tidsloggning, Sammanställning
    - Slots: start + stopptid + konto + text + "rast/lunch"
-   - Arbetstid = summa (icke-rast) slots
-   - Timljud varje timme efter att dagen startats
+   - Arbetstid = summa (icke-rast) slots (alla dagar)
+   - Start/Slut + timljud: endast för idag
    - localStorage
 */
 
 const STORE = {
   accounts: "tl_accounts_v1",
-  days: "tl_days_v1"
+  days: "tl_days_v1",
 };
 
 // ---------- Helpers ----------
@@ -29,6 +29,7 @@ function parseTimeToMinutes(hhmm) {
   if (!hhmm || !hhmm.includes(":")) return null;
   const [h, m] = hhmm.split(":").map((x) => parseInt(x, 10));
   if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  if (h < 0 || h > 23 || m < 0 || m > 59) return null;
   return h * 60 + m;
 }
 
@@ -44,7 +45,7 @@ function nowTimeHHMM() {
 }
 
 function setText(el, text) {
-  el.textContent = text;
+  if (el) el.textContent = text;
 }
 
 function loadJSON(key, fallback) {
@@ -76,7 +77,7 @@ function escapeHtml(s) {
 /*
 days = {
   "YYYY-MM-DD": {
-     startTs: number|null,
+     startTs: number|null,  // endast relevant för "idag" (timljud)
      endTs: number|null,
      slots: [
        { id, startMin, endMin, accountId, text, isBreak }
@@ -88,6 +89,9 @@ accounts = [{id,name}]
 let accounts = loadJSON(STORE.accounts, []);
 let days = loadJSON(STORE.days, {});
 
+// Aktiv dag (för bakåtredigering)
+let activeDayKey = todayKey();
+
 // ---------- DOM ----------
 const todayPill = document.getElementById("todayPill");
 
@@ -97,8 +101,8 @@ const panels = {
   log: document.getElementById("tab-log"),
   history: document.getElementById("tab-history"),
 };
+
 const activeDate = document.getElementById("activeDate");
-let activeDayKey = todayKey();
 
 // Accounts
 const accountName = document.getElementById("accountName");
@@ -146,6 +150,20 @@ tabBtns.forEach((btn) => {
   });
 });
 
+// ---------- Day helpers ----------
+function getDay(key) {
+  if (!days[key]) days[key] = { startTs: null, endTs: null, slots: [] };
+  return days[key];
+}
+
+function saveDays() {
+  saveJSON(STORE.days, days);
+}
+
+function isTodayActive() {
+  return activeDayKey === todayKey();
+}
+
 // ---------- Accounts ----------
 function addAccount(name) {
   const n = (name || "").trim();
@@ -170,7 +188,6 @@ function updateAccountName(id, newName) {
   const n = (newName || "").trim();
   if (!n) return;
 
-  // blockera dubbletter (exakt namn, case-insensitive)
   if (accounts.some((a) => a.id !== id && a.name.toLowerCase() === n.toLowerCase())) {
     alert("Det finns redan ett konto med det namnet.");
     renderAccounts();
@@ -179,6 +196,7 @@ function updateAccountName(id, newName) {
 
   const a = accounts.find((x) => x.id === id);
   if (!a) return;
+
   a.name = n;
   saveJSON(STORE.accounts, accounts);
   renderAccountSelect();
@@ -186,6 +204,7 @@ function updateAccountName(id, newName) {
 
 function renderAccounts() {
   accountList.innerHTML = "";
+
   if (!accounts.length) {
     accountList.innerHTML = `
       <div class="item">
@@ -204,10 +223,18 @@ function renderAccounts() {
       const el = document.createElement("div");
       el.className = "item";
       el.innerHTML = `
-        <div class="left">
+        <div class="left" style="flex:1; min-width:0;">
           <div class="title">
             <input class="account-edit" data-id="${a.id}" value="${escapeHtml(a.name)}"
-                   style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:12px;" />
+              style="
+                width:100%;
+                padding:10px 10px;
+                border-radius:12px;
+                border:1px solid rgba(255,255,255,.12);
+                background: rgba(0,0,0,.25);
+                color: var(--text);
+                outline:none;
+              " />
           </div>
           <div class="meta">ID: ${a.id}</div>
         </div>
@@ -220,7 +247,7 @@ function renderAccounts() {
         if (confirm(`Ta bort konto "${a.name}"?`)) deleteAccount(a.id);
       });
 
-      el.querySelector(`.account-edit`).addEventListener("change", (e) => {
+      el.querySelector(".account-edit").addEventListener("change", (e) => {
         updateAccountName(a.id, e.target.value);
       });
 
@@ -233,20 +260,13 @@ accountName.addEventListener("keydown", (e) => {
   if (e.key === "Enter") addAccount(accountName.value);
 });
 
-// ---------- Day / slots ----------
-function getDay(key) {
-  if (!days[key]) days[key] = { startTs: null, endTs: null, slots: [] };
-  return days[key];
-}
-
-function saveDays() {
-  saveJSON(STORE.days, days);
-}
-
+// ---------- Slots + Start/Slut (endast idag) ----------
 function startDay() {
-  const key = todayKey();
-  const d = getDay(key);
-  if (d.startTs) return; // redan startad
+  if (!isTodayActive()) return; // skydd: endast idag
+
+  const d = getDay(activeDayKey);
+  if (d.startTs) return;
+
   d.startTs = Date.now();
   d.endTs = null;
   saveDays();
@@ -255,9 +275,11 @@ function startDay() {
 }
 
 function endDay() {
-  const key = todayKey();
-  const d = getDay(key);
+  if (!isTodayActive()) return; // skydd: endast idag
+
+  const d = getDay(activeDayKey);
   if (!d.startTs) return alert("Starta dagen först.");
+
   d.endTs = Date.now();
   saveDays();
   renderDay();
@@ -265,13 +287,7 @@ function endDay() {
 }
 
 function addSlot() {
-  const key = activeDayKey();
-  const d = getDay(key);
-
-  if (!d.startTs) {
-    alert("Starta dagen först.");
-    return;
-  }
+  const d = getDay(activeDayKey);
 
   const startMin = parseTimeToMinutes(slotStart.value);
   const endMin = parseTimeToMinutes(slotEnd.value);
@@ -291,10 +307,9 @@ function addSlot() {
     endMin,
     accountId: slotAccount.value || "",
     text: (slotText.value || "").trim(),
-    isBreak: !!slotIsBreak.checked
+    isBreak: !!slotIsBreak.checked,
   });
 
-  // sortera på starttid
   d.slots.sort((a, b) => a.startMin - b.startMin);
 
   saveDays();
@@ -309,16 +324,14 @@ function addSlot() {
 }
 
 function deleteSlot(slotId) {
-  const key = activeDayKey();
-  const d = getDay(key);
+  const d = getDay(activeDayKey);
   d.slots = d.slots.filter((s) => s.id !== slotId);
   saveDays();
   renderDay();
 }
 
 function toggleBreak(slotId) {
-  const key = activeDayKey();
-  const d = getDay(key);
+  const d = getDay(activeDayKey);
   const s = d.slots.find((x) => x.id === slotId);
   if (!s) return;
   s.isBreak = !s.isBreak;
@@ -327,8 +340,7 @@ function toggleBreak(slotId) {
 }
 
 function editSlot(slotId) {
-  const key = activeDayKey();
-  const d = getDay(key);
+  const d = getDay(activeDayKey);
   const s = d.slots.find((x) => x.id === slotId);
   if (!s) return;
 
@@ -342,6 +354,7 @@ function editSlot(slotId) {
 
   const startMin = parseTimeToMinutes(newStart);
   const endMin = parseTimeToMinutes(newEnd);
+
   if (startMin === null || endMin === null || endMin <= startMin) {
     alert("Ogiltig start/stopptid.");
     return;
@@ -366,10 +379,9 @@ function editSlot(slotId) {
   renderDay();
 }
 
-function clearToday() {
-  const key = activeDayKey();
-  const d = getDay(key);
-  if (!confirm("Rensa alla slots för idag?")) return;
+function clearDay() {
+  const d = getDay(activeDayKey);
+  if (!confirm("Rensa alla rader för vald dag?")) return;
   d.slots = [];
   saveDays();
   renderDay();
@@ -378,7 +390,7 @@ function clearToday() {
 startDayBtn.addEventListener("click", startDay);
 endDayBtn.addEventListener("click", endDay);
 addSlotBtn.addEventListener("click", addSlot);
-clearTodayBtn.addEventListener("click", clearToday);
+clearTodayBtn.addEventListener("click", clearDay);
 
 // ---------- Calculations ----------
 function slotDurationMin(s) {
@@ -417,48 +429,55 @@ function renderAccountSelect() {
 }
 
 function renderDay() {
-  const key = activeDayKey();
-  const d = getDay(key);
+  const d = getDay(activeDayKey);
+  const isToday = isTodayActive();
 
-  dayKeyView.textContent = `Datum: ${key}`;
-  todayPill.textContent = `Idag: ${key}`;
+  // Pills/labels
+  setText(dayKeyView, `Aktiv dag: ${activeDayKey}`);
+  setText(todayPill, `Idag: ${todayKey()}`);
 
+  // Start/Slut: bara “idag”
   setText(
     dayStartView,
-    d.startTs
+    isToday && d.startTs
       ? new Date(d.startTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
       : "—"
   );
   setText(
     dayEndView,
-    d.endTs
+    isToday && d.endTs
       ? new Date(d.endTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
       : "—"
   );
 
-  const b = dayBreakMinutes(d);
-  setText(breakView, fmtHM(b));
+  // Totals alltid från slots
+  setText(breakView, fmtHM(dayBreakMinutes(d)));
+  setText(workView, fmtHM(dayWorkMinutes(d)));
 
-  const w = dayWorkMinutes(d);
-  setText(workView, fmtHM(w));
+  // Disable Start/Slut när aktiv dag ≠ idag
+  startDayBtn.disabled = !isToday || !!d.startTs;
+  endDayBtn.disabled = !isToday || !d.startTs || !!d.endTs;
 
-  startDayBtn.disabled = !!d.startTs;
-  endDayBtn.disabled = !d.startTs || !!d.endTs;
-
-  // defaults för slot inputs
-  const nowM = parseTimeToMinutes(nowTimeHHMM());
-  if (nowM !== null) {
-    // default start = nu (ej avrundning)
-    if (!slotStart.value) slotStart.value = minutesToTime(nowM);
+  if (!isToday) {
+    setText(chimeView, "Start/Slut bara för idag (timljud kräver att dagen är igång).");
+  } else {
+    setText(chimeView, d.startTs && !d.endTs ? "Timljud: på (varje timme efter start)" : "Timljud: av");
   }
 
+  // Default för slot start
+  const nowM = parseTimeToMinutes(nowTimeHHMM());
+  if (nowM !== null && !slotStart.value) {
+    slotStart.value = minutesToTime(nowM);
+  }
+
+  // Render slots
   slotList.innerHTML = "";
   if (!d.slots.length) {
     slotList.innerHTML = `
       <div class="item">
         <div class="left">
-          <div class="title muted">Inga slots ännu</div>
-          <div class="meta">Lägg till en slot med start + stopptid.</div>
+          <div class="title muted">Inga rader ännu</div>
+          <div class="meta">Lägg till en rad med start + stopptid.</div>
         </div>
       </div>`;
     return;
@@ -490,7 +509,7 @@ function renderDay() {
   });
 }
 
-// ---------- Hourly chime ----------
+// ---------- Hourly chime (endast idag) ----------
 let chimeTimer = null;
 let chimeNextTs = null;
 
@@ -504,7 +523,6 @@ function playChime() {
     gain.gain.value = 0.06;
     gain.connect(ctx.destination);
 
-    // Tre toner (särskiljbar signal)
     const freqs = [880, 660, 880];
     let t = ctx.currentTime;
 
@@ -519,24 +537,19 @@ function playChime() {
     });
 
     setTimeout(() => ctx.close(), 1200);
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 function startChimeLoop() {
   stopChimeLoop();
 
-  const key = todayKey();
-  const d = getDay(key);
-  if (!d.startTs || d.endTs) {
-    chimeView.textContent = "Timljud: av";
-    return;
-  }
+  // bara om aktiv dag är idag
+  if (!isTodayActive()) return;
 
-  const start = d.startTs;
-  chimeNextTs = start + 60 * 60 * 1000;
-  chimeView.textContent = "Timljud: på (varje timme efter start)";
+  const d = getDay(activeDayKey);
+  if (!d.startTs || d.endTs) return;
+
+  chimeNextTs = d.startTs + 60 * 60 * 1000;
 
   chimeTimer = setInterval(() => {
     const now = Date.now();
@@ -552,38 +565,26 @@ function stopChimeLoop() {
   if (chimeTimer) clearInterval(chimeTimer);
   chimeTimer = null;
   chimeNextTs = null;
-  chimeView.textContent = "Timljud: av";
 }
 
 // ---------- CSV export ----------
 exportCsvBtn.addEventListener("click", () => {
   const rows = [];
-  rows.push(["Datum", "Start", "Slut", "SlotStart", "SlotSlut", "Minuter", "Konto", "Rast", "Text"].join(";"));
+  rows.push(["Datum", "SlotStart", "SlotSlut", "Minuter", "Konto", "Rast", "Text"].join(";"));
 
   const keys = Object.keys(days).sort();
   for (const k of keys) {
     const d = days[k];
-    const start = d.startTs
-      ? new Date(d.startTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
-      : "";
-    const end = d.endTs
-      ? new Date(d.endTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
-      : "";
-
-    if (!d.slots.length) {
-      rows.push([k, start, end, "", "", "", "", "", ""].join(";"));
-      continue;
-    }
+    if (!d.slots?.length) continue;
 
     d.slots.forEach((s) => {
       const acc = accountNameById(s.accountId);
       const isBreak = s.isBreak ? "1" : "0";
       const text = (s.text || "").replaceAll('"', '""');
       const mins = slotDurationMin(s);
+
       rows.push([
         k,
-        start,
-        end,
         minutesToTime(s.startMin),
         minutesToTime(s.endMin),
         mins,
@@ -654,11 +655,8 @@ function aggregateForKeys(keys) {
 
   keys.sort().forEach((k) => {
     const day = days[k];
-    const b = dayBreakMinutes(day);
-    const w = dayWorkMinutes(day);
-
-    totalBreakMin += b;
-    totalWorkMin += w;
+    totalBreakMin += dayBreakMinutes(day);
+    totalWorkMin += dayWorkMinutes(day);
 
     (day.slots || []).forEach((s) => {
       rows.push({ date: k, ...s });
@@ -667,8 +665,7 @@ function aggregateForKeys(keys) {
       if (s.isBreak) return;
 
       const accId = s.accountId || "";
-      const prev = perAccMin.get(accId) || 0;
-      perAccMin.set(accId, prev + dur);
+      perAccMin.set(accId, (perAccMin.get(accId) || 0) + dur);
     });
   });
 
@@ -697,7 +694,6 @@ function renderHistory() {
     <div><span class="k">Dagar med data</span> <span class="v">${keys.length}</span></div>
   `;
 
-  // Per konto
   if (perAccMin.size === 0) {
     perAccountBox.innerHTML = `<div class="muted">Inga slots i perioden.</div>`;
   } else {
@@ -720,7 +716,6 @@ function renderHistory() {
     perAccountBox.innerHTML = html;
   }
 
-  // Poster
   historyList.innerHTML = "";
   if (!rows.length) {
     historyList.innerHTML = `
@@ -757,21 +752,33 @@ refreshHistoryBtn.addEventListener("click", renderHistory);
 periodType.addEventListener("change", renderHistory);
 periodDate.addEventListener("change", renderHistory);
 
-activeDate.value = activeDayKey;
-activeDate.addEventListener("change", () => {
-  activeDayKey = activeDate.value || todayKey();
-  renderDay();
-});
+// ---------- Active day selector ----------
+if (activeDate) {
+  activeDate.value = activeDayKey;
+  activeDate.addEventListener("change", () => {
+    activeDayKey = activeDate.value || todayKey();
+
+    // Byter dag => stoppa alltid chime.
+    stopChimeLoop();
+
+    renderDay();
+
+    // Starta chime igen om vi är på idag och dagen är igång
+    const d = getDay(activeDayKey);
+    if (isTodayActive() && d.startTs && !d.endTs) startChimeLoop();
+  });
+}
 
 // ---------- Init ----------
 function init() {
-  todayPill.textContent = `Idag: ${todayKey()}`;
+  setText(todayPill, `Idag: ${todayKey()}`);
   renderAccounts();
   renderAccountSelect();
   renderDay();
 
   periodDate.value = todayKey();
 
+  // start chime om dagens loggning redan är igång
   const d = getDay(todayKey());
   if (d.startTs && !d.endTs) startChimeLoop();
 }
