@@ -72,6 +72,26 @@ function escapeHtml(s) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 }
+function monthKeyFromDayKey(dayKey){
+  // "YYYY-MM-DD" -> "YYYY-MM"
+  return dayKey.slice(0,7);
+}
+
+function minutesToDecimalHours(mins){
+  // 150 -> 2.5
+  return Math.round((mins / 60) * 100) / 100;
+}
+
+function formatHoursSv(hours){
+  // 2.5 -> "2,50"
+  const s = hours.toFixed(2);
+  return s.replace(".", ",");
+}
+
+function formatDateSv(dayKey){
+  // "2026-01-03" -> "2026-01-03" (du kan byta till "3/1" om du vill senare)
+  return dayKey;
+}
 
 // ---------- Data model ----------
 /*
