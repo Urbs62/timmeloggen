@@ -795,6 +795,177 @@ if (activeDate) {
   });
 }
 
+function buildInvoiceRows(monthYYYYMM, accountIdOrAll){
+  // returns { rows: [...], totalMinutes }
+  const rows = [];
+  let totalMinutes = 0;
+
+  const keys = Object.keys(days)
+    .filter(k => k.startsWith(monthYYYYMM + "-"))
+    .sort();
+
+  for (const k of keys){
+    const d = days[k];
+    const slots = (d?.slots || [])
+      .filter(s => !s.isBreak)
+      .filter(s => accountIdOrAll === "ALL" ? true : (s.accountId === accountIdOrAll))
+      .slice()
+      .sort((a,b) => a.startMin - b.startMin);
+
+    for (const s of slots){
+      const mins = slotDurationMin(s);
+      if (mins <= 0) continue;
+
+      totalMinutes += mins;
+
+      rows.push({
+        date: k,
+        accountName: accountNameById(s.accountId) || "(ej valt)",
+        start: minutesToTime(s.startMin),
+        end: minutesToTime(s.endMin),
+        minutes: mins,
+        hoursDec: minutesToDecimalHours(mins),
+        text: s.text || ""
+      });
+    }
+  }
+
+  return { rows, totalMinutes };
+}
+
+function renderInvoiceAccountSelect(){
+  if (!invoiceAccount) return;
+
+  invoiceAccount.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "ALL";
+  optAll.textContent = "Alla konton";
+  invoiceAccount.appendChild(optAll);
+
+  accounts
+    .slice()
+    .sort((a,b)=>a.name.localeCompare(b.name,"sv"))
+    .forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a.id;
+      opt.textContent = a.name;
+      invoiceAccount.appendChild(opt);
+    });
+}
+
+function exportInvoiceCsv(){
+  const monthVal = (invoiceMonth?.value || "").trim(); // "YYYY-MM"
+  if (!monthVal) return alert("Välj en månad.");
+
+  const accVal = invoiceAccount?.value || "ALL";
+  const { rows, totalMinutes } = buildInvoiceRows(monthVal, accVal);
+
+  if (!rows.length){
+    return alert("Inga arbetspass hittades för vald månad/konto.");
+  }
+
+  const header = ["Datum","Konto","Start","Slut","Timmar","Aktivitet"].join(";");
+  const lines = [header];
+
+  for (const r of rows){
+    const text = (r.text || "").replaceAll('"','""');
+    lines.push([
+      formatDateSv(r.date),
+      r.accountName,
+      r.start,
+      r.end,
+      formatHoursSv(r.hoursDec),
+      `"${text}"`
+    ].join(";"));
+  }
+
+  const totalHours = minutesToDecimalHours(totalMinutes);
+  lines.push(["SUMMA","","","","" + formatHoursSv(totalHours),""].join(";"));
+
+  const blob = new Blob([lines.join("\n")], { type:"text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const accName = accVal === "ALL" ? "alla" : (accountNameById(accVal) || "konto");
+  const safeAcc = accName.replace(/[^\w\-]+/g,"_");
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `timmeloggen_fakturaunderlag_${monthVal}_${safeAcc}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function buildInvoicePrintHtml(monthVal, accVal){
+  const { rows, totalMinutes } = buildInvoiceRows(monthVal, accVal);
+
+  const accLabel =
+    accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || "(ej valt)");
+
+  const totalHours = minutesToDecimalHours(totalMinutes);
+
+  // Tabellrader
+  let tr = "";
+  for (const r of rows){
+    tr += `
+      <tr>
+        <td>${escapeHtml(formatDateSv(r.date))}</td>
+        <td>${escapeHtml(r.start)}–${escapeHtml(r.end)}</td>
+        <td class="right">${escapeHtml(formatHoursSv(r.hoursDec))}</td>
+        <td>${escapeHtml(r.text || "")}</td>
+      </tr>
+    `;
+  }
+
+  return `
+    <h1>Fakturaunderlag</h1>
+    <div class="kv">
+      <div><b>Månad:</b> ${escapeHtml(monthVal)}</div>
+      <div><b>Konto:</b> ${escapeHtml(accLabel)}</div>
+      <div class="muted">Skapat av Timmeloggen (lokalt underlag)</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Tid</th>
+          <th class="right">Timmar</th>
+          <th>Aktivitet</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tr}
+        <tr class="sumrow">
+          <td colspan="2">SUMMA</td>
+          <td class="right">${escapeHtml(formatHoursSv(totalHours))}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+}
+
+function printInvoicePdf(){
+  const monthVal = (invoiceMonth?.value || "").trim();
+  if (!monthVal) return alert("Välj en månad.");
+
+  const accVal = invoiceAccount?.value || "ALL";
+  const { rows } = buildInvoiceRows(monthVal, accVal);
+  if (!rows.length){
+    return alert("Inga arbetspass hittades för vald månad/konto.");
+  }
+
+  if (!printArea) return alert("printArea saknas i index.html.");
+
+  printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
+
+  // Öppna print-dialog (Spara som PDF)
+  setTimeout(() => window.print(), 50);
+}
+
+
 // ---------- Init ----------
 function init() {
   setText(todayPill, `Idag: ${todayKey()}`);
@@ -807,5 +978,13 @@ function init() {
   // start chime om dagens loggning redan är igång
   const d = getDay(todayKey());
   if (d.startTs && !d.endTs) startChimeLoop();
+
+   // Faktura: init
+   if (invoiceMonth) invoiceMonth.value = todayKey().slice(0,7);
+      renderInvoiceAccountSelect();
+
+   if (exportInvoiceCsvBtn) exportInvoiceCsvBtn.addEventListener("click", exportInvoiceCsv);
+   if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
+
 }
 init();
