@@ -1,58 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg
-  width="512"
-  height="512"
-  viewBox="0 0 512 512"
-  xmlns="http://www.w3.org/2000/svg"
-  role="img"
-  aria-label="Timmeloggen logo">
-
+<svg width="512" height="512" viewBox="0 0 512 512"
+  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timmeloggen logo">
   <defs>
-    <!-- Subtle glow -->
-    <radialGradient id="bgGlow" cx="30%" cy="20%" r="70%">
-      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.25"/>
+    <radialGradient id="bg" cx="30%" cy="18%" r="75%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.28"/>
+      <stop offset="70%" stop-color="#0b1220" stop-opacity="1"/>
       <stop offset="100%" stop-color="#0b1220" stop-opacity="1"/>
     </radialGradient>
   </defs>
 
-  <!-- Rounded square background -->
-  <rect
-    x="16"
-    y="16"
-    width="480"
-    height="480"
-    rx="96"
-    fill="url(#bgGlow)"
-  />
+  <!-- App tile -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg)"/>
 
   <!-- TL monogram -->
-  <g
-    fill="#e5e7eb"
-    transform="translate(256 300)"
-    text-anchor="middle"
-    font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
-    font-weight="900">
-
-    <!-- T -->
-    <text x="-60" y="0" font-size="200">T</text>
-
-    <!-- L -->
-    <text x="80" y="0" font-size="200">L</text>
+  <g fill="#e5e7eb" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-weight="900">
+    <text x="256" y="332" font-size="220" text-anchor="middle" letter-spacing="-14">TL</text>
   </g>
 
-  <!-- Minimal clock tick -->
-  <g
-    transform="translate(330 170)"
-    stroke="#60a5fa"
-    stroke-width="10"
-    stroke-linecap="round"
-    fill="none">
-
-    <!-- small circle -->
-    <circle cx="0" cy="0" r="28" />
-
-    <!-- clock hand -->
-    <line x1="0" y1="0" x2="0" y2="-16" />
+  <!-- Check badge (tydlig) -->
+  <g transform="translate(386 148)">
+    <circle cx="0" cy="0" r="44" fill="rgba(52,211,153,0.18)" stroke="#34d399" stroke-width="10"/>
+    <path d="M -18 2 L -4 18 L 22 -16"
+      fill="none" stroke="#34d399" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-
 </svg>
