@@ -138,6 +138,12 @@ const overviewBox = document.getElementById("overviewBox");
 const perAccountBox = document.getElementById("perAccountBox");
 const historyList = document.getElementById("historyList");
 
+const invoiceAccount = document.getElementById("invoiceAccount");
+const invoiceMonth = document.getElementById("invoiceMonth");
+const exportInvoiceCsvBtn = document.getElementById("exportInvoiceCsvBtn");
+const printInvoiceBtn = document.getElementById("printInvoiceBtn");
+const printArea = document.getElementById("printArea");
+
 // ---------- Tabs ----------
 tabBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
