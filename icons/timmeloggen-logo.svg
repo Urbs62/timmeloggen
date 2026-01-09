@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  width="512"
+  height="512"
+  viewBox="0 0 512 512"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Timmeloggen logo">
+
+  <defs>
+    <!-- Subtle glow -->
+    <radialGradient id="bgGlow" cx="30%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#0b1220" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect
+    x="16"
+    y="16"
+    width="480"
+    height="480"
+    rx="96"
+    fill="url(#bgGlow)"
+  />
+
+  <!-- TL monogram -->
+  <g
+    fill="#e5e7eb"
+    transform="translate(256 300)"
+    text-anchor="middle"
+    font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+    font-weight="900">
+
+    <!-- T -->
+    <text x="-60" y="0" font-size="200">T</text>
+
+    <!-- L -->
+    <text x="80" y="0" font-size="200">L</text>
+  </g>
+
+  <!-- Minimal clock tick -->
+  <g
+    transform="translate(330 170)"
+    stroke="#60a5fa"
+    stroke-width="10"
+    stroke-linecap="round"
+    fill="none">
+
+    <!-- small circle -->
+    <circle cx="0" cy="0" r="28" />
+
+    <!-- clock hand -->
+    <line x1="0" y1="0" x2="0" y2="-16" />
+  </g>
+
+</svg>
