@@ -279,6 +279,7 @@ function renderAccounts() {
 
       accountList.appendChild(el);
     });
+   renderInvoiceAccountSelect();
 }
 
 addAccountBtn.addEventListener("click", () => addAccount(accountName.value));
