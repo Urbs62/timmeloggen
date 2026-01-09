@@ -209,6 +209,18 @@ select{ max-width: 260px; }
   border:1px solid rgba(255,255,255,.08);
   background: rgba(0,0,0,.18);
 }
+/* Gör så att "grow"-kolumner i .row faktiskt får bredd */
+.grow{
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+/* I en row: låt inputs/select i grow få full bredd */
+.row .grow input,
+.row .grow select{
+  max-width: none;
+  width: 100%;
+}
 
 /* Buttons – gymapp */
 button{
