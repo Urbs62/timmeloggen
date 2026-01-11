@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Faktura – Jubrion AB</title>
+
+  <style>
+    :root{
+      --text:#111;
+      --muted:#555;
+      --line:#ddd;
+      --bg:#fff;
+      --accent:#1e63d5;
+      --r:12px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    html,body{ background:var(--bg); color:var(--text); font-family:var(--font); margin:0; }
+    .page{ max-width: 900px; margin: 0 auto; padding: 24px; }
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+    .brand{
+      display:flex; gap:14px; align-items:flex-start;
+      min-width: 260px;
+    }
+    .logo{
+      width:72px; height:72px;
+      border:1px dashed var(--line);
+      border-radius: var(--r);
+      display:flex; align-items:center; justify-content:center;
+      color: var(--muted);
+      font-size: 12px;
+      flex:0 0 auto;
+    }
+    .brand h1{ margin:0; font-size: 22px; letter-spacing:.2px; }
+    .small{ color:var(--muted); font-size: 13px; line-height:1.35; }
+
+    .meta{
+      text-align:right;
+      min-width: 260px;
+    }
+    .meta .k{ color:var(--muted); font-size: 13px; }
+    .meta .v{ font-weight: 700; }
+    .meta .row{ margin: 2px 0; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 14px 0 18px;
+    }
+    .box{
+      border:1px solid var(--line);
+      border-radius: var(--r);
+      padding: 12px 12px;
+      background:#fff;
+    }
+    .box h3{ margin:0 0 8px; font-size: 14px; color:#000; }
+    .box .small{ margin:0; }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    th, td{
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: none;
+    }
+    td.right, th.right{ text-align:right; }
+    td.nowrap{ white-space: nowrap; }
+
+    .sum{
+      margin-top: 14px;
+      display:flex;
+      justify-content:flex-end;
+    }
+    .sumBox{
+      width: 360px;
+      border:1px solid var(--line);
+      border-radius: var(--r);
+      padding: 12px;
+    }
+    .sumRow{
+      display:flex; justify-content:space-between; gap:12px;
+      margin: 6px 0;
+      font-size: 14px;
+    }
+    .sumRow strong{ font-size: 16px; }
+    .footer{
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .accent{ color: var(--accent); font-weight: 700; }
+
+    @media print{
+      .page{ padding: 12mm; }
+      @page{ margin: 12mm; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">LOGGA<br/>kommer sen</div>
+        <div>
+          <h1>Faktura</h1>
+          <div class="small">
+            <div><strong>Jubrion AB</strong></div>
+            <div>Tullgatan 17, 972 38 Luleå</div>
+            <div>Kontaktperson: Urban Sandlund</div>
+            <div>E-post: info@jubrion.se</div>
+            <div>Webb: jubrion.org</div>
+            <div>Bankgiro: xxxx-xxxx</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="row"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">2026-01-11</span></div>
+        <div class="row"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">1234</span></div>
+        <div class="row"><span class="k">Valuta:</span> <span class="v">SEK</span></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <h3>Leveransadress</h3>
+        <p class="small">
+          Mobilaris Industrial Solutions AB<br/>
+          Sundsbacken 6<br/>
+          972 42 Luleå
+        </p>
+      </div>
+
+      <div class="box">
+        <h3>Fakturadress</h3>
+        <p class="small">
+          info@mobilaris.se
+        </p>
+      </div>
+    </div>
+
+    <table aria-label="Fakturarader">
+      <thead>
+        <tr>
+          <th>Beskrivning</th>
+          <th class="right nowrap">Antal timmar</th>
+          <th class="right nowrap">Á-pris</th>
+          <th class="right nowrap">Belopp</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <!-- FEJK rader, ersätts enkelt senare -->
+      </tbody>
+    </table>
+
+    <div class="sum">
+      <div class="sumBox">
+        <div class="sumRow"><span>Summa exkl. moms</span><span id="sumEx">0,00</span></div>
+        <div class="sumRow"><span>Moms (25%)</span><span id="vat">0,00</span></div>
+        <div class="sumRow"><strong>Att betala</strong><strong id="total">0,00</strong></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div><span class="accent">Betalning:</span> Bankgiro xxxx-xxxx</div>
+      <div><span class="accent">Referens:</span> Urban Sandlund</div>
+      <div><span class="accent">Underlag:</span> Timmeloggen (månad + konto)</div>
+    </div>
+  </div>
+
+  <script>
+    // ======== FEJKDATA NU (byt till riktig data från Timmeloggen senare) ========
+    // Samma pris för alla konton:
+    const PRICE_PER_HOUR = 650; // ändra när du vill
+
+    // Fejkade konton (en rad per konto)
+    const invoiceLines = [
+      { account: "Kund A / Projekt 3010", hours: 12.5 },
+      { account: "Kund B / Projekt 4020", hours: 8.0 },
+      { account: "Kund C / Projekt 5100", hours: 3.5 }
+    ];
+
+    // ======== Helpers ========
+    const fmtMoney = (n) => n.toFixed(2).replace(".", ",");
+    const fmtHours = (h) => h.toFixed(2).replace(".", ",");
+
+    // Sätt fakturadatum automatiskt om du vill
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,"0");
+    const dd = String(today.getDate()).padStart(2,"0");
+    document.getElementById("invoiceDate").textContent = `${yyyy}-${mm}-${dd}`;
+
+    // Rendera rader
+    const tbody = document.getElementById("rows");
+    let sumEx = 0;
+
+    for (const l of invoiceLines){
+      const amount = l.hours * PRICE_PER_HOUR;
+      sumEx += amount;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${l.account}</td>
+        <td class="right nowrap">${fmtHours(l.hours)}</td>
+        <td class="right nowrap">${fmtMoney(PRICE_PER_HOUR)}</td>
+        <td class="right nowrap">${fmtMoney(amount)}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    const vat = sumEx * 0.25;
+    const total = sumEx + vat;
+
+    document.getElementById("sumEx").textContent = fmtMoney(sumEx);
+    document.getElementById("vat").textContent = fmtMoney(vat);
+    document.getElementById("total").textContent = fmtMoney(total);
+  </script>
+</body>
+</html>
