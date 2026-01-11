@@ -36,13 +36,15 @@
       color: var(--muted);
       font-size: 12px;
       flex:0 0 auto;
+      text-align:center;
+      line-height:1.1;
     }
     .brand h1{ margin:0; font-size: 22px; letter-spacing:.2px; }
     .small{ color:var(--muted); font-size: 13px; line-height:1.35; }
 
     .meta{
       text-align:right;
-      min-width: 260px;
+      min-width: 280px;
     }
     .meta .k{ color:var(--muted); font-size: 13px; }
     .meta .v{ font-weight: 700; }
@@ -90,7 +92,7 @@
       justify-content:flex-end;
     }
     .sumBox{
-      width: 360px;
+      width: 380px;
       border:1px solid var(--line);
       border-radius: var(--r);
       padding: 12px;
@@ -141,7 +143,7 @@
       <div class="meta">
         <div class="row"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">2026-01-11</span></div>
         <div class="row"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">1234</span></div>
-        <div class="row"><span class="k">Valuta:</span> <span class="v">SEK</span></div>
+        <div class="row"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
       </div>
     </div>
 
@@ -173,15 +175,15 @@
         </tr>
       </thead>
       <tbody id="rows">
-        <!-- FEJK rader, ersätts enkelt senare -->
+        <!-- rader renderas av skriptet -->
       </tbody>
     </table>
 
     <div class="sum">
       <div class="sumBox">
-        <div class="sumRow"><span>Summa exkl. moms</span><span id="sumEx">0,00</span></div>
-        <div class="sumRow"><span>Moms (25%)</span><span id="vat">0,00</span></div>
-        <div class="sumRow"><strong>Att betala</strong><strong id="total">0,00</strong></div>
+        <div class="sumRow"><span>Summa exkl. moms</span><span id="sumEx">0 SEK</span></div>
+        <div class="sumRow"><span>Moms (25%)</span><span id="vat">0 SEK</span></div>
+        <div class="sumRow"><strong>Att betala</strong><strong id="total">0 SEK</strong></div>
       </div>
     </div>
 
@@ -194,25 +196,37 @@
 
   <script>
     // ======== FEJKDATA NU (byt till riktig data från Timmeloggen senare) ========
-    // Samma pris för alla konton:
-    const PRICE_PER_HOUR = 650; // ändra när du vill
+    const PRICE_PER_HOUR = 650; // SEK
 
-    // Fejkade konton (en rad per konto)
+    // En rad per konto/projekt (utan "Kund A/B/C")
     const invoiceLines = [
-      { account: "Kund A / Projekt 3010", hours: 12.5 },
-      { account: "Kund B / Projekt 4020", hours: 8.0 },
-      { account: "Kund C / Projekt 5100", hours: 3.5 }
+      { account: "Projekt 3010", hours: 12.5 },
+      { account: "Projekt 4020", hours: 8.0 },
+      { account: "Projekt 5100", hours: 3.5 }
     ];
 
     // ======== Helpers ========
-    const fmtMoney = (n) => n.toFixed(2).replace(".", ",");
-    const fmtHours = (h) => h.toFixed(2).replace(".", ",");
+    const pad2 = (n) => String(n).padStart(2,"0");
 
-    // Sätt fakturadatum automatiskt om du vill
+    // 1 234 567,89
+    function formatSEK(amount){
+      const n = Number(amount) || 0;
+      const fixed = n.toFixed(2);              // "1234.50"
+      const [intPart, decPart] = fixed.split(".");
+      const spaced = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      return `${spaced},${decPart} SEK`;
+    }
+
+    function formatHours(h){
+      const n = Number(h) || 0;
+      return n.toFixed(2).replace(".", ",");
+    }
+
+    // Datum auto om du vill
     const today = new Date();
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth()+1).padStart(2,"0");
-    const dd = String(today.getDate()).padStart(2,"0");
+    const mm = pad2(today.getMonth()+1);
+    const dd = pad2(today.getDate());
     document.getElementById("invoiceDate").textContent = `${yyyy}-${mm}-${dd}`;
 
     // Rendera rader
@@ -220,15 +234,15 @@
     let sumEx = 0;
 
     for (const l of invoiceLines){
-      const amount = l.hours * PRICE_PER_HOUR;
+      const amount = (Number(l.hours) || 0) * PRICE_PER_HOUR;
       sumEx += amount;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${l.account}</td>
-        <td class="right nowrap">${fmtHours(l.hours)}</td>
-        <td class="right nowrap">${fmtMoney(PRICE_PER_HOUR)}</td>
-        <td class="right nowrap">${fmtMoney(amount)}</td>
+        <td class="right nowrap">${formatHours(l.hours)}</td>
+        <td class="right nowrap">${formatSEK(PRICE_PER_HOUR)}</td>
+        <td class="right nowrap">${formatSEK(amount)}</td>
       `;
       tbody.appendChild(tr);
     }
@@ -236,9 +250,10 @@
     const vat = sumEx * 0.25;
     const total = sumEx + vat;
 
-    document.getElementById("sumEx").textContent = fmtMoney(sumEx);
-    document.getElementById("vat").textContent = fmtMoney(vat);
-    document.getElementById("total").textContent = fmtMoney(total);
+    document.getElementById("sumEx").textContent = formatSEK(sumEx);
+    document.getElementById("vat").textContent = formatSEK(vat);
+    document.getElementById("total").textContent = formatSEK(total);
   </script>
 </body>
 </html>
+
