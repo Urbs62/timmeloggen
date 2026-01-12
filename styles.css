@@ -186,6 +186,12 @@ input, select{
   font-family: inherit;   /* ← VIKTIG */
   font-size: 1rem;        /* ← gör att den matchar text */
 }
+select{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 input:focus, select:focus{ border-color: rgba(96,165,250,.6); }
 
 input[type="time"]{ max-width: 180px; }
