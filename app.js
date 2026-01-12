@@ -1014,5 +1014,39 @@ function init() {
    if (exportInvoiceCsvBtn) exportInvoiceCsvBtn.addEventListener("click", exportInvoiceCsv);
    if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
 
+     const openInvoiceHtmlBtn = document.getElementById("openInvoiceHtmlBtn");
+     if (openInvoiceHtmlBtn) {
+       openInvoiceHtmlBtn.addEventListener("click", () => {
+         alert("Klick registrerat – öppnar faktura…");
+
+         const month = (document.getElementById("invoiceMonth")?.value || "").trim();
+         const accId = (document.getElementById("invoiceAccount")?.value || "all").trim();
+
+         const price = 650;
+         const vat = 0.25;
+
+         const d = new Date();
+         const yyyy = d.getFullYear();
+         const mm = String(d.getMonth()+1).padStart(2,"0");
+         const dd = String(d.getDate()).padStart(2,"0");
+         const invDate = `${yyyy}-${mm}-${dd}`;
+
+         const invNo = "1234";
+
+         const url =
+           `invoice.html?month=${encodeURIComponent(month)}` +
+           `&account=${encodeURIComponent(accId || "all")}` +
+           `&price=${encodeURIComponent(price)}` +
+           `&vat=${encodeURIComponent(vat)}` +
+           `&date=${encodeURIComponent(invDate)}` +
+           `&no=${encodeURIComponent(invNo)}`;
+
+         // För PWA/mobil: öppna i samma flik
+            location.href = url;
+       });
+        } else {
+          console.warn("Hittar inte #openInvoiceHtmlBtn i DOM.");
+     }
+
 }
 init();
