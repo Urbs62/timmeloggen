@@ -360,4 +360,9 @@ hr, .sep{
                "Segoe UI", Roboto, Arial, sans-serif !important;
     font-size: 1rem;
   }
+  select{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
 }
