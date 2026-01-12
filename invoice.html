@@ -158,9 +158,30 @@
       }catch{ return fallback; }
     }
 
-    const STORE = { accounts:"tl_accounts_v1", days:"tl_days_v1" };
-    const accounts = loadJSON(STORE.accounts, []);
-    const days = loadJSON(STORE.days, {});
+    // För säkerhets skull: stöd flera versioner (om du råkat byta STORE-nycklar i app.js)
+    const ACC_KEYS = ["tl_accounts_v1", "tl_accounts_v2", "tl_accounts"];
+    const DAY_KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
+
+    function loadFirst(keys, fallback){
+      for (const k of keys){
+        const v = loadJSON(k, null);
+        if (v && (Array.isArray(v) ? v.length : Object.keys(v).length)) return { key:k, value:v };
+      }
+      return { key:"(ingen)", value:fallback };
+    }
+
+    const accRes = loadFirst(ACC_KEYS, []);
+    const dayRes = loadFirst(DAY_KEYS, {});
+
+    const accounts = accRes.value;
+    const days = dayRes.value;
+
+    // Debug (tar inte plats på utskrift)
+    const dbg = document.createElement("div");
+    dbg.style.cssText = "margin-top:8px;color:#777;font-size:12px;";
+    dbg.textContent = `DEBUG: accounts=${accounts.length} (key=${accRes.key}), days=${Object.keys(days).length} (key=${dayRes.key}), month=${month||"(tom)"} account=${accountParam}`;
+    document.querySelector(".page").appendChild(dbg);
+
 
     // accountId -> name
     const accNameById = new Map(accounts.map(a => [a.id, a.name]));
