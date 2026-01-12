@@ -10,7 +10,6 @@ const STORE = {
   accounts: "tl_accounts_v1",
   days: "tl_days_v1",
 };
-alert("app.js laddad");
 
 // ---------- Helpers ----------
 const pad2 = (n) => String(n).padStart(2, "0");
