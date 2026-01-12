@@ -880,6 +880,33 @@ function exportInvoiceCsv(){
     ].join(";"));
   }
 
+   const openInvoiceHtmlBtn = document.getElementById("openInvoiceHtmlBtn");
+
+   openInvoiceHtmlBtn?.addEventListener("click", () => {
+     const month = (document.getElementById("invoiceMonth")?.value || "").trim();   // "YYYY-MM"
+     const accId = (document.getElementById("invoiceAccount")?.value || "all").trim();
+     const price = 650;        // samma pris för alla (ändra vid behov)
+     const vat = 0.25;         // 25%
+
+     const date = new Date();
+     const yyyy = date.getFullYear();
+     const mm = String(date.getMonth()+1).padStart(2,"0");
+     const dd = String(date.getDate()).padStart(2,"0");
+     const invDate = `${yyyy}-${mm}-${dd}`;
+
+     const invNo = "1234"; // v1: hårdkodat. Sen kan vi göra auto-räknare i localStorage.
+
+     const url =
+       `invoice.html?month=${encodeURIComponent(month)}` +
+       `&account=${encodeURIComponent(accId || "all")}` +
+       `&price=${encodeURIComponent(price)}` +
+       `&vat=${encodeURIComponent(vat)}` +
+       `&date=${encodeURIComponent(invDate)}` +
+       `&no=${encodeURIComponent(invNo)}`;
+
+     window.open(url, "_blank", "noopener");
+   });
+
   const totalHours = minutesToDecimalHours(totalMinutes);
   lines.push(["SUMMA","","","","" + formatHoursSv(totalHours),""].join(";"));
 
