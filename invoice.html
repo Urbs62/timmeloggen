@@ -4,121 +4,43 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Faktura – Jubrion AB</title>
-
   <style>
     :root{
-      --text:#111;
-      --muted:#555;
-      --line:#ddd;
-      --bg:#fff;
-      --accent:#1e63d5;
-      --r:12px;
+      --text:#111; --muted:#555; --line:#ddd; --bg:#fff;
+      --accent:#1e63d5; --r:12px;
       --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     }
-
     html,body{ background:var(--bg); color:var(--text); font-family:var(--font); margin:0; }
     .page{ max-width: 900px; margin: 0 auto; padding: 24px; }
-    .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
-      border-bottom: 2px solid var(--line);
-      padding-bottom: 14px;
-      margin-bottom: 16px;
-    }
-    .brand{
-      display:flex; gap:14px; align-items:flex-start;
-      min-width: 260px;
-    }
-    .logo{
-      width:72px; height:72px;
-      border:1px dashed var(--line);
-      border-radius: var(--r);
-      display:flex; align-items:center; justify-content:center;
-      color: var(--muted);
-      font-size: 12px;
-      flex:0 0 auto;
-      text-align:center;
-      line-height:1.1;
-    }
-    .brand h1{ margin:0; font-size: 22px; letter-spacing:.2px; }
-    .small{ color:var(--muted); font-size: 13px; line-height:1.35; }
+    .top{ display:flex; justify-content:space-between; gap:16px; border-bottom:2px solid var(--line); padding-bottom:14px; margin-bottom:16px; }
+    .brand{ display:flex; gap:14px; align-items:flex-start; min-width:260px; }
+    .logo{ width:72px; height:72px; border:1px dashed var(--line); border-radius:var(--r); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; text-align:center; line-height:1.1; }
+    .brand h1{ margin:0; font-size:22px; }
+    .small{ color:var(--muted); font-size:13px; line-height:1.35; }
+    .meta{ text-align:right; min-width:280px; }
+    .meta .k{ color:var(--muted); font-size:13px; }
+    .meta .v{ font-weight:700; }
+    .meta .row{ margin:2px 0; }
 
-    .meta{
-      text-align:right;
-      min-width: 280px;
-    }
-    .meta .k{ color:var(--muted); font-size: 13px; }
-    .meta .v{ font-weight: 700; }
-    .meta .row{ margin: 2px 0; }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin: 14px 0 18px;
-    }
-    .box{
-      border:1px solid var(--line);
-      border-radius: var(--r);
-      padding: 12px 12px;
-      background:#fff;
-    }
-    .box h3{ margin:0 0 8px; font-size: 14px; color:#000; }
-    .box .small{ margin:0; }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    th, td{
-      border-bottom: 1px solid var(--line);
-      padding: 10px 8px;
-      text-align:left;
-      vertical-align:top;
-    }
-    th{
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 700;
-      text-transform: none;
-    }
+    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0 18px; }
+    .box{ border:1px solid var(--line); border-radius:var(--r); padding:12px; background:#fff; }
+    .box h3{ margin:0 0 8px; font-size:14px; }
+    table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+    th,td{ border-bottom:1px solid var(--line); padding:10px 8px; text-align:left; vertical-align:top; }
+    th{ font-size:13px; color:var(--muted); font-weight:700; }
     td.right, th.right{ text-align:right; }
-    td.nowrap{ white-space: nowrap; }
+    td.nowrap{ white-space:nowrap; }
 
-    .sum{
-      margin-top: 14px;
-      display:flex;
-      justify-content:flex-end;
-    }
-    .sumBox{
-      width: 380px;
-      border:1px solid var(--line);
-      border-radius: var(--r);
-      padding: 12px;
-    }
-    .sumRow{
-      display:flex; justify-content:space-between; gap:12px;
-      margin: 6px 0;
-      font-size: 14px;
-    }
-    .sumRow strong{ font-size: 16px; }
-    .footer{
-      margin-top: 18px;
-      border-top: 1px solid var(--line);
-      padding-top: 12px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px 18px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .accent{ color: var(--accent); font-weight: 700; }
+    .sum{ margin-top:14px; display:flex; justify-content:flex-end; }
+    .sumBox{ width:380px; border:1px solid var(--line); border-radius:var(--r); padding:12px; }
+    .sumRow{ display:flex; justify-content:space-between; gap:12px; margin:6px 0; font-size:14px; }
+    .sumRow strong{ font-size:16px; }
 
-    @media print{
-      .page{ padding: 12mm; }
-      @page{ margin: 12mm; }
-    }
+    .footer{ margin-top:18px; border-top:1px solid var(--line); padding-top:12px; display:flex; flex-wrap:wrap; gap:10px 18px; color:var(--muted); font-size:13px; }
+    .accent{ color:var(--accent); font-weight:700; }
+
+    .warn{ margin:10px 0 0; color:#8a1f11; font-size:13px; }
+    @media print{ .page{ padding:12mm; } @page{ margin:12mm; } }
   </style>
 </head>
 
@@ -141,16 +63,17 @@
       </div>
 
       <div class="meta">
-        <div class="row"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">2026-01-11</span></div>
-        <div class="row"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">1234</span></div>
+        <div class="row"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">—</span></div>
+        <div class="row"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">—</span></div>
         <div class="row"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
+        <div class="row"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
       </div>
     </div>
 
     <div class="grid">
       <div class="box">
         <h3>Leveransadress</h3>
-        <p class="small">
+        <p class="small" style="margin:0;">
           Mobilaris Industrial Solutions AB<br/>
           Sundsbacken 6<br/>
           972 42 Luleå
@@ -159,7 +82,7 @@
 
       <div class="box">
         <h3>Fakturadress</h3>
-        <p class="small">
+        <p class="small" style="margin:0;">
           info@mobilaris.se
         </p>
       </div>
@@ -174,15 +97,13 @@
           <th class="right nowrap">Belopp</th>
         </tr>
       </thead>
-      <tbody id="rows">
-        <!-- rader renderas av skriptet -->
-      </tbody>
+      <tbody id="rows"></tbody>
     </table>
 
     <div class="sum">
       <div class="sumBox">
         <div class="sumRow"><span>Summa exkl. moms</span><span id="sumEx">0 SEK</span></div>
-        <div class="sumRow"><span>Moms (25%)</span><span id="vat">0 SEK</span></div>
+        <div class="sumRow"><span>Moms</span><span id="vat">0 SEK</span></div>
         <div class="sumRow"><strong>Att betala</strong><strong id="total">0 SEK</strong></div>
       </div>
     </div>
@@ -192,68 +113,124 @@
       <div><span class="accent">Referens:</span> Urban Sandlund</div>
       <div><span class="accent">Underlag:</span> Timmeloggen (månad + konto)</div>
     </div>
+
+    <div id="warn" class="warn" style="display:none;"></div>
   </div>
 
   <script>
-    // ======== FEJKDATA NU (byt till riktig data från Timmeloggen senare) ========
-    const PRICE_PER_HOUR = 650; // SEK
+    // ---- Query helpers ----
+    const q = new URLSearchParams(location.search);
+    const month = q.get("month") || "";            // "YYYY-MM"
+    const accountParam = q.get("account") || "all"; // kontoId eller "all"
+    const price = Number(q.get("price") || "650");
+    const vatRate = Number(q.get("vat") || "0.25");
+    const invNo = q.get("no") || "1234";
+    const invDate = q.get("date") || (() => {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    })();
 
-    // En rad per konto/projekt (utan "Kund A/B/C")
-    const invoiceLines = [
-      { account: "Projekt 3010", hours: 12.5 },
-      { account: "Projekt 4020", hours: 8.0 },
-      { account: "Projekt 5100", hours: 3.5 }
-    ];
+    document.getElementById("invoiceNo").textContent = invNo;
+    document.getElementById("invoiceDate").textContent = invDate;
+    document.getElementById("periodLabel").textContent = month ? month : "—";
 
-    // ======== Helpers ========
-    const pad2 = (n) => String(n).padStart(2,"0");
-
-    // 1 234 567,89
+    // ---- Format ----
     function formatSEK(amount){
       const n = Number(amount) || 0;
-      const fixed = n.toFixed(2);              // "1234.50"
+      const fixed = n.toFixed(2);
       const [intPart, decPart] = fixed.split(".");
       const spaced = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
       return `${spaced},${decPart} SEK`;
     }
-
     function formatHours(h){
       const n = Number(h) || 0;
       return n.toFixed(2).replace(".", ",");
     }
 
-    // Datum auto om du vill
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = pad2(today.getMonth()+1);
-    const dd = pad2(today.getDate());
-    document.getElementById("invoiceDate").textContent = `${yyyy}-${mm}-${dd}`;
-
-    // Rendera rader
-    const tbody = document.getElementById("rows");
-    let sumEx = 0;
-
-    for (const l of invoiceLines){
-      const amount = (Number(l.hours) || 0) * PRICE_PER_HOUR;
-      sumEx += amount;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${l.account}</td>
-        <td class="right nowrap">${formatHours(l.hours)}</td>
-        <td class="right nowrap">${formatSEK(PRICE_PER_HOUR)}</td>
-        <td class="right nowrap">${formatSEK(amount)}</td>
-      `;
-      tbody.appendChild(tr);
+    // ---- Read Timmeloggen data from localStorage ----
+    function loadJSON(key, fallback){
+      try{
+        const v = localStorage.getItem(key);
+        return v ? JSON.parse(v) : fallback;
+      }catch{ return fallback; }
     }
 
-    const vat = sumEx * 0.25;
+    const STORE = { accounts:"tl_accounts_v1", days:"tl_days_v1" };
+    const accounts = loadJSON(STORE.accounts, []);
+    const days = loadJSON(STORE.days, {});
+
+    // accountId -> name
+    const accNameById = new Map(accounts.map(a => [a.id, a.name]));
+
+    // Sum work minutes per account for given month
+    // Slots: { startMin, endMin, accountId, isBreak }
+    function slotMinutes(s){
+      const a = Number(s.startMin), b = Number(s.endMin);
+      if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
+      return b - a;
+    }
+
+    const perAccMin = new Map();
+
+    const keys = Object.keys(days).filter(k => month ? k.startsWith(month + "-") : true);
+    for (const k of keys){
+      const d = days[k];
+      const slots = (d && d.slots) ? d.slots : [];
+      for (const s of slots){
+        if (s.isBreak) continue;
+        if (accountParam !== "all" && (s.accountId || "") !== accountParam) continue;
+        const mins = slotMinutes(s);
+        if (!mins) continue;
+        const accId = s.accountId || "";
+        perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
+      }
+    }
+
+    const rowsEl = document.getElementById("rows");
+    let sumEx = 0;
+
+    // Render: one row per account
+    const entries = [...perAccMin.entries()]
+      .map(([accId, min]) => ({
+        accId,
+        min,
+        name: accNameById.get(accId) || "(ej valt)"
+      }))
+      .sort((a,b) => b.min - a.min);
+
+    if (!entries.length){
+      const warn = document.getElementById("warn");
+      warn.style.display = "block";
+      warn.textContent = "Inga fakturerbara timmar hittades för vald period/konto.";
+      rowsEl.innerHTML = `
+        <tr><td colspan="4" class="small">—</td></tr>
+      `;
+    } else {
+      for (const e of entries){
+        const hours = e.min / 60;
+        const amount = hours * price;
+        sumEx += amount;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${e.name}</td>
+          <td class="right nowrap">${formatHours(hours)}</td>
+          <td class="right nowrap">${formatSEK(price)}</td>
+          <td class="right nowrap">${formatSEK(amount)}</td>
+        `;
+        rowsEl.appendChild(tr);
+      }
+    }
+
+    const vat = sumEx * vatRate;
     const total = sumEx + vat;
 
     document.getElementById("sumEx").textContent = formatSEK(sumEx);
-    document.getElementById("vat").textContent = formatSEK(vat);
+    document.getElementById("vat").textContent = formatSEK(vat) + ` (${Math.round(vatRate*100)}%)`;
     document.getElementById("total").textContent = formatSEK(total);
   </script>
 </body>
 </html>
-
