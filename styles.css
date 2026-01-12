@@ -17,9 +17,9 @@ html,body{ height:100%; }
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background: radial-gradient(1200px 600px at 20% -10%, rgba(96,165,250,.18), transparent 60%),
-              radial-gradient(900px 500px at 80% 0%, rgba(52,211,153,.14), transparent 55%),
-              var(--bg);
+  background:
+    radial-gradient(900px 500px at 20% -10%, rgba(96,165,250,.10), transparent 60%),
+    var(--bg);
   color:var(--text);
 }
 
@@ -138,8 +138,8 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
 .panel{ display:none; }
 .panel.active{ display:block; }
 
-/* Cards – gymapp glas */
-.card{
+/* s – gymapp glas */
+.{
   background: rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.10);
   border-radius:18px;
@@ -147,7 +147,7 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   margin: 12px 0;
   box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
-.card.inner{
+..inner{
   box-shadow:none;
   background: rgba(0,0,0,.18);
   border:1px solid rgba(255,255,255,.08);
