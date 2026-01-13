@@ -1,4 +1,4 @@
-<!doctype html>
+  <!doctype html>
 <html lang="sv">
 <head>
   <meta charset="utf-8" />
@@ -119,13 +119,13 @@
 
   <script>
     // ---- Query helpers ----
-    const q = new URLSearchParams(location.search);
-    const month = q.get("month") || "";            // "YYYY-MM"
-    const accountParam = q.get("account") || "all"; // kontoId eller "all"
-    const price = Number(q.get("price") || "650");
-    const vatRate = Number(q.get("vat") || "0.25");
-    const invNo = q.get("no") || "1234";
-    const invDate = q.get("date") || (() => {
+      const q = new URLSearchParams(location.search);
+      const month = q.get("month") || "";            // "YYYY-MM"
+      const accountParam = q.get("account") || "all"; // kontoId eller "all"
+      const price = Number(q.get("price") || "650");
+      const vatRate = Number(q.get("vat") || "0.25");
+      const invNo = q.get("no") || "1234";
+      const invDate = q.get("date") || (() => {
       const d = new Date();
       const yyyy = d.getFullYear();
       const mm = String(d.getMonth()+1).padStart(2,"0");
@@ -188,12 +188,35 @@
 
     // Sum work minutes per account for given month
     // Slots: { startMin, endMin, accountId, isBreak }
+    function parseTimeToMinutes(hhmm){
+      if (!hhmm || typeof hhmm !== "string" || !hhmm.includes(":")) return null;
+        const [h,m] = hhmm.split(":").map(x => parseInt(x,10));
+      if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+      return h*60 + m;
+    }
+  
     function slotMinutes(s){
-      const a = Number(s.startMin), b = Number(s.endMin);
+      // 1) Prefer startMin/endMin (nummer eller sträng)
+      let a = s?.startMin ?? null;
+      let b = s?.endMin ?? null;
+
+      // 2) Fallback till start/end som "HH:MM" om du skulle ha så i datan
+      if (a == null || b == null){
+        const sa = s?.start ?? s?.from ?? s?.startTime ?? null;
+        const sb = s?.end ?? s?.to ?? s?.endTime ?? null;
+        const pa = parseTimeToMinutes(sa);
+        const pb = parseTimeToMinutes(sb);
+      if (pa != null && pb != null){ a = pa; b = pb; }
+      }
+
+      // 3) Normalisera till number
+      a = Number(a);
+      b = Number(b);
+
       if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
       return b - a;
     }
-
+    
     const perAccMin = new Map();
 
     const keys = Object.keys(days).filter(k => month ? k.startsWith(month + "-") : true);
