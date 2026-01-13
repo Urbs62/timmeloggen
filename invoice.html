@@ -121,7 +121,9 @@
     // ---- Query helpers ----
       const q = new URLSearchParams(location.search);
       const month = q.get("month") || "";            // "YYYY-MM"
-      const accountParam = q.get("account") || "all"; // kontoId eller "all"
+    
+    const accountParam = (q.get("account") || "all").toLowerCase();
+
       const price = Number(q.get("price") || "650");
       const vatRate = Number(q.get("vat") || "0.25");
       const invNo = q.get("no") || "1234";
