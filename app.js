@@ -884,7 +884,10 @@ function exportInvoiceCsv(){
 
    openInvoiceHtmlBtn?.addEventListener("click", () => {
      const month = (document.getElementById("invoiceMonth")?.value || "").trim();   // "YYYY-MM"
-     const accId = (document.getElementById("invoiceAccount")?.value || "all").trim();
+      
+      const accId = (document.getElementById("invoiceAccount")?.value || "all").trim();
+      const accParam = accId ? accId : "all"; // om tomt
+
      const price = 650;        // samma pris för alla (ändra vid behov)
      const vat = 0.25;         // 25%
 
