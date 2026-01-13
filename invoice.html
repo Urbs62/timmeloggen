@@ -224,7 +224,8 @@
       const d = days[k];
       const slots = (d && d.slots) ? d.slots : [];
       for (const s of slots){
-        if (s.isBreak) continue;
+       const isBreak = !!(s.isBreak ?? s.break ?? s.isPause);
+        if (isBreak) continue;
         if (accountParam !== "all" && (s.accountId || "") !== accountParam) continue;
         const mins = slotMinutes(s);
         if (!mins) continue;
