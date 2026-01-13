@@ -1,4 +1,4 @@
-  <!doctype html>
+<!doctype html>
 <html lang="sv">
 <head>
   <meta charset="utf-8" />
@@ -179,9 +179,13 @@
     // Debug (tar inte plats på utskrift)
     const dbg = document.createElement("div");
     dbg.style.cssText = "margin-top:8px;color:#777;font-size:12px;";
-    dbg.textContent = `DEBUG: accounts=${accounts.length} (key=${accRes.key}), days=${Object.keys(days).length} (key=${dayRes.key}), month=${month||"(tom)"} account=${accountParam}`;
-    document.querySelector(".page").appendChild(dbg);
+    dbg.textContent =
+       `DEBUG: accounts=${accounts.length} (key=${accRes.key}), ` +
+      `days=${Object.keys(days).length} (key=${dayRes.key}), ` +
+      `month=${month||"(tom)"} account=${accountParam}, ` +
+      `slotsTotal=${dbgSlotsTotal}, slotsBillable=${dbgSlotsBillable}`;
 
+    document.querySelector(".page").appendChild(dbg);
 
     // accountId -> name
     const accNameById = new Map(accounts.map(a => [a.id, a.name]));
@@ -195,42 +199,58 @@
       return h*60 + m;
     }
   
-    function slotMinutes(s){
-      // 1) Prefer startMin/endMin (nummer eller sträng)
-      let a = s?.startMin ?? null;
-      let b = s?.endMin ?? null;
-
-      // 2) Fallback till start/end som "HH:MM" om du skulle ha så i datan
-      if (a == null || b == null){
-        const sa = s?.start ?? s?.from ?? s?.startTime ?? null;
-        const sb = s?.end ?? s?.to ?? s?.endTime ?? null;
-        const pa = parseTimeToMinutes(sa);
-        const pb = parseTimeToMinutes(sb);
-      if (pa != null && pb != null){ a = pa; b = pb; }
-      }
-
-      // 3) Normalisera till number
-      a = Number(a);
-      b = Number(b);
-
-      if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
-      return b - a;
+   function slotMinutes(s){
+    // 0) Legacy-format: durationMin finns (t.ex. gamla 30-min slots)
+    // Ex: { minutes: 510, durationMin: 30, time:"08:30" }
+    if (s && s.durationMin != null) {
+      const dm = Number(s.durationMin);
+    if (Number.isFinite(dm) && dm > 0) return dm;
     }
-    
+
+    // 1) Prefer startMin/endMin (nummer eller sträng)
+    let a = s?.startMin ?? null;
+    let b = s?.endMin ?? null;
+
+    // 2) Fallback: om du råkat ha tider som "HH:MM"
+    if (a == null || b == null){
+      const sa = s?.start ?? s?.from ?? s?.startTime ?? s?.slotStart ?? null;
+      const sb = s?.end   ?? s?.to   ?? s?.endTime   ?? s?.slotEnd   ?? null;
+      const pa = parseTimeToMinutes(sa);
+      const pb = parseTimeToMinutes(sb);
+      if (pa != null && pb != null){ a = pa; b = pb; }
+    }
+
+    // 3) Normalisera till number
+    a = Number(a);
+    b = Number(b);
+
+    if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
+     return b - a;
+  }
+
+    let dbgSlotsTotal = 0;
+    let dbgSlotsBillable = 0;
     const perAccMin = new Map();
 
     const keys = Object.keys(days).filter(k => month ? k.startsWith(month + "-") : true);
     for (const k of keys){
       const d = days[k];
       const slots = (d && d.slots) ? d.slots : [];
-      for (const s of slots){
-       const isBreak = !!(s.isBreak ?? s.break ?? s.isPause);
-        if (isBreak) continue;
-        if (accountParam !== "all" && (s.accountId || "") !== accountParam) continue;
-        const mins = slotMinutes(s);
-        if (!mins) continue;
-        const accId = s.accountId || "";
-        perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
+        for (const s of slots){
+          dbgSlotsTotal++;
+
+          const isBreak = !!(s.isBreak ?? s.break ?? s.isPause);
+          if (isBreak) continue;
+
+          if (accountParam !== "all" && (s.accountId || "") !== accountParam) continue;
+
+          const mins = slotMinutes(s);
+          if (!mins) continue;
+
+          dbgSlotsBillable++;
+
+          const accId = s.accountId || "";
+          perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
       }
     }
 
