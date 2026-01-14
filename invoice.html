@@ -162,7 +162,7 @@
 
     // För säkerhets skull: stöd flera versioner (om du råkat byta STORE-nycklar i app.js)
     const ACC_KEYS = ["tl_accounts_v1", "tl_accounts_v2", "tl_accounts"];
-    const DAY_KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
+    const _KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
 
     function loadFirst(keys, fallback){
       for (const k of keys){
@@ -177,6 +177,16 @@
 
     const accounts = accRes.value;
     const days = dayRes.value;
+    
+    // DEBUG: visa en exempel-slot så vi ser datamodellen
+    const firstKey = Object.keys(days).sort()[0];
+    const firstSlot = firstKey && days[firstKey] && Array.isArray(days[firstKey].slots) ? days[firstKey].slots[0] : null;
+
+    const dbgSlot = document.createElement("div");
+    dbgSlot.style.cssText = "margin-top:6px;color:#777;font-size:12px;white-space:pre-wrap;";
+    dbgSlot.textContent = "DEBUG slot sample: " + JSON.stringify({ firstKey, firstSlot }, null, 2);
+    document.querySelector(".page").appendChild(dbgSlot);
+
 
     // Debug (tar inte plats på utskrift)
     const dbg = document.createElement("div");
