@@ -52,7 +52,7 @@
         <div>
           <h1>Faktura</h1>
           <div class="small">
-            <div><strong>Jubrion AB (vTEST-1) v21</strong></div>
+            <div><strong>Jubrion AB (vTEST-1) v22</strong></div>
             <div>Tullgatan 17, 972 38 Luleå</div>
             <div>Kontaktperson: Urban Sandlund</div>
             <div>E-post: info@jubrion.se</div>
@@ -184,6 +184,8 @@ ${msg}
 
     // För säkerhets skull: stöd flera versioner (om du råkat byta STORE-nycklar i app.js)
     const ACC_KEYS = ["tl_accounts_v1", "tl_accounts_v2", "tl_accounts"];
+    const DAY_KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
+
     const _KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
 
     function loadFirst(keys, fallback){
