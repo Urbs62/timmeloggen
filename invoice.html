@@ -52,7 +52,7 @@
         <div>
           <h1>Faktura</h1>
           <div class="small">
-            <div><strong>Jubrion AB (vTEST-1) v18</strong></div>
+            <div><strong>Jubrion AB (vTEST-1) v19</strong></div>
             <div>Tullgatan 17, 972 38 Luleå</div>
             <div>Kontaktperson: Urban Sandlund</div>
             <div>E-post: info@jubrion.se</div>
@@ -309,11 +309,12 @@
     document.getElementById("vat").textContent = formatSEK(vat) + ` (${Math.round(vatRate*100)}%)`;
     document.getElementById("total").textContent = formatSEK(total);
 
-    document.body.insertAdjacentHTML(
+
+
+  </script>
+      document.body.insertAdjacentHTML(
       "afterbegin",
       '<div style="position:sticky;top:0;z-index:9999;padding:8px 10px;background:#fffbcc;border-bottom:1px solid #ddd;font:12px system-ui">DEBUG: invoice script körs ✅</div>'
     );
-
-  </script>
 </body>
 </html>
