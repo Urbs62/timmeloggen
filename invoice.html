@@ -308,6 +308,12 @@
     document.getElementById("sumEx").textContent = formatSEK(sumEx);
     document.getElementById("vat").textContent = formatSEK(vat) + ` (${Math.round(vatRate*100)}%)`;
     document.getElementById("total").textContent = formatSEK(total);
+
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      '<div style="position:sticky;top:0;z-index:9999;padding:8px 10px;background:#fffbcc;border-bottom:1px solid #ddd;font:12px system-ui">DEBUG: invoice script körs ✅</div>'
+    );
+
   </script>
 </body>
 </html>
