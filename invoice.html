@@ -52,7 +52,7 @@
         <div>
           <h1>Faktura</h1>
           <div class="small">
-            <div><strong>Jubrion AB (vTEST-1) v22</strong></div>
+            <div><strong>Jubrion AB (vTEST-1) v23</strong></div>
             <div>Tullgatan 17, 972 38 Luleå</div>
             <div>Kontaktperson: Urban Sandlund</div>
             <div>E-post: info@jubrion.se</div>
@@ -215,6 +215,9 @@ ${msg}
     // Debug (tar inte plats på utskrift)
     const dbg = document.createElement("div");
     dbg.style.cssText = "margin-top:8px;color:#777;font-size:12px;";
+    let dbgSlotsTotal = 0;
+    let dbgSlotsBillable = 0;
+
     dbg.textContent =
        `DEBUG: accounts=${accounts.length} (key=${accRes.key}), ` +
       `days=${Object.keys(days).length} (key=${dayRes.key}), ` +
