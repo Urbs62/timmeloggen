@@ -52,7 +52,7 @@
         <div>
           <h1>Faktura</h1>
           <div class="small">
-            <div><strong>Jubrion AB (vTEST-1) v23</strong></div>
+            <div><strong>Jubrion AB v1</strong></div>
             <div>Tullgatan 17, 972 38 Luleå</div>
             <div>Kontaktperson: Urban Sandlund</div>
             <div>E-post: info@jubrion.se</div>
@@ -118,38 +118,16 @@
   </div>
 
   <script>
-// ===== DEBUG 1: bekräfta att scriptet körs =====
-document.body.insertAdjacentHTML(
-  "afterbegin",
-  '<div style="position:sticky;top:0;z-index:9999;padding:8px 10px;background:#fffbcc;border-bottom:1px solid #ddd;font:12px system-ui">DEBUG: invoice script körs ✅</div>'
-);
-
-// ===== DEBUG 2: fånga ALLA JavaScript-fel =====
-window.addEventListener("error", (e) => {
-  const msg =
-    (e && e.message ? e.message : "Okänt fel") +
-    (e && e.filename ? `\n${e.filename}:${e.lineno}:${e.colno}` : "");
-
-  document.body.insertAdjacentHTML(
-    "afterbegin",
-    `<div style="padding:10px;background:#ffe8e8;border-bottom:1px solid #e3b1b1;font:12px system-ui;white-space:pre-wrap">
-DEBUG: JS-fel ❌
-${msg}
-</div>`
-  );
-});
-
-    
     // ---- Query helpers ----
-      const q = new URLSearchParams(location.search);
-      const month = q.get("month") || "";            // "YYYY-MM"
-    
-    const accountParam = (q.get("account") || "all").toLowerCase();
+    const q = new URLSearchParams(location.search);
+    const month = (q.get("month") || "").trim();                // "YYYY-MM"
+    const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
+    const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
 
-      const price = Number(q.get("price") || "650");
-      const vatRate = Number(q.get("vat") || "0.25");
-      const invNo = q.get("no") || "1234";
-      const invDate = q.get("date") || (() => {
+    const price = Number(q.get("price") || "650");
+    const vatRate = Number(q.get("vat") || "0.25");
+    const invNo = q.get("no") || "1234";
+    const invDate = q.get("date") || (() => {
       const d = new Date();
       const yyyy = d.getFullYear();
       const mm = String(d.getMonth()+1).padStart(2,"0");
@@ -179,14 +157,13 @@ ${msg}
       try{
         const v = localStorage.getItem(key);
         return v ? JSON.parse(v) : fallback;
-      }catch{ return fallback; }
+      }catch{
+        return fallback;
+      }
     }
 
-    // För säkerhets skull: stöd flera versioner (om du råkat byta STORE-nycklar i app.js)
     const ACC_KEYS = ["tl_accounts_v1", "tl_accounts_v2", "tl_accounts"];
     const DAY_KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
-
-    const _KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
 
     function loadFirst(keys, fallback){
       for (const k of keys){
@@ -198,110 +175,84 @@ ${msg}
 
     const accRes = loadFirst(ACC_KEYS, []);
     const dayRes = loadFirst(DAY_KEYS, {});
-
     const accounts = accRes.value;
     const days = dayRes.value;
-    
-    // DEBUG: visa en exempel-slot så vi ser datamodellen
-    const firstKey = Object.keys(days).sort()[0];
-    const firstSlot = firstKey && days[firstKey] && Array.isArray(days[firstKey].slots) ? days[firstKey].slots[0] : null;
-
-    const dbgSlot = document.createElement("div");
-    dbgSlot.style.cssText = "margin-top:6px;color:#777;font-size:12px;white-space:pre-wrap;";
-    dbgSlot.textContent = "DEBUG slot sample: " + JSON.stringify({ firstKey, firstSlot }, null, 2);
-    document.querySelector(".page").appendChild(dbgSlot);
-
-
-    // Debug (tar inte plats på utskrift)
-    const dbg = document.createElement("div");
-    dbg.style.cssText = "margin-top:8px;color:#777;font-size:12px;";
-    let dbgSlotsTotal = 0;
-    let dbgSlotsBillable = 0;
-
-    dbg.textContent =
-       `DEBUG: accounts=${accounts.length} (key=${accRes.key}), ` +
-      `days=${Object.keys(days).length} (key=${dayRes.key}), ` +
-      `month=${month||"(tom)"} account=${accountParam}, ` +
-      `slotsTotal=${dbgSlotsTotal}, slotsBillable=${dbgSlotsBillable}`;
-
-    document.querySelector(".page").appendChild(dbg);
 
     // accountId -> name
-    const accNameById = new Map(accounts.map(a => [a.id, a.name]));
+    const accNameById = new Map((accounts || []).map(a => [a.id, a.name]));
 
-    // Sum work minutes per account for given month
-    // Slots: { startMin, endMin, accountId, isBreak }
+    // ---- Time helpers ----
     function parseTimeToMinutes(hhmm){
       if (!hhmm || typeof hhmm !== "string" || !hhmm.includes(":")) return null;
-        const [h,m] = hhmm.split(":").map(x => parseInt(x,10));
+      const [h,m] = hhmm.split(":").map(x => parseInt(x,10));
       if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
       return h*60 + m;
     }
-  
-   function slotMinutes(s){
-    // 0) Legacy-format: durationMin finns (t.ex. gamla 30-min slots)
-    // Ex: { minutes: 510, durationMin: 30, time:"08:30" }
-    if (s && s.durationMin != null) {
-      const dm = Number(s.durationMin);
-    if (Number.isFinite(dm) && dm > 0) return dm;
+
+    function slotMinutes(s){
+      if (!s) return 0;
+
+      // Legacy-format: durationMin (t.ex. gamla 30-min slots)
+      if (s.durationMin != null){
+        const dm = Number(s.durationMin);
+        if (Number.isFinite(dm) && dm > 0) return dm;
+      }
+
+      // Nyare format: startMin/endMin
+      let a = s.startMin ?? null;
+      let b = s.endMin ?? null;
+
+      // Fallback: tider som "HH:MM"
+      if (a == null || b == null){
+        const sa = s.start ?? s.from ?? s.startTime ?? s.slotStart ?? null;
+        const sb = s.end   ?? s.to   ?? s.endTime   ?? s.slotEnd   ?? null;
+        const pa = parseTimeToMinutes(sa);
+        const pb = parseTimeToMinutes(sb);
+        if (pa != null && pb != null){ a = pa; b = pb; }
+      }
+
+      a = Number(a);
+      b = Number(b);
+      if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
+      return b - a;
     }
 
-    // 1) Prefer startMin/endMin (nummer eller sträng)
-    let a = s?.startMin ?? null;
-    let b = s?.endMin ?? null;
-
-    // 2) Fallback: om du råkat ha tider som "HH:MM"
-    if (a == null || b == null){
-      const sa = s?.start ?? s?.from ?? s?.startTime ?? s?.slotStart ?? null;
-      const sb = s?.end   ?? s?.to   ?? s?.endTime   ?? s?.slotEnd   ?? null;
-      const pa = parseTimeToMinutes(sa);
-      const pb = parseTimeToMinutes(sb);
-      if (pa != null && pb != null){ a = pa; b = pb; }
+    function isBreakSlot(s){
+      return !!(s && (s.isBreak ?? s.break ?? s.isPause));
     }
 
-    // 3) Normalisera till number
-    a = Number(a);
-    b = Number(b);
-
-    if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
-     return b - a;
-  }
-
-    let dbgSlotsTotal = 0;
-    let dbgSlotsBillable = 0;
+    // ---- Aggregate minutes per account ----
     const perAccMin = new Map();
 
-    const keys = Object.keys(days).filter(k => month ? k.startsWith(month + "-") : true);
-    for (const k of keys){
+    const dayKeys = Object.keys(days || {})
+      .filter(k => month ? k.startsWith(month + "-") : true)
+      .sort();
+
+    for (const k of dayKeys){
       const d = days[k];
-      const slots = (d && d.slots) ? d.slots : [];
-        for (const s of slots){
-          dbgSlotsTotal++;
+      const slots = (d && Array.isArray(d.slots)) ? d.slots : [];
+      for (const s of slots){
+        if (isBreakSlot(s)) continue;
 
-          const isBreak = !!(s.isBreak ?? s.break ?? s.isPause);
-          if (isBreak) continue;
+        const accId = (s.accountId || "");
+        if (accountParam !== "all" && accId !== accountParam) continue;
 
-          if (accountParam !== "all" && (s.accountId || "") !== accountParam) continue;
+        const mins = slotMinutes(s);
+        if (!mins) continue;
 
-          const mins = slotMinutes(s);
-          if (!mins) continue;
-
-          dbgSlotsBillable++;
-
-          const accId = s.accountId || "";
-          perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
+        perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
       }
     }
 
+    // ---- Render invoice rows ----
     const rowsEl = document.getElementById("rows");
     let sumEx = 0;
 
-    // Render: one row per account
     const entries = [...perAccMin.entries()]
       .map(([accId, min]) => ({
         accId,
         min,
-        name: accNameById.get(accId) || "(ej valt)"
+        name: accNameById.get(accId) || (accId ? accId : "(ej valt)")
       }))
       .sort((a,b) => b.min - a.min);
 
@@ -309,9 +260,7 @@ ${msg}
       const warn = document.getElementById("warn");
       warn.style.display = "block";
       warn.textContent = "Inga fakturerbara timmar hittades för vald period/konto.";
-      rowsEl.innerHTML = `
-        <tr><td colspan="4" class="small">—</td></tr>
-      `;
+      rowsEl.innerHTML = `<tr><td colspan="4" class="small">—</td></tr>`;
     } else {
       for (const e of entries){
         const hours = e.min / 60;
@@ -320,7 +269,7 @@ ${msg}
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${e.name}</td>
+          <td>${String(e.name).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}</td>
           <td class="right nowrap">${formatHours(hours)}</td>
           <td class="right nowrap">${formatSEK(price)}</td>
           <td class="right nowrap">${formatSEK(amount)}</td>
@@ -333,9 +282,8 @@ ${msg}
     const total = sumEx + vat;
 
     document.getElementById("sumEx").textContent = formatSEK(sumEx);
-    document.getElementById("vat").textContent = formatSEK(vat) + ` (${Math.round(vatRate*100)}%)`;
+    document.getElementById("vat").textContent = `${formatSEK(vat)} (${Math.round(vatRate*100)}%)`;
     document.getElementById("total").textContent = formatSEK(total);
-
   </script>
 </body>
 </html>
