@@ -41,6 +41,28 @@
 
     .warn{ margin:10px 0 0; color:#8a1f11; font-size:13px; }
     @media print{ .page{ padding:12mm; } @page{ margin:12mm; } }
+
+    .invoice-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .invoice-actions button{
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fff;
+      cursor:pointer;
+      font-weight:700;
+      font-family:inherit;
+    }
+    .invoice-actions button:hover{
+      background:#f3f6fb;
+    }
+    @media print{
+      .noPrint{ display:none !important; }
+    }
   </style>
 </head>
 
