@@ -52,7 +52,7 @@
         <div>
           <h1>Faktura</h1>
           <div class="small">
-            <div><strong>Jubrion AB (vTEST-1) v19</strong></div>
+            <div><strong>Jubrion AB (vTEST-1) v20</strong></div>
             <div>Tullgatan 17, 972 38 Luleå</div>
             <div>Kontaktperson: Urban Sandlund</div>
             <div>E-post: info@jubrion.se</div>
@@ -312,9 +312,25 @@
 
 
   </script>
-      document.body.insertAdjacentHTML(
-      "afterbegin",
-      '<div style="position:sticky;top:0;z-index:9999;padding:8px 10px;background:#fffbcc;border-bottom:1px solid #ddd;font:12px system-ui">DEBUG: invoice script körs ✅</div>'
-    );
+     // ===== DEBUG 1: bekräfta att scriptet körs =====
+document.body.insertAdjacentHTML(
+  "afterbegin",
+  '<div style="position:sticky;top:0;z-index:9999;padding:8px 10px;background:#fffbcc;border-bottom:1px solid #ddd;font:12px system-ui">DEBUG: invoice script körs ✅</div>'
+);
+
+// ===== DEBUG 2: fånga ALLA JavaScript-fel =====
+window.addEventListener("error", (e) => {
+  const msg =
+    (e?.message || "Okänt fel") +
+    (e?.filename ? `\n${e.filename}:${e.lineno}:${e.colno}` : "");
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    `<div style="padding:10px;background:#ffe8e8;border-bottom:1px solid #e3b1b1;font:12px system-ui;white-space:pre-wrap">
+DEBUG: JS-fel ❌
+${msg}
+</div>`
+  );
+});
+
 </body>
 </html>
