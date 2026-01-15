@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="sv">
 <head>
+  <link rel="stylesheet" href="styles.css" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Faktura – Jubrion AB (vTEST-1)</title>
@@ -67,6 +68,11 @@
 </head>
 
 <body>
+  <div class="invoice-actions noPrint">
+    <button class="secondary" onclick="window.print()">Skriv ut / Spara som PDF</button>
+    <button class="ghost" onclick="history.back()">Tillbaka</button>
+  </div>
+
   <div class="page">
     <div class="invoice-actions noPrint">
       <button onclick="window.print()">Skriv ut / Spara som PDF</button>
