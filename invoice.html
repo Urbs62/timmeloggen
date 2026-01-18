@@ -1,4 +1,4 @@
-  <!doctype html>
+        <!doctype html>
 <html lang="sv">
 <head>
   <link rel="stylesheet" href="styles.css" />
@@ -73,6 +73,69 @@
     @media print{
       .noPrint{ display:none !important; }
     }
+
+    /* --- Header: 2 kolumner (logo | meta) --- */
+    .top{
+      display:grid;
+      grid-template-columns: 1fr 320px; /* logo tar resten, meta fast bredd */
+      gap:16px;
+      align-items:start;
+      border-bottom:2px solid var(--line);
+      padding-bottom:14px;
+      margin-bottom:16px;
+    }
+
+    .logoCol{ min-width: 0; }
+    .metaCol{ min-width: 0; text-align:right; }
+
+    .invTitle{
+      margin:0 0 8px;
+      font-size:22px;
+      line-height:1.1;
+    }
+
+    .metaList{ display:grid; gap:6px; }
+    .metaRow{ display:flex; gap:10px; justify-content:flex-end; }
+    .metaRow .k{ color:var(--muted); font-size:13px; }
+    .metaRow .v{ font-weight:700; }
+
+    /* Logga: rektangulär */
+    .invoice-logo{
+      width:180px;     /* justera här om du vill */
+      height:auto;
+      max-width:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    /* --- Footer: 2 kolumner --- */
+    .footer{
+      margin-top:18px;
+      border-top:1px solid var(--line);
+      padding-top:12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .footerCol{ min-width:0; }
+
+    /* --- Mobil: stacka snyggt --- */
+    @media (max-width: 720px){
+      .top{
+        grid-template-columns: 1fr;   /* logo överst, meta under */
+      }
+      .metaCol{ text-align:left; }
+      .metaRow{ justify-content:flex-start; }
+      .invoice-logo{ width:160px; }
+      .footer{
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -82,33 +145,23 @@
     <button class="ghost" onclick="history.back()">Tillbaka</button>
   </div>
 
-    <div class="top">
-      <div class="brand">
-        <img
-          src="icons/Jubrion_AB_logo_horizontal_192.png"
-          alt="Jubrion AB"
-          class="invoice-logo"
-        />
-        <div>
-          <h1>Faktura</h1>
-          <div class="small">
-            <div><strong>Jubrion AB v4</strong></div>
-            <div>Tullgatan 17, 972 38 Luleå</div>
-            <div>Kontaktperson: Urban Sandlund</div>
-            <div>E-post: info@jubrion.se</div>
-            <div>Webb: jubrion.org</div>
-            <div>Bankgiro: xxxx-xxxx</div>
-          </div>
-        </div>
-      </div>
+  <div class="top">
+    <div class="logoCol">
+      <img src="Jubrion_AB_logo_horizontal_512.png" alt="Jubrion AB" class="invoice-logo" />
+    </div>
 
-      <div class="meta">
-        <div class="row"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">—</span></div>
-        <div class="row"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">—</span></div>
-        <div class="row"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
-        <div class="row"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
+    <div class="metaCol">
+      <h1 class="invTitle">Faktura</h1>
+  
+      <div class="metaList">
+        <div class="metaRow"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">—</span></div>
+        <div class="metaRow"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">—</span></div>
+        <div class="metaRow"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
+        <div class="metaRow"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
       </div>
     </div>
+  </div>
+
 
     <div class="grid">
       <div class="box">
@@ -149,10 +202,21 @@
     </div>
 
     <div class="footer">
-      <div><span class="accent">Betalning:</span> Bankgiro xxxx-xxxx</div>
-      <div><span class="accent">Referens:</span> Urban Sandlund</div>
-      <div><span class="accent">Underlag:</span> Timmeloggen (månad + konto)</div>
+      <div class="footerCol">
+        <div><strong>Jubrion AB</strong></div>
+        <div>E-post: info@jubrion.se</div>
+      <div>Webb: jubrion.org</div>
     </div>
+
+    <div class="footerCol">
+      <div><strong>Jubrion AB</strong></div>
+      <div>Tullgatan 17</div>
+      <div>972 38 Luleå</div>
+      <div>F-skatt: xxxxxx</div>
+      <div>Bankgiro: xxxx-xxxx</div>
+    </div>
+  </div>
+
 
     <div id="warn" class="warn" style="display:none;"></div>
   </div>
