@@ -41,14 +41,11 @@
     @media print{ .page{ padding:12mm; } @page{ margin:12mm; } }
 
     
-    .invoice-actions button{
-      padding:10px 16px;
-      border-radius:999px;
-      border:1px solid #ddd;
-      background:#fff;
-      cursor:pointer;
-      font-weight:700;
-      font-family:inherit;
+    .invoice-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-bottom:12px;
     }
     .invoice-actions button:hover{
       background:#f3f6fb;
@@ -136,7 +133,7 @@
 
 <body>
   <div class="invoice-actions noPrint">
-    <button class="secondary" onclick="window.print()">Skriv ut / Spara som PDF</button>
+    <button type="button" class="secondary" data-print>Skriv ut / Spara som PDF</button>
     <button class="ghost" onclick="history.back()">Tillbaka</button>
   </div>
 
@@ -386,6 +383,9 @@
     document.getElementById("sumEx").textContent = formatSEK(sumEx);
     document.getElementById("vat").textContent = `${formatSEK(vat)} (${Math.round(vatRate*100)}%)`;
     document.getElementById("total").textContent = formatSEK(total);
+    document.querySelectorAll('[data-print]').forEach(btn => {
+      btn.addEventListener('click', () => window.print());
+    });
   </script>
 </body>
 </html>
