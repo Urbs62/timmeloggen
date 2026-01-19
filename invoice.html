@@ -1,4 +1,4 @@
-  <!doctype html>
+<!doctype html>
 <html lang="sv">
 <head>
   <link rel="stylesheet" href="styles.css" />
@@ -43,21 +43,7 @@
     .warn{ margin:10px 0 0; color:#8a1f11; font-size:13px; }
     @media print{ .page{ padding:12mm; } @page{ margin:12mm; } }
 
-    .invoice-actions{
-      display:flex;
-      justify-content:flex-end;
-      gap:10px;
-      margin-bottom:12px;
-
-    .invoice-logo{
-      width:140px;
-      height: auto;
-      max-width: 100%
-      object-fit:contain;
-      border-radius:12px;
-    }
-
-    }
+    
     .invoice-actions button{
       padding:10px 16px;
       border-radius:999px;
@@ -133,62 +119,6 @@
       .invoice-logo{ width:160px; }
       .footer{
         grid-template-columns: 1fr;
-      }
-    }
-    /* ===== Invoice header layout (logo + meta) ===== */
-
-    .top{
-      display:grid;
-      grid-template-columns: auto 1fr;
-      gap:16px;
-      align-items:start;
-    }
-
-    /* Vänster kolumn: logga */
-    .brand{
-      display:flex;
-      align-items:flex-start;
-      gap:0;
-      min-width:0;
-    }
-
-    .brand .logo{
-      width:160px;
-      height:auto;
-      border:none;
-      padding:0;
-    }
-
-    .brand .logo img{
-      display:block;
-      max-width:100%;
-      height:auto;
-      object-fit:contain;
-    }
-
-    /* Höger kolumn: fakturatext */
-    .meta{
-      text-align:left;
-      margin-left:auto;
-    }
-
-    .meta h1{
-      margin:0 0 8px 0;
-      font-size:22px;
-    }
-
-    .meta .row{
-      margin:4px 0;
-    }
-
-    /* Mobilanpassning */
-    @media (max-width: 600px){
-      .top{
-        grid-template-columns: 1fr;
-      }
-
-      .brand{
-        margin-bottom:12px;
       }
     }
 
