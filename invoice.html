@@ -147,20 +147,26 @@
 
   <div class="top">
     <div class="logoCol">
-      <img src="icons/Jubrion_AB_logo_horizontal_512.png" alt="Jubrion AB" class="invoice-logo" />
+      <img
+        src="img/Jubrion_AB_logo_horizontal_512.png"
+        alt="Jubrion AB"
+        class="invoice-logo"
+        onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
+      />
     </div>
 
     <div class="metaCol">
       <h1 class="invTitle">Faktura</h1>
-  
+
       <div class="metaList">
-        <div class="metaRow"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">—</span></div>
-        <div class="metaRow"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">—</span></div>
-        <div class="metaRow"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
-        <div class="metaRow"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
-      </div>
+      <div class="metaRow"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">—</span></div>
+      <div class="metaRow"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">—</span></div>
+      <div class="metaRow"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
+      <div class="metaRow"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
     </div>
   </div>
+</div>
+
 
 
     <div class="grid">
