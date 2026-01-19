@@ -96,29 +96,41 @@
       margin-top:18px;
       border-top:1px solid var(--line);
       padding-top:12px;
+
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap:16px;
+      gap:32px;                 /* lite luft mellan kolumner */
+
       color:var(--muted);
       font-size:13px;
-      line-height:1.35;
+      line-height:1.4;
     }
 
-    .footerCol{ min-width:0; }
+    .footerCol{
+      min-width:0;
+    }
 
+    /* Höger kolumn: högerställd men indragen */
+    .footerCol.rightCol{
+      text-align:right;
+      padding-right:48px;       /* <-- flyttar kolumnen inåt från kanten */
+    }
+    
     /* --- Mobil: stacka snyggt --- */
     @media (max-width: 720px){
       .top{
         grid-template-columns: 1fr;   /* logo överst, meta under */
       }
+      .footer{
+        gap:16px;
+      }
+      .footerCol.rightCol{
+        padding-right:12px;
+      }
       .metaCol{ text-align:left; }
       .metaRow{ justify-content:flex-start; }
       .invoice-logo{ width:160px; }
-       .footer{
-          grid-template-columns: 1fr 1fr; /* behåll 2 kolumner */
-      }
     }
-
   </style>
 </head>
 
@@ -149,8 +161,6 @@
     </div>
   </div>
 </div>
-
-
 
     <div class="grid">
       <div class="box">
@@ -197,7 +207,7 @@
         <div>972 38 Luleå</div>
       </div>
 
-      <div class="footerCol">
+       <div class="footerCol rightCol">
         <div>Bankgiro: xxxx-xxxx</div>
         <div>F-skatt: AVCFGDRETTT</div>
         <div>E-post: info@jubrionn.se</div>
