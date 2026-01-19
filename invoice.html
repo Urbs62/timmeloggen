@@ -294,12 +294,12 @@
     const vatRate = Number(q.get("vat") || "0.25");
     const invNo = q.get("no") || "1234";
     const invDate = q.get("date") || (() => {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      return `${yyyy}-${mm}-${dd}`;
-    })();
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${yyyy}-${mm}-${dd}`;
+  })();
 
     document.getElementById("invoiceNo").textContent = invNo;
     document.getElementById("invoiceDate").textContent = invDate;
