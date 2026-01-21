@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="sv">
 <head>
+  <link rel="stylesheet" href="styles.css" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Faktura – Jubrion AB</title>
@@ -14,7 +15,7 @@
     html,body{ background:var(--bg); color:var(--text); font-family:var(--font); margin:0; }
     .page{ max-width: 900px; margin: 0 auto; padding: 24px; }
 
-    /* Actions (print/back) */
+    /* ===== Actions (print/back) ===== */
     .invoice-actions{
       display:flex;
       justify-content:flex-end;
@@ -35,12 +36,9 @@
       touch-action: manipulation;
     }
     .invoice-actions button:hover{ background:#f3f6fb; }
-    .invoice-actions button:active{ transform: translateY(1px); }
-
     @media print{ .noPrint{ display:none !important; } }
-    @media print{ .page{ padding:12mm; } @page{ margin:12mm; } }
 
-    /* --- Header: 2 kolumner (logo | meta) --- */
+    /* ===== Header: 2 kolumner (logo | meta) ===== */
     .top{
       display:grid;
       grid-template-columns: 1fr 320px;
@@ -50,9 +48,14 @@
       padding-bottom:14px;
       margin-bottom:16px;
     }
-    .logoCol{ min-width: 0; }
-    .metaCol{ min-width: 0; text-align:right; }
+    .logoCol{ min-width:0; }
 
+    /* Meta högerjusterad + indragen (som footer högerkolumn) */
+    .metaCol{
+      min-width:0;
+      text-align:right;
+      padding-right:48px; /* <-- indrag från kanten */
+    }
     .invTitle{
       margin:0 0 8px;
       font-size:22px;
@@ -63,14 +66,25 @@
     .metaRow .k{ color:var(--muted); font-size:13px; }
     .metaRow .v{ font-weight:700; }
 
+    /* Logga (rektangulär) */
     .invoice-logo{
-      width:180px;
+      width:180px;     /* justera här om du vill */
       height:auto;
       max-width:100%;
       object-fit:contain;
       display:block;
     }
+    .logoFallback{
+      width:180px;
+      padding:10px;
+      border:1px dashed var(--line);
+      border-radius: var(--r);
+      color: var(--muted);
+      font-size:12px;
+      text-align:center;
+    }
 
+    /* ===== Boxes + table ===== */
     .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0 18px; }
     .box{ border:1px solid var(--line); border-radius:var(--r); padding:12px; background:#fff; }
     .box h3{ margin:0 0 8px; font-size:14px; }
@@ -82,6 +96,16 @@
     td.right, th.right{ text-align:right; }
     td.nowrap{ white-space:nowrap; }
 
+    /* Totalt timmar-rad */
+    tr.total-hours td{
+      border-bottom: 1px solid var(--line);
+      padding-top: 12px;
+      padding-bottom: 12px;
+      font-weight: 700;
+      background: rgba(0,0,0,0.02);
+    }
+
+    /* ===== Sum box ===== */
     .sum{ margin-top:14px; display:flex; justify-content:flex-end; }
     .sumBox{ width:380px; border:1px solid var(--line); border-radius:var(--r); padding:12px; }
     .sumRow{ display:flex; justify-content:space-between; gap:12px; margin:6px 0; font-size:14px; }
@@ -89,45 +113,72 @@
 
     .warn{ margin:10px 0 0; color:#8a1f11; font-size:13px; }
 
-    /* Footer: 2 kolumner */
+    /* ===== Footer: 2 kolumner, lite mer centrerad ===== */
     .footer{
       margin-top:18px;
       border-top:1px solid var(--line);
       padding-top:12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:32px;
       color:var(--muted);
       font-size:13px;
       line-height:1.4;
     }
+    .footerInner{
+      max-width: 760px;     /* <-- gör att kolumnerna hamnar mer centralt */
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:32px;
+    }
     .footerCol{ min-width:0; }
     .footerCol.rightCol{
       text-align:right;
-      padding-right:48px;
+      padding-right:48px;   /* samma “indrag” som headerns meta */
     }
 
-    /* Mobil */
+    /* ===== Mobil ===== */
     @media (max-width: 720px){
       .top{ grid-template-columns: 1fr; }
-      .metaCol{ text-align:left; }
-      .metaRow{ justify-content:flex-start; }
+      .metaCol{
+        text-align:right;
+        padding-right:12px; /* mindre indrag på mobil */
+      }
+      .metaRow{ justify-content:flex-end; }
       .invoice-logo{ width:160px; }
-      .footer{
-        grid-template-columns: 1fr 1fr; /* behåll två kolumner */
+
+      .grid{ grid-template-columns:1fr; }
+
+      .footerInner{
+        grid-template-columns: 1fr 1fr; /* behåll 2 kolumner */
         gap:16px;
       }
       .footerCol.rightCol{ padding-right:12px; }
-      .invoice-actions{ padding: 0 16px; }
-      .page{ padding: 16px; }
+    }
+
+    /* ===== Print: gör footern till “riktig footer” längst ner ===== */
+    @media print{
+      @page{ margin:12mm; }
+      body{
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+      }
+      .page{
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        padding:12mm;
+      }
+      .footer{
+        margin-top:auto; /* <-- pushar ner footern till botten */
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="invoice-actions noPrint">
-    <button type="button" id="btnPrint">Skriv ut / Spara som PDF</button>
-    <button type="button" id="btnBack">Tillbaka</button>
+    <button type="button" id="printBtn">Skriv ut / Spara som PDF</button>
+    <button type="button" onclick="history.back()">Tillbaka</button>
   </div>
 
   <div class="page">
@@ -137,7 +188,7 @@
           src="icons/Jubrion_AB_logo_horizontal_192.png"
           alt="Jubrion AB"
           class="invoice-logo"
-          onerror="this.replaceWith(Object.assign(document.createElement('div'),{style:'color:#8a1f11;font-size:12px',textContent:'LOGGA saknas'}))"
+          onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
         />
       </div>
 
@@ -189,16 +240,18 @@
     </div>
 
     <div class="footer">
-      <div class="footerCol">
-        <div><strong>Jubrion AB</strong></div>
-        <div>Tullgatan 17</div>
-        <div>972 38 Luleå</div>
-      </div>
+      <div class="footerInner">
+        <div class="footerCol">
+          <div><strong>Jubrion AB</strong></div>
+          <div>Tullgatan 17</div>
+          <div>972 38 Luleå</div>
+        </div>
 
-      <div class="footerCol rightCol">
-        <div>Bankgiro: xxxx-xxxx</div>
-        <div>F-skatt: AVCFGDRETTT</div>
-        <div>E-post: info@jubrionn.se</div>
+        <div class="footerCol rightCol">
+          <div>Bankgiro: xxxx-xxxx</div>
+          <div>F-skatt: AVCFGDRETTT</div>
+          <div>E-post: info@jubrion.se</div>
+        </div>
       </div>
     </div>
 
@@ -206,59 +259,19 @@
   </div>
 
   <script>
-    // --- Robust print för Android/PWA ---
-    function isProbablyStandalonePWA(){
-      // Android: display-mode standalone
-      const dm = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-      // iOS: navigator.standalone
-      const ios = !!window.navigator.standalone;
-      return !!(dm || ios);
-    }
-
-    async function tryPrint(){
-      // 1) försök vanlig print
-      try{
-        window.print();
-        return true;
-      }catch(e){
-        // fortsätt till fallback
+    // Print-knapp: både onclick och addEventListener (för att vara extra robust i mobil/PWA)
+    (function(){
+      const btn = document.getElementById("printBtn");
+      if (btn){
+        btn.addEventListener("click", () => window.print());
+        btn.onclick = () => window.print();
       }
-
-      // 2) fallback: öppna i ny flik (brukar ge print-menyn på Android)
-      try{
-        const url = location.href;
-        const w = window.open(url, "_blank");
-        if (!w) return false;
-        // Låt sidan ladda och försök print i nya tabben
-        setTimeout(() => {
-          try{ w.focus(); w.print(); }catch(e){}
-        }, 700);
-        return true;
-      }catch(e){
-        return false;
-      }
-    }
-
-    document.getElementById("btnPrint").addEventListener("click", async () => {
-      const ok = await tryPrint();
-      if (!ok){
-        alert("Kunde inte öppna utskrift. Prova öppna sidan i Chrome (inte PWA) och välj Skriv ut där.");
-      } else {
-        // I PWA kan det fortfarande “kännas” som inget händer.
-        // Liten hint om det behövs:
-        if (isProbablyStandalonePWA()){
-          // inget popup, bara tyst hjälp vid behov
-          console.log("Print triggat i PWA-läge.");
-        }
-      }
-    });
-
-    document.getElementById("btnBack").addEventListener("click", () => history.back());
+    })();
 
     // ---- Query helpers ----
     const q = new URLSearchParams(location.search);
     const month = (q.get("month") || "").trim();                // "YYYY-MM"
-    const rawAccount = (q.get("account") || "all").trim();
+    const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
     const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
 
     const price = Number(q.get("price") || "650");
@@ -288,13 +301,22 @@
       const n = Number(h) || 0;
       return n.toFixed(2).replace(".", ",");
     }
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
+    }
 
     // ---- Read Timmeloggen data from localStorage ----
     function loadJSON(key, fallback){
       try{
         const v = localStorage.getItem(key);
         return v ? JSON.parse(v) : fallback;
-      }catch{ return fallback; }
+      }catch{
+        return fallback;
+      }
     }
     const ACC_KEYS = ["tl_accounts_v1", "tl_accounts_v2", "tl_accounts"];
     const DAY_KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
@@ -309,25 +331,34 @@
 
     const accRes = loadFirst(ACC_KEYS, []);
     const dayRes = loadFirst(DAY_KEYS, {});
-    const accounts = accRes.value;
-    const days = dayRes.value;
+    const accounts = accRes.value || [];
+    const days = dayRes.value || {};
 
-    const accNameById = new Map((accounts || []).map(a => [a.id, a.name]));
+    // accountId -> name
+    const accNameById = new Map(accounts.map(a => [a.id, a.name]));
 
+    // ---- Time helpers ----
     function parseTimeToMinutes(hhmm){
       if (!hhmm || typeof hhmm !== "string" || !hhmm.includes(":")) return null;
       const [h,m] = hhmm.split(":").map(x => parseInt(x,10));
       if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
       return h*60 + m;
     }
+
     function slotMinutes(s){
       if (!s) return 0;
+
+      // Legacy-format: durationMin (t.ex. gamla 30-min slots)
       if (s.durationMin != null){
         const dm = Number(s.durationMin);
         if (Number.isFinite(dm) && dm > 0) return dm;
       }
+
+      // Nyare format: startMin/endMin
       let a = s.startMin ?? null;
       let b = s.endMin ?? null;
+
+      // Fallback: tider som "HH:MM"
       if (a == null || b == null){
         const sa = s.start ?? s.from ?? s.startTime ?? s.slotStart ?? null;
         const sb = s.end   ?? s.to   ?? s.endTime   ?? s.slotEnd   ?? null;
@@ -335,16 +366,21 @@
         const pb = parseTimeToMinutes(sb);
         if (pa != null && pb != null){ a = pa; b = pb; }
       }
-      a = Number(a); b = Number(b);
+
+      a = Number(a);
+      b = Number(b);
       if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
       return b - a;
     }
+
     function isBreakSlot(s){
       return !!(s && (s.isBreak ?? s.break ?? s.isPause));
     }
 
+    // ---- Aggregate minutes per account ----
     const perAccMin = new Map();
-    const dayKeys = Object.keys(days || {})
+
+    const dayKeys = Object.keys(days)
       .filter(k => month ? k.startsWith(month + "-") : true)
       .sort();
 
@@ -353,16 +389,21 @@
       const slots = (d && Array.isArray(d.slots)) ? d.slots : [];
       for (const s of slots){
         if (isBreakSlot(s)) continue;
+
         const accId = (s.accountId || "");
         if (accountParam !== "all" && accId !== accountParam) continue;
+
         const mins = slotMinutes(s);
         if (!mins) continue;
+
         perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
       }
     }
 
+    // ---- Render invoice rows ----
     const rowsEl = document.getElementById("rows");
     let sumEx = 0;
+    let totalBillableMinutes = 0;
 
     const entries = [...perAccMin.entries()]
       .map(([accId, min]) => ({
@@ -379,23 +420,38 @@
       rowsEl.innerHTML = `<tr><td colspan="4" class="small">—</td></tr>`;
     } else {
       for (const e of entries){
+        totalBillableMinutes += e.min;
+
         const hours = e.min / 60;
         const amount = hours * price;
         sumEx += amount;
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${String(e.name).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}</td>
+          <td>${escapeHtml(e.name)}</td>
           <td class="right nowrap">${formatHours(hours)}</td>
           <td class="right nowrap">${formatSEK(price)}</td>
           <td class="right nowrap">${formatSEK(amount)}</td>
         `;
         rowsEl.appendChild(tr);
       }
+
+      // ---- Totalt antal timmar (egen rad) ----
+      const totalHours = totalBillableMinutes / 60;
+      const trTot = document.createElement("tr");
+      trTot.className = "total-hours";
+      trTot.innerHTML = `
+        <td>Totalt antal timmar</td>
+        <td class="right nowrap">${formatHours(totalHours)}</td>
+        <td class="right nowrap"></td>
+        <td class="right nowrap"></td>
+      `;
+      rowsEl.appendChild(trTot);
     }
 
     const vat = sumEx * vatRate;
     const total = sumEx + vat;
+
     document.getElementById("sumEx").textContent = formatSEK(sumEx);
     document.getElementById("vat").textContent = `${formatSEK(vat)} (${Math.round(vatRate*100)}%)`;
     document.getElementById("total").textContent = formatSEK(total);
