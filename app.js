@@ -93,6 +93,87 @@ function formatDateSv(dayKey){
   return dayKey;
 }
 
+const DAILY_BUDGET_HOURS = 3.2;
+
+function isWeekday(dateObj){
+  const d = dateObj.getDay(); // 0=sön ... 6=lör
+  return d >= 1 && d <= 5;
+}
+
+function monthBounds(yyyyMm){
+  const [y, m] = yyyyMm.split("-").map(Number);
+  const start = new Date(y, m - 1, 1);
+  const end = new Date(y, m, 0); // sista dagen i månaden
+  return { start, end };
+}
+
+function countWeekdaysInRange(startDate, endDateInclusive){
+  let count = 0;
+  const d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const end = new Date(endDateInclusive.getFullYear(), endDateInclusive.getMonth(), endDateInclusive.getDate());
+  while (d <= end){
+    if (isWeekday(d)) count++;
+    d.setDate(d.getDate() + 1);
+  }
+  return count;
+}
+
+function hoursWorkedInMonth(daysObj, yyyyMm){
+  const dayKeys = Object.keys(daysObj || {}).filter(k => k.startsWith(yyyyMm + "-"));
+  let minutes = 0;
+
+  for (const k of dayKeys){
+    const d = daysObj[k];
+    const slots = Array.isArray(d?.slots) ? d.slots : [];
+    for (const s of slots){
+      const isBreak = !!(s?.isBreak ?? s?.break ?? s?.isPause);
+      if (isBreak) continue;
+
+      const a = Number(s?.startMin);
+      const b = Number(s?.endMin);
+      if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) continue;
+
+      minutes += (b - a);
+    }
+  }
+  return minutes / 60;
+}
+
+function monthForecast(daysObj, yyyyMm){
+  const { start, end } = monthBounds(yyyyMm);
+
+  const workdaysInMonth = countWeekdaysInRange(start, end);
+
+  const today = new Date();
+  const isCurrentMonth =
+    today.getFullYear() === start.getFullYear() &&
+    today.getMonth() === start.getMonth();
+
+  const elapsedEnd = isCurrentMonth ? today : end;
+  const elapsedWorkdays = countWeekdaysInRange(start, elapsedEnd);
+
+  const budgetMonth = workdaysInMonth * DAILY_BUDGET_HOURS;
+  const budgetSoFar = elapsedWorkdays * DAILY_BUDGET_HOURS;
+
+  const workedSoFar = hoursWorkedInMonth(daysObj, yyyyMm);
+
+  const remainingWorkdays = Math.max(0, workdaysInMonth - elapsedWorkdays);
+  const forecast = workedSoFar + remainingWorkdays * DAILY_BUDGET_HOURS;
+
+  return {
+    workdaysInMonth,
+    elapsedWorkdays,
+    remainingWorkdays,
+    budgetMonth,
+    budgetSoFar,
+    workedSoFar,
+    deltaNow: workedSoFar - budgetSoFar,
+    forecast,
+    forecastDelta: forecast - budgetMonth
+  };
+}
+
+
 // ---------- Data model ----------
 /*
 days = {
@@ -157,6 +238,7 @@ const refreshHistoryBtn = document.getElementById("refreshHistoryBtn");
 const overviewBox = document.getElementById("overviewBox");
 const perAccountBox = document.getElementById("perAccountBox");
 const historyList = document.getElementById("historyList");
+const forecastBox = document.getElementById("forecastBox");
 
 const invoiceAccount = document.getElementById("invoiceAccount");
 const invoiceMonth = document.getElementById("invoiceMonth");
@@ -772,6 +854,29 @@ function renderHistory() {
         `;
         historyList.appendChild(el);
       });
+       // ---- Prognos (endast meningsfull för månad) ----
+        if (forecastBox){
+          if (type !== "month"){
+            forecastBox.innerHTML = `<div class="muted">Välj period: <strong>Månad</strong> för att se prognos.</div>`;
+          } else {
+            const yyyyMm = (dateStr || todayKey()).slice(0, 7);
+            const f = monthForecast(days, yyyyMm);
+
+            forecastBox.innerHTML = `
+              <div class="kv">
+                <div><span class="k">Arbetsdagar (månad)</span> <span class="v">${f.workdaysInMonth}</span></div>
+                <div><span class="k">Arbetsdagar hittills</span> <span class="v">${f.elapsedWorkdays}</span></div>
+                <div><span class="k">Budget hittills</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
+                <div><span class="k">Utfall hittills</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
+                <div><span class="k">Diff nu</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
+                <hr class="sep" />
+                <div><span class="k">Prognos månad</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
+                <div><span class="k">Prognos vs budget</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
+              </div>
+            `;
+            }
+           }
+
   }
 }
 
