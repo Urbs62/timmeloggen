@@ -816,6 +816,7 @@ function renderHistory() {
     <div><span class="k">Dagar med data</span> <span class="v">${keys.length}</span></div>
   `;
 
+  // Per konto
   if (perAccMin.size === 0) {
     perAccountBox.innerHTML = `<div class="muted">Inga slots i perioden.</div>`;
   } else {
@@ -838,6 +839,7 @@ function renderHistory() {
     perAccountBox.innerHTML = html;
   }
 
+  // Poster
   historyList.innerHTML = "";
   if (!rows.length) {
     historyList.innerHTML = `
@@ -850,7 +852,9 @@ function renderHistory() {
   } else {
     rows
       .slice()
-      .sort((a, b) => (a.date + minutesToTime(a.startMin)).localeCompare(b.date + minutesToTime(b.startMin), "sv"))
+      .sort((a, b) =>
+        (a.date + minutesToTime(a.startMin)).localeCompare(b.date + minutesToTime(b.startMin), "sv")
+      )
       .forEach((r) => {
         const acc = accountNameById(r.accountId) || "(ej valt)";
         const timeLabel = `${minutesToTime(r.startMin)}–${minutesToTime(r.endMin)}`;
@@ -867,37 +871,39 @@ function renderHistory() {
         `;
         historyList.appendChild(el);
       });
-       // ---- Prognos (endast meningsfull för månad) ----
-        if (forecastBox){
-          if (type !== "month"){
-            forecastBox.innerHTML = `<div class="muted">Välj period: <strong>Månad</strong> för att se prognos.</div>`;
-          } else {
-            const yyyyMm = (dateStr || todayKey()).slice(0, 7);
-            const f = monthForecast(days, yyyyMm);
+  }
 
-            forecastBox.innerHTML = `
-              <div class="kv">
-                <div><span class="k">Arbetsdagar (månad)</span> <span class="v">${f.workdaysInMonth}</span></div>
-                <div><span class="k">Arbetsdagar hittills</span> <span class="v">${f.elapsedWorkdays}</span></div>
-                <div><span class="k">Budget hittills</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
-                <div><span class="k">Utfall hittills</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
-                <div><span class="k">Diff nu</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
+  // ---- Prognos (endast meningsfull för månad) ----
+  if (forecastBox) {
+    if (type !== "month") {
+      forecastBox.innerHTML = `<div class="muted">Välj period: <strong>Månad</strong> för att se prognos.</div>`;
+    } else {
+      const yyyyMm = (dateStr || todayKey()).slice(0, 7);
+      const f = monthForecast(days, yyyyMm);
 
-                <hr class="sep" />
-            
-                <div><span class="k">Budget kvar</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
-                <div><span class="k">Krävs snitt/dag (resten)</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
-            
-                <hr class="sep" />
-            
-                <div><span class="k">Prognos månad</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
-                <div><span class="k">Prognos vs budget</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
-              </div>
-            `;
-  
+      forecastBox.innerHTML = `
+        <div class="kv">
+          <div><span class="k">Arbetsdagar (månad)</span> <span class="v">${f.workdaysInMonth}</span></div>
+          <div><span class="k">Arbetsdagar hittills</span> <span class="v">${f.elapsedWorkdays}</span></div>
+          <div><span class="k">Budget hittills</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Utfall hittills</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Diff nu</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
 
+          <hr class="sep" />
+
+          <div><span class="k">Budget kvar</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Krävs snitt/dag (resten)</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
+
+          <hr class="sep" />
+
+          <div><span class="k">Prognos månad</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Prognos vs budget</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
+        </div>
+      `;
+    }
   }
 }
+
 
 refreshHistoryBtn.addEventListener("click", renderHistory);
 periodType.addEventListener("change", renderHistory);
