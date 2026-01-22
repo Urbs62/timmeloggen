@@ -158,21 +158,34 @@ function monthForecast(daysObj, yyyyMm){
   const workedSoFar = hoursWorkedInMonth(daysObj, yyyyMm);
 
   const remainingWorkdays = Math.max(0, workdaysInMonth - elapsedWorkdays);
+  const budgetRemaining = Math.max(0, budgetMonth - workedSoFar);
+
+  // Prognos om du fortsätter i budget-takt resten av månaden:
   const forecast = workedSoFar + remainingWorkdays * DAILY_BUDGET_HOURS;
+  const forecastDelta = forecast - budgetMonth;
+
+  // Krävs för att nå exakt budget (om du vill "komma ikapp"):
+  const requiredPerDayToReachBudget =
+    remainingWorkdays > 0 ? budgetRemaining / remainingWorkdays : 0;
 
   return {
     workdaysInMonth,
     elapsedWorkdays,
     remainingWorkdays,
+
     budgetMonth,
     budgetSoFar,
     workedSoFar,
+
     deltaNow: workedSoFar - budgetSoFar,
+
     forecast,
-    forecastDelta: forecast - budgetMonth
+    forecastDelta,
+
+    budgetRemaining,
+    requiredPerDayToReachBudget
   };
 }
-
 
 // ---------- Data model ----------
 /*
@@ -869,13 +882,19 @@ function renderHistory() {
                 <div><span class="k">Budget hittills</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
                 <div><span class="k">Utfall hittills</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
                 <div><span class="k">Diff nu</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
+
                 <hr class="sep" />
+            
+                <div><span class="k">Budget kvar</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
+                <div><span class="k">Krävs snitt/dag (resten)</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
+            
+                <hr class="sep" />
+            
                 <div><span class="k">Prognos månad</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
                 <div><span class="k">Prognos vs budget</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
               </div>
             `;
-            }
-           }
+  
 
   }
 }
