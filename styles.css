@@ -315,7 +315,18 @@ hr, .sep{
     background:#fff !important;
     color:#000 !important;
   }
+  /* NYTT – sidbrytning för Fakturaunderlag */
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
 
+  /* valfritt men bra */
+  .kv {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
   /* göm app-UI */
   .wrap{ display:none !important; }
 
