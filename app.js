@@ -1050,12 +1050,12 @@ function buildInvoicePrintHtml(monthVal, accVal){
   }
 
   return `
-    <h1>Fakturaunderlag</h1>
-    <div class="kv">
-      <div><b>Månad:</b> ${escapeHtml(monthVal)}</div>
-      <div><b>Konto:</b> ${escapeHtml(accLabel)}</div>
-      <div class="muted">Skapat av Timmeloggen (lokalt underlag)</div>
-    </div>
+    <h1 class="page-break">Fakturaunderlag</h1>
+     <div class="kv">
+       <div><b>Månad:</b> ${escapeHtml(monthVal)}</div>
+       <div><b>Konto:</b> ${escapeHtml(accLabel)}</div>
+       <div class="muted">Skapat av Timmeloggen (lokalt underlag)</div>
+     </div>
 
     <table>
       <thead>
