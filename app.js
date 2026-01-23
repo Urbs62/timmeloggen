@@ -1092,6 +1092,7 @@ function printInvoicePdf(){
   printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
 
   // Öppna print-dialog (Spara som PDF)
+   alert("innan print");
   setTimeout(() => window.print(), 50);
 }
 
