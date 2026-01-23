@@ -1147,6 +1147,42 @@ function init() {
    if (exportInvoiceCsvBtn) exportInvoiceCsvBtn.addEventListener("click", exportInvoiceCsv);
    if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
 
+   // --- Öppna faktura (HTML) ---
+   const openInvoiceHtmlBtn = document.getElementById("openInvoiceHtmlBtn");
+   if (openInvoiceHtmlBtn) {
+     openInvoiceHtmlBtn.addEventListener("click", () => {
+       const month = (invoiceMonth?.value || "").trim();
+       if (!month) {
+         alert("Välj en månad.");
+         return;
+       }
+
+       const accId = (invoiceAccount?.value || "ALL").trim();
+
+       const price = 650;   // á-pris
+       const vat = 0.25;    // 25 % moms
+
+       const d = new Date();
+       const yyyy = d.getFullYear();
+       const mm = String(d.getMonth() + 1).padStart(2, "0");
+       const dd = String(d.getDate()).padStart(2, "0");
+       const invDate = `${yyyy}-${mm}-${dd}`;
+
+       const invNo = "1234"; // v1 – senare kan vi autogenerera
+
+       const url =
+         `invoice.html?month=${encodeURIComponent(month)}` +
+         `&account=${encodeURIComponent(accId)}` +
+         `&price=${encodeURIComponent(price)}` +
+         `&vat=${encodeURIComponent(vat)}` +
+         `&date=${encodeURIComponent(invDate)}` +
+         `&no=${encodeURIComponent(invNo)}`;
+
+       // PWA / mobil: öppna i samma flik
+       location.href = url;
+     });
+   }
+
      const openInvoiceHtmlBtn = document.getElementById("openInvoiceHtmlBtn");
      if (openInvoiceHtmlBtn) {
        openInvoiceHtmlBtn.addEventListener("click", () => {
