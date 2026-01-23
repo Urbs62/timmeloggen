@@ -1054,7 +1054,6 @@ function buildInvoicePrintHtml(monthVal, accVal){
      <div class="kv">
        <div><b>Månad:</b> ${escapeHtml(monthVal)}</div>
        <div><b>Konto:</b> ${escapeHtml(accLabel)}</div>
-       <div class="muted">Skapat av Timmeloggen (lokalt underlag)</div>
      </div>
 
     <table>
