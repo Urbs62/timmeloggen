@@ -179,6 +179,10 @@
       .footerCol.rightCol{ padding-right:12px; }
     }
 
+    @media print{
+    .addrBox{ break-inside: avoid; page-break-inside: avoid; }
+    }
+
     /* ===== Print: gör footern till “riktig footer” längst ner ===== */
     @media print{
       @page{ margin:12mm; }
