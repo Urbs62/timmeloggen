@@ -83,6 +83,31 @@
       font-size:12px;
       text-align:center;
     }
+    /* Adressbox: två kolumner i samma ruta */
+  .addrGrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  /* liten “delare” mellan kolumnerna (valfritt) */
+  .addrCol + .addrCol{
+    border-left: 1px solid var(--line);
+    padding-left: 14px;
+  }
+
+  /* Mobil: stapla */
+  @media (max-width: 720px){
+    .addrGrid{ grid-template-columns: 1fr; }
+    .addrCol + .addrCol{
+      border-left: 0;
+      padding-left: 0;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      margin-top: 6px;
+    }
+  }
 
     /* ===== Boxes + table ===== */
     .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0 18px; }
@@ -203,21 +228,23 @@
       </div>
     </div>
 
-    <div class="grid">
-      <div class="box">
-        <h3>Leveransadress</h3>
-        <p class="small">
-          Mobilaris Industrial Solutions AB<br/>
-          Sundsbacken 6<br/>
-          972 42 Luleå
-        </p>
+    <div class="box addrBox">
+      <div class="addrGrid">
+        <div class="addrCol">
+          <h3>Leveransadress</h3>
+          <p class="small">
+            Mobilaris Industrial Solutions AB<br/>
+            Sundsbacken 6<br/>
+            972 42 Luleå
+          </p>
       </div>
 
-      <div class="box">
-        <h3>Fakturadress</h3>
+      <div class="addrCol">
+        <h3>Fakturaadress</h3>
         <p class="small">info@mobilaris.se</p>
       </div>
     </div>
+  </div>
 
     <table aria-label="Fakturarader">
       <thead>
