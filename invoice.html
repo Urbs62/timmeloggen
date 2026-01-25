@@ -213,6 +213,26 @@
 
       table{ margin-top:0; }
       .footer{ margin-top:10mm; }
+
+      /* ===== FIXED FOOTER I PRINT ===== */
+
+      /* Ge plats så innehållet inte hamnar under footern */
+      .page{
+        padding-bottom: 28mm;   /* justera vid behov (22–35mm) */
+       }
+
+      .footer{
+        position: fixed;
+        left: 12mm;
+        right: 12mm;
+        bottom: 12mm;
+
+        margin: 0;
+        border-top: 1px solid var(--line);
+        padding-top: 6mm;
+        background: #fff;       /* viktigt i PDF */
+      }
+ 
     }
   </style>
 </head>
