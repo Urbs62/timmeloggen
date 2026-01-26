@@ -330,13 +330,26 @@
       if (!btn) return;
 
       const doPrint = () => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => window.print());
-        });
-      };
+       const oldTitle = document.title;
 
-      btn.addEventListener("click", doPrint);
-      btn.onclick = doPrint;
+      // sätt filnamn via title
+      setPdfTitleForInvoice();
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.print();
+
+          // återställ title efteråt (viktigt)
+          setTimeout(() => {
+            document.title = oldTitle;
+          }, 500);
+        });
+      });
+    };
+
+    btn.addEventListener("click", doPrint);
+    btn.onclick = doPrint;
+
     })();
 
     // ---- Query helpers ----
