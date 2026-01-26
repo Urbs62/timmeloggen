@@ -10,6 +10,9 @@ const STORE = {
   accounts: "tl_accounts_v1",
   days: "tl_days_v1",
 };
+function getInvoiceNo(){
+  return "2601";
+}
 
 // ---------- Helpers ----------
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -721,7 +724,8 @@ exportCsvBtn.addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `timmeloggen_export_${todayKey()}.csv`;
+   
+  a.download = `TimeLedger-export-_${todayKey()}.csv`;
 
   document.body.appendChild(a);
   a.click();
@@ -1022,8 +1026,12 @@ function exportInvoiceCsv(){
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = `timmeloggen_fakturaunderlag_${monthVal}_${safeAcc}.csv`;
-  document.body.appendChild(a);
+
+   const invNo = getInvoiceNo();
+   a.download = `Fakturaunderlag-${invNo} Jubrion AB.csv`;
+//  a.download = `timmeloggen_fakturaunderlag_${monthVal}_${safeAcc}.csv`;
+ 
+   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
