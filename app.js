@@ -22,6 +22,13 @@ function todayKey() {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
+function safeFilePart(s){
+  return String(s || "")
+    .replace(/[\\/:*?"<>|]+/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function fmtHM(mins) {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
@@ -1098,11 +1105,19 @@ function printInvoicePdf(){
 
   if (!printArea) return alert("printArea saknas i index.html.");
 
-  printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
+   printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
 
-  // Öppna print-dialog (Spara som PDF)
-   alert("innan print");
-  setTimeout(() => window.print(), 50);
+   const invNo = getInvoiceNo(); // t.ex. "2601"
+   const oldTitle = document.title;
+   document.title = `Fakturaunderlag-${safeFilePart(invNo)} Jubrion AB`;
+
+   setTimeout(() => {
+     window.print();
+     setTimeout(() => {
+       document.title = oldTitle;
+     }, 500);
+   }, 50);
+
 }
 
 
