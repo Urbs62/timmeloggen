@@ -721,7 +721,7 @@ exportCsvBtn.addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
- // a.download = `timmeloggen_export_${todayKey()}.csv`;
+  a.download = `timmeloggen_export_${todayKey()}.csv`;
 
   document.body.appendChild(a);
   a.click();
