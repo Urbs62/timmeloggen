@@ -22,12 +22,7 @@ function todayKey() {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
-function safeFilePart(s){
-  return String(s || "")
-    .replace(/[\\/:*?"<>|]+/g, "-")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+
 
 function fmtHM(mins) {
   const h = Math.floor(mins / 60);
@@ -73,6 +68,13 @@ function saveJSON(key, value) {
 
 function uid() {
   return Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
+
+function safeFilePart(s){
+  return String(s || "")
+    .replace(/[\\/:*?"<>|]+/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function escapeHtml(s) {
