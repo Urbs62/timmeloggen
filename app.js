@@ -1147,8 +1147,7 @@ function init() {
        const dd = String(d.getDate()).padStart(2, "0");
        const invDate = `${yyyy}-${mm}-${dd}`;
 
-       const invNo = "1234"; // v1 – senare kan vi autogenerera
-
+       const invNo = getInvoiceNo();
        const url =
          `invoice.html?month=${encodeURIComponent(month)}` +
          `&account=${encodeURIComponent(accId)}` +
