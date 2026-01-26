@@ -1,4 +1,4 @@
-/* Timmeloggen v1 – gymapp-liknande upplägg
+/* Time Ledger – gymapp-liknande upplägg
    - 3 flikar: Konton, Tidsloggning, Sammanställning
    - Slots: start + stopptid + konto + text + "rast/lunch"
    - Arbetstid = summa (icke-rast) slots (alla dagar)
@@ -721,7 +721,7 @@ exportCsvBtn.addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `timmeloggen_export_${todayKey()}.csv`;
+ // a.download = `timmeloggen_export_${todayKey()}.csv`;
 
   document.body.appendChild(a);
   a.click();
