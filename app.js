@@ -1024,7 +1024,7 @@ function exportInvoiceCsv(){
   a.href = url;
   
    a.download = `Fakturaunderlag-${invNo} Jubrion AB.csv`;
-//  a.download = `timmeloggen_fakturaunderlag_${monthVal}_${safeAcc}.csv`;
+
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
