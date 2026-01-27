@@ -1106,6 +1106,17 @@ function buildInvoicePrintHtml(monthVal, accVal){
   `;
 }
 
+function setTitleHard(newTitle){
+  document.title = newTitle;
+  const t = document.querySelector("title");
+  if (t) t.textContent = newTitle;
+}
+
+function setPdfTitleForUnderlag(){
+  const invNo = safeFilePart(getInvoiceNo());
+  setTitleHard(`Fakturaunderlag-${invNo} Jubrion AB`);
+}
+
 function printInvoicePdf(){
   const monthVal = (invoiceMonth?.value || "").trim();
   if (!monthVal) return alert("Välj en månad.");
@@ -1118,23 +1129,24 @@ function printInvoicePdf(){
 
   if (!printArea) return alert("printArea saknas i index.html.");
 
-  // bygg html i printArea
   printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
 
-  // Sätt filnamn via title (gäller print från index.html)
   const oldTitle = document.title;
+  const oldTitleEl = document.querySelector("title")?.textContent || oldTitle;
+
+  // Sätt filnamn (extra “hårt”) innan print preview öppnas
   setPdfTitleForUnderlag();
 
-  // Stabil mobilprint
-  requestAnimationFrame(() => requestAnimationFrame(() => {
+  // Android/PWA behöver ofta en liten delay
+  setTimeout(() => {
     window.print();
 
-    // återställ title + städa efteråt
+    // Återställ efteråt
     setTimeout(() => {
-      document.title = oldTitle;
+      setTitleHard(oldTitleEl);
       printArea.innerHTML = "";
-    }, 500);
-  }));
+    }, 800);
+  }, 250);
 }
 
 // ---------- Init ----------
