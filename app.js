@@ -13,6 +13,17 @@ const STORE = {
 function getInvoiceNo(){
   return "2601";
 }
+function safeFilePart(s){
+  return String(s || "")
+    .replace(/[\\/:*?"<>|]+/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function setPdfTitleForUnderlag(){
+  const invNo = safeFilePart(getInvoiceNo());
+  document.title = `Fakturaunderlag-${invNo} Jubrion AB`;
+}
 
 // ---------- Helpers ----------
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -1107,21 +1118,24 @@ function printInvoicePdf(){
 
   if (!printArea) return alert("printArea saknas i index.html.");
 
-   printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
+  // bygg html i printArea
+  printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
 
-   const invNo = getInvoiceNo(); // t.ex. "2601"
-   const oldTitle = document.title;
-   document.title = `Fakturaunderlag-${safeFilePart(invNo)} Jubrion AB`;
+  // Sätt filnamn via title (gäller print från index.html)
+  const oldTitle = document.title;
+  setPdfTitleForUnderlag();
 
-   setTimeout(() => {
-     window.print();
-     setTimeout(() => {
-       document.title = oldTitle;
-     }, 500);
-   }, 50);
+  // Stabil mobilprint
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    window.print();
 
+    // återställ title + städa efteråt
+    setTimeout(() => {
+      document.title = oldTitle;
+      printArea.innerHTML = "";
+    }, 500);
+  }));
 }
-
 
 // ---------- Init ----------
 function init() {
