@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fakturaunderlag</title>
+
+  <style>
+    body{
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#000;
+      margin:0;
+      padding:16mm;
+      background:#fff;
+    }
+
+    h1{
+      margin:0 0 8mm;
+      font-size:22px;
+    }
+
+    .kv{
+      margin-bottom:8mm;
+      font-size:14px;
+    }
+    .kv div{ margin:2px 0; }
+    .muted{ color:#555; font-size:13px; }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    th, td{
+      border-bottom:1px solid #ddd;
+      padding:8px 6px;
+      vertical-align:top;
+    }
+    th{
+      text-align:left;
+      font-weight:700;
+      color:#555;
+      font-size:13px;
+    }
+    td.right, th.right{ text-align:right; }
+
+    tr.sumrow td{
+      font-weight:700;
+      border-top:2px solid #000;
+    }
+
+    @media print{
+      @page{ margin:12mm; }
+      body{ padding:0; }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Fakturaunderlag</h1>
+
+<div class="kv">
+  <div><b>Månad:</b> <span id="month">—</span></div>
+  <div><b>Konto:</b> <span id="account">—</span></div>
+  <div class="muted">Skapat av Timmeloggen (lokalt underlag)</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Tid</th>
+      <th class="right">Timmar</th>
+      <th>Aktivitet</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+
+<script>
+/* ====== Helpers ====== */
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
+function formatHoursSv(h){
+  return Number(h || 0).toFixed(2).replace(".", ",");
+}
+
+/* ====== Query params ====== */
+const q = new URLSearchParams(location.search);
+const month = q.get("month") || "";
+const account = q.get("account") || "Alla konton";
+
+/* ====== Mock / fallback ======
+   Ersätt detta med data från localStorage
+   när du kopplar från app.js
+*/
+const rows = JSON.parse(q.get("rows") || "[]");
+
+/* ====== Render ====== */
+document.getElementById("month").textContent = month;
+document.getElementById("account").textContent = account;
+
+const tbody = document.getElementById("rows");
+
+let totalHours = 0;
+
+if (!rows.length){
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="4" class="muted">Inga rader i underlaget.</td>
+    </tr>
+  `;
+} else {
+  rows.forEach(r => {
+    totalHours += Number(r.hours || 0);
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(r.date)}</td>
+      <td>${escapeHtml(r.start)}–${escapeHtml(r.end)}</td>
+      <td class="right">${formatHoursSv(r.hours)}</td>
+      <td>${escapeHtml(r.text || "")}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const sum = document.createElement("tr");
+  sum.className = "sumrow";
+  sum.innerHTML = `
+    <td colspan="2">SUMMA</td>
+    <td class="right">${formatHoursSv(totalHours)}</td>
+    <td></td>
+  `;
+  tbody.appendChild(sum);
+}
+</script>
+
+</body>
+</html>
