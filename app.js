@@ -1204,7 +1204,7 @@ function init() {
      });
    }
 
-   /* --- Öppna underlag (HTML) via localStorage (ingen lång URL) --- */
+   /* --- Öppna underlaget (HTML) via localStorage (ingen lång URL) --- */
 {
   const oldBtn = document.getElementById("openUnderlagHtmlBtn");
   if (oldBtn) {
