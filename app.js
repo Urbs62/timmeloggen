@@ -1204,42 +1204,47 @@ function init() {
      });
    }
 
-   // --- Öppna underlag (HTML) via localStorage (ingen lång URL) ---
-   const openUnderlagHtmlBtn = document.getElementById("openUnderlagHtmlBtn");
-   if (openUnderlagHtmlBtn) {
-     openUnderlagHtmlBtn.addEventListener("click", () => {
-       const monthVal = (document.getElementById("invoiceMonth")?.value || "").trim();
-       if (!monthVal) return alert("Välj en månad.");
+   /* --- Öppna underlag (HTML) via localStorage (ingen lång URL) --- */
+{
+  const oldBtn = document.getElementById("openUnderlagHtmlBtn");
+  if (oldBtn) {
+    // Döda gamla listeners (viktigt om du testat flera varianter)
+    const btn = oldBtn.cloneNode(true);
+    oldBtn.parentNode.replaceChild(btn, oldBtn);
+
+    btn.addEventListener("click", () => {
+      const monthVal = (document.getElementById("invoiceMonth")?.value || "").trim();
+      if (!monthVal) return alert("Välj en månad.");
+
+      const accVal = (document.getElementById("invoiceAccount")?.value || "ALL").trim();
+      const { rows } = buildInvoiceRows(monthVal, accVal);
+      if (!rows.length) return alert("Inga arbetspass hittades för vald månad/konto.");
+
+      const accLabel = (accVal === "ALL") ? "Alla konton" : (accountNameById(accVal) || accVal);
+
+      const compactRows = rows.map(r => ({
+        date: r.date,
+        start: r.start,
+        end: r.end,
+        hours: r.hoursDec,
+        text: r.text || ""
+      }));
+
+      const payload = {
+        v: 1,
+        createdAt: Date.now(),
+        month: monthVal,
+        account: accLabel,
+        rows: compactRows
+      };
+
+      localStorage.setItem("tl_underlag_payload_v1", JSON.stringify(payload));
+
+      // Öppna underlag.html med kort URL
+      location.href = "underlag.html?from=ls";
+    }, { passive: true });
+  }
+}
    
-       const accVal = (document.getElementById("invoiceAccount")?.value || "ALL").trim();
-       const { rows } = buildInvoiceRows(monthVal, accVal);
-       if (!rows.length) return alert("Inga arbetspass hittades för vald månad/konto.");
-   
-       const accLabel =
-         accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || accVal);
-   
-       // Minimal radmodell till underlaget
-       const compactRows = rows.map(r => ({
-         date: r.date,
-         start: r.start,
-         end: r.end,
-         hours: r.hoursDec,
-         text: r.text || ""
-       }));
-   
-       // Lägg payload i localStorage
-       const payload = {
-         v: 1,
-         createdAt: Date.now(),
-         month: monthVal,
-         account: accLabel,
-         rows: compactRows
-       };
-       localStorage.setItem("tl_underlag_payload_v1", JSON.stringify(payload));
-   
-       // Öppna underlag.html med kort URL
-       location.href = `underlag.html?from=ls`;
-     });
-   }
 }
 init();
