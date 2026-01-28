@@ -1,5 +1,5 @@
 /* Timmeloggen PWA Service Worker (cache-first för app-skalet) */
-const CACHE_NAME = "timmeloggen-v20";
+const CACHE_NAME = "timmeloggen-v21";
 const ASSETS = [
   "./",
   "./index.html",
