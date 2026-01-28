@@ -1204,7 +1204,7 @@ function init() {
      });
    }
 
-   // --- Öppna underlag (HTML) ---
+   // --- Öppna underlag (HTML) via localStorage (ingen lång URL) ---
    const openUnderlagHtmlBtn = document.getElementById("openUnderlagHtmlBtn");
    if (openUnderlagHtmlBtn) {
      openUnderlagHtmlBtn.addEventListener("click", () => {
@@ -1212,34 +1212,34 @@ function init() {
        if (!monthVal) return alert("Välj en månad.");
    
        const accVal = (document.getElementById("invoiceAccount")?.value || "ALL").trim();
-   
        const { rows } = buildInvoiceRows(monthVal, accVal);
        if (!rows.length) return alert("Inga arbetspass hittades för vald månad/konto.");
    
        const accLabel =
          accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || accVal);
    
-       // Gör små, säkra rader till underlag.html (minimalt fältset)
+       // Minimal radmodell till underlaget
        const compactRows = rows.map(r => ({
          date: r.date,
          start: r.start,
          end: r.end,
-         hours: r.hoursDec, // underlag.html väntar "hours"
+         hours: r.hoursDec,
          text: r.text || ""
        }));
    
-       const payload = encodeURIComponent(JSON.stringify(compactRows));
+       // Lägg payload i localStorage
+       const payload = {
+         v: 1,
+         createdAt: Date.now(),
+         month: monthVal,
+         account: accLabel,
+         rows: compactRows
+       };
+       localStorage.setItem("tl_underlag_payload_v1", JSON.stringify(payload));
    
-       // OBS: detta kan bli långt, men funkar bra i normalfall.
-       const url =
-         `underlag.html?month=${encodeURIComponent(monthVal)}` +
-         `&account=${encodeURIComponent(accLabel)}` +
-         `&rows=${payload}`;
-   
-       // Mobil/PWA: öppna i samma flik
-       location.href = url;
+       // Öppna underlag.html med kort URL
+       location.href = `underlag.html?from=ls`;
      });
    }
-
 }
 init();
