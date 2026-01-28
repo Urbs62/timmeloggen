@@ -1,37 +1,190 @@
-/* --- Öppna underlag (HTML) via localStorage (ingen lång URL) ---
-const openUnderlagHtmlBtn = document.getElementById("openUnderlagHtmlBtn");
-if (openUnderlagHtmlBtn) {
-  openUnderlagHtmlBtn.addEventListener("click", () => {
-    const monthVal = (document.getElementById("invoiceMonth")?.value || "").trim();
-    if (!monthVal) return alert("Välj en månad.");
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fakturaunderlag</title>
+  <style>
+    :root{
+      --text:#111; --muted:#555; --line:#ddd; --bg:#fff;
+      --r:12px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    html,body{ background:var(--bg); color:var(--text); font-family:var(--font); margin:0; }
+    .page{ max-width: 900px; margin: 0 auto; padding: 24px; }
 
-    const accVal = (document.getElementById("invoiceAccount")?.value || "ALL").trim();
-    const { rows } = buildInvoiceRows(monthVal, accVal);
-    if (!rows.length) return alert("Inga arbetspass hittades för vald månad/konto.");
+    .actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin: 12px auto 12px;
+      max-width: 900px;
+      padding: 0 24px;
+    }
+    .actions button{
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fff;
+      cursor:pointer;
+      font-weight:700;
+      font-family:inherit;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .actions button:hover{ background:#f3f6fb; }
+    @media print{ .noPrint{ display:none !important; } }
 
-    const accLabel =
-      accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || accVal);
+    h1{ margin:0 0 8px; font-size:22px; }
+    .kv{ margin: 10px 0 14px; color: var(--muted); font-size:13px; line-height:1.35; }
 
-    // Minimal radmodell till underlaget
-    const compactRows = rows.map(r => ({
-      date: r.date,
-      start: r.start,
-      end: r.end,
-      hours: r.hoursDec,
-      text: r.text || ""
-    }));
+    table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+    th,td{ border-bottom:1px solid var(--line); padding:10px 8px; text-align:left; vertical-align:top; }
+    th{ font-size:13px; color:var(--muted); font-weight:700; }
+    td.right, th.right{ text-align:right; }
+    td.nowrap{ white-space:nowrap; }
 
-    // Lägg payload i localStorage
-    const payload = {
-      v: 1,
-      createdAt: Date.now(),
-      month: monthVal,
-      account: accLabel,
-      rows: compactRows
-    };
-    localStorage.setItem("tl_underlag_payload_v1", JSON.stringify(payload));
+    tr.sumrow td{
+      font-weight:700;
+      background: rgba(0,0,0,0.02);
+    }
 
-    // Öppna underlag.html med kort URL
-    location.href = `underlag.html?from=ls`;
-  });
-}
+    .warn{ margin:10px 0 0; color:#8a1f11; font-size:13px; }
+
+    @media print{
+      @page{ margin:12mm; }
+      .page{ max-width:none; padding:12mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="actions noPrint">
+    <button type="button" id="printBtn">Skriv ut / Spara som PDF</button>
+    <button type="button" id="backBtn">Tillbaka</button>
+  </div>
+
+  <div class="page">
+    <div id="content"></div>
+    <div id="warn" class="warn" style="display:none;"></div>
+  </div>
+
+  <script>
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
+    }
+    function formatHoursSv(hours){
+      const n = Number(hours) || 0;
+      return n.toFixed(2).replace(".", ",");
+    }
+
+    function safeFilePart(s){
+      return String(s || "")
+        .replace(/[\\/:*?"<>|]+/g, "-")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function loadPayload(){
+      // Primärt: localStorage
+      try{
+        const raw = localStorage.getItem("tl_underlag_payload_v1");
+        if (!raw) return null;
+        const obj = JSON.parse(raw);
+        if (!obj || !Array.isArray(obj.rows)) return null;
+        return obj;
+      }catch{
+        return null;
+      }
+    }
+
+    function render(){
+      const payload = loadPayload();
+      const warn = document.getElementById("warn");
+      const content = document.getElementById("content");
+
+      if (!payload){
+        warn.style.display = "block";
+        warn.textContent = "Inget underlag hittades. Gå tillbaka och öppna underlaget från appen igen.";
+        content.innerHTML = "";
+        return;
+      }
+
+      const month = payload.month || "";
+      const account = payload.account || "";
+      const rows = payload.rows || [];
+
+      // Försök sätta PDF-namn via title (funkar bra i desktop, varierar i Android)
+      document.title = `Fakturaunderlag-${safeFilePart(month)}-${safeFilePart(account)}`;
+
+      let tr = "";
+      let total = 0;
+
+      for (const r of rows){
+        const h = Number(r.hours) || 0;
+        total += h;
+
+        tr += `
+          <tr>
+            <td>${escapeHtml(r.date)}</td>
+            <td class="nowrap">${escapeHtml(r.start)}–${escapeHtml(r.end)}</td>
+            <td class="right nowrap">${escapeHtml(formatHoursSv(h))}</td>
+            <td>${escapeHtml(r.text || "")}</td>
+          </tr>
+        `;
+      }
+
+      content.innerHTML = `
+        <h1>Fakturaunderlag</h1>
+        <div class="kv">
+          <div><b>Månad:</b> ${escapeHtml(month)}</div>
+          <div><b>Konto:</b> ${escapeHtml(account)}</div>
+        </div>
+
+        <table aria-label="Underlag">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th class="nowrap">Tid</th>
+              <th class="right nowrap">Timmar</th>
+              <th>Aktivitet</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tr}
+            <tr class="sumrow">
+              <td colspan="2">SUMMA</td>
+              <td class="right nowrap">${escapeHtml(formatHoursSv(total))}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Print
+    (function(){
+      const btn = document.getElementById("printBtn");
+      if (btn){
+        const doPrint = () => {
+          // dubbla rAF brukar hjälpa i mobil
+          requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+        };
+        btn.addEventListener("click", doPrint);
+        btn.onclick = doPrint;
+      }
+
+      const backBtn = document.getElementById("backBtn");
+      if (backBtn){
+        backBtn.addEventListener("click", () => history.back());
+      }
+    })();
+
+    render();
+  </script>
+</body>
+</html>
