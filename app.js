@@ -1203,5 +1203,43 @@ function init() {
        location.href = url;
      });
    }
+
+   // --- Öppna underlag (HTML) ---
+   const openUnderlagHtmlBtn = document.getElementById("openUnderlagHtmlBtn");
+   if (openUnderlagHtmlBtn) {
+     openUnderlagHtmlBtn.addEventListener("click", () => {
+       const monthVal = (document.getElementById("invoiceMonth")?.value || "").trim();
+       if (!monthVal) return alert("Välj en månad.");
+   
+       const accVal = (document.getElementById("invoiceAccount")?.value || "ALL").trim();
+   
+       const { rows } = buildInvoiceRows(monthVal, accVal);
+       if (!rows.length) return alert("Inga arbetspass hittades för vald månad/konto.");
+   
+       const accLabel =
+         accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || accVal);
+   
+       // Gör små, säkra rader till underlag.html (minimalt fältset)
+       const compactRows = rows.map(r => ({
+         date: r.date,
+         start: r.start,
+         end: r.end,
+         hours: r.hoursDec, // underlag.html väntar "hours"
+         text: r.text || ""
+       }));
+   
+       const payload = encodeURIComponent(JSON.stringify(compactRows));
+   
+       // OBS: detta kan bli långt, men funkar bra i normalfall.
+       const url =
+         `underlag.html?month=${encodeURIComponent(monthVal)}` +
+         `&account=${encodeURIComponent(accLabel)}` +
+         `&rows=${payload}`;
+   
+       // Mobil/PWA: öppna i samma flik
+       location.href = url;
+     });
+   }
+
 }
 init();
