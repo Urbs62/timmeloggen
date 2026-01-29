@@ -1,4 +1,4 @@
-/* Time Ledger – gymapp-liknande upplägg
+/* Time Ledger
    - 3 flikar: Konton, Tidsloggning, Sammanställning
    - Slots: start + stopptid + konto + text + "rast/lunch"
    - Arbetstid = summa (icke-rast) slots (alla dagar)
@@ -32,8 +32,6 @@ function todayKey() {
   const d = new Date();
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
-
-
 
 function fmtHM(mins) {
   const h = Math.floor(mins / 60);
@@ -928,7 +926,6 @@ function renderHistory() {
     }
   }
 }
-
 
 refreshHistoryBtn.addEventListener("click", renderHistory);
 periodType.addEventListener("change", renderHistory);
