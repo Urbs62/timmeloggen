@@ -324,42 +324,32 @@
   </div>
 
   <script>
-    // Stabilare mobilprint: låt layout hinna "sätta sig"
+    // ===== Print: EN binding, mobilvänlig =====
     (function(){
       const btn = document.getElementById("printBtn");
-      if (!btn) return;
+    if (!btn) return;
 
-      const doPrint = () => {
-       const oldTitle = document.title;
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
 
-      // sätt filnamn via title
-      setPdfTitleForInvoice();
+    const oldTitle = document.title;
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
+    // sätt filnamn via title
+    setPdfTitleForInvoice();
+
+    requestAnimationFrame(() => {
+       requestAnimationFrame(() => {
           window.print();
-
-          // återställ title efteråt (viktigt)
-          setTimeout(() => {
-            document.title = oldTitle;
-          }, 500);
+          setTimeout(() => { document.title = oldTitle; }, 800);
         });
       });
-    };
+    }, { passive: false });
+  })();
 
-    btn.addEventListener("click", doPrint);
-    btn.onclick = doPrint;
-
-    })();
 
     // ---- Query helpers ----
     const q = new URLSearchParams(location.search);
-    const month = (q.get("month") || "").trim();                // "YYYY-MM"
-    const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
-    const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
-
-    const price = Number(q.get("price") || "650");
-    const vatRate = Number(q.get("vat") || "0.25");
+   
     const invNo = q.get("no") || "2601";
     function safeFilePart(s){
       return String(s || "")
@@ -367,11 +357,18 @@
       .replace(/\s+/g, " ")
       .trim();
     }
-
     function setPdfTitleForInvoice(){
       const title = `Faktura-${safeFilePart(invNo)} Jubrion AB`;
       document.title = title;
-    }   
+    }  
+    
+    const month = (q.get("month") || "").trim();                // "YYYY-MM"
+    const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
+    const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
+
+    const price = Number(q.get("price") || "650");
+    const vatRate = Number(q.get("vat") || "0.25");
+    
 
     const invDate = q.get("date") || (() => {
       const d = new Date();
