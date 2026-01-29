@@ -303,22 +303,6 @@ hr, .sep{
   opacity: 0.85;
 }
 
-/* Tabell: bättre kolumnbredder */
-table{
-  table-layout: fixed;
-}
-
-th.dateCol,
-td.dateCol{
-  width: 90px;          /* justera 80–100px vid behov */
-  white-space: nowrap;
-}
-
-/* Generellt lite mindre text i tabellen */
-table{
-  font-size: 12px;      /* tidigare troligen 13–14 */
-}
-
 /* =========================
    PRINT / PDF
    ========================= */
