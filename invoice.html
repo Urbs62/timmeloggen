@@ -329,27 +329,40 @@
   </div>
 
   <script>
-    // ===== Print: EN binding, mobilvänlig =====
-    (function(){
-      const btn = document.getElementById("printBtn");
+  // ===== Print: mobilvänligt (direkt i klick) =====
+  (function () {
+    const btn = document.getElementById("printBtn");
     if (!btn) return;
 
-    btn.addEventListener("click", (e) => {
+    btn.onclick = function (e) {
       e.preventDefault();
 
-    const oldTitle = document.title;
+      const oldTitle = document.title;
 
-    // sätt filnamn via title
-    setPdfTitleForInvoice();
+      // sätt filnamn via title (om du vill)
+      if (typeof setPdfTitleForInvoice === "function") {
+        setPdfTitleForInvoice();
+      }
 
-    requestAnimationFrame(() => {
-       requestAnimationFrame(() => {
-          window.print();
-          setTimeout(() => { document.title = oldTitle; }, 800);
-        });
-      });
-    }, { passive: false });
+      // VIKTIGT: direkt i klicket (mobil kräver detta)
+      window.print();
+
+      // återställ title efter en liten stund
+      setTimeout(() => {
+        document.title = oldTitle;
+      }, 800);
+
+      return false;
+    };
   })();
+</script>
+
+
+
+
+    
+</script>
+
 
 
     // ---- Query helpers ----
