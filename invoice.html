@@ -328,231 +328,238 @@
     <div id="warn" class="warn" style="display:none;"></div>
   </div>
 
-  <script>
-  // ===== Print: mobilvänligt (direkt i klick) =====
+  
+<script>
+  // ========= Print (mobil): EN binding, synkront =========
   (function () {
     const btn = document.getElementById("printBtn");
     if (!btn) return;
 
-    btn.onclick = function (e) {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
 
       const oldTitle = document.title;
 
-      // sätt filnamn via title (om du vill)
-      if (typeof setPdfTitleForInvoice === "function") {
-        setPdfTitleForInvoice();
-      }
+      // sätt filnamn via title (vissa mobiler använder title som PDF-namn)
+      setPdfTitleForInvoice();
 
-      // VIKTIGT: direkt i klicket (mobil kräver detta)
+      // VIKTIGT: window.print() direkt i click (ingen requestAnimationFrame)
       window.print();
 
-      // återställ title efter en liten stund
+      // återställ title efteråt
       setTimeout(() => {
         document.title = oldTitle;
-      }, 800);
-
-      return false;
-    };
+      }, 1000);
+    }, { passive: false });
   })();
 
-    // ---- Query helpers ----
-    const q = new URLSearchParams(location.search);
-   
-    const invNo = q.get("no") || "2601";
-    function safeFilePart(s){
-      return String(s || "")
+  // ========= Query helpers =========
+  const q = new URLSearchParams(location.search);
+  const month = (q.get("month") || "").trim();                // "YYYY-MM"
+  const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
+  const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
+
+  const price = Number(q.get("price") || "650");
+  const vatRate = Number(q.get("vat") || "0.25");
+  const invNo = (q.get("no") || "2601").trim();
+
+  function safeFilePart(s) {
+    return String(s || "")
       .replace(/[\\/:*?"<>|]+/g, "-")
       .replace(/\s+/g, " ")
       .trim();
+  }
+
+  function setPdfTitleForInvoice() {
+    document.title = `Faktura-${safeFilePart(invNo)} Jubrion AB`;
+  }
+
+  const invDate = q.get("date") || (() => {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  })();
+
+  // ========= Skriv in meta =========
+  document.getElementById("invoiceNo").textContent = invNo;
+  document.getElementById("invoiceDate").textContent = invDate;
+  document.getElementById("periodLabel").textContent = month ? month : "—";
+
+  // ========= Format =========
+  function formatSEK(amount) {
+    const n = Number(amount) || 0;
+    const fixed = n.toFixed(2);
+    const parts = fixed.split(".");
+    const intPart = parts[0];
+    const decPart = parts[1];
+    const spaced = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return `${spaced},${decPart} SEK`;
+  }
+
+  function formatHours(h) {
+    const n = Number(h) || 0;
+    return n.toFixed(2).replace(".", ",");
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  // ========= Read Timmeloggen data =========
+  function loadJSON(key, fallback) {
+    try {
+      const v = localStorage.getItem(key);
+      return v ? JSON.parse(v) : fallback;
+    } catch {
+      return fallback;
     }
-    function setPdfTitleForInvoice(){
-      const title = `Faktura-${safeFilePart(invNo)} Jubrion AB`;
-      document.title = title;
-    }  
-    
-    const month = (q.get("month") || "").trim();                // "YYYY-MM"
-    const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
-    const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
+  }
 
-    const price = Number(q.get("price") || "650");
-    const vatRate = Number(q.get("vat") || "0.25");
-    
+  const ACC_KEYS = ["tl_accounts_v1", "tl_accounts_v2", "tl_accounts"];
+  const DAY_KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
 
-    const invDate = q.get("date") || (() => {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      return `${yyyy}-${mm}-${dd}`;
-    })();
-
-    document.getElementById("invoiceNo").textContent = invNo;
-    document.getElementById("invoiceDate").textContent = invDate;
-    document.getElementById("periodLabel").textContent = month ? month : "—";
-
-    // ---- Format ----
-    function formatSEK(amount){
-      const n = Number(amount) || 0;
-      const fixed = n.toFixed(2);
-      const [intPart, decPart] = fixed.split(".");
-      const spaced = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-      return `${spaced},${decPart} SEK`;
-    }
-    function formatHours(h){
-      const n = Number(h) || 0;
-      return n.toFixed(2).replace(".", ",");
-    }
-    function escapeHtml(s){
-      return String(s ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;");
-    }
-
-    // ---- Read Timmeloggen data from localStorage ----
-    function loadJSON(key, fallback){
-      try{
-        const v = localStorage.getItem(key);
-        return v ? JSON.parse(v) : fallback;
-      }catch{
-        return fallback;
+  function loadFirst(keys, fallback) {
+    for (const k of keys) {
+      const v = loadJSON(k, null);
+      if (v && (Array.isArray(v) ? v.length : Object.keys(v).length)) {
+        return { key: k, value: v };
       }
     }
-    const ACC_KEYS = ["tl_accounts_v1", "tl_accounts_v2", "tl_accounts"];
-    const DAY_KEYS = ["tl_days_v1", "tl_days_v2", "tl_days"];
+    return { key: "(ingen)", value: fallback };
+  }
 
-    function loadFirst(keys, fallback){
-      for (const k of keys){
-        const v = loadJSON(k, null);
-        if (v && (Array.isArray(v) ? v.length : Object.keys(v).length)) return { key:k, value:v };
-      }
-      return { key:"(ingen)", value:fallback };
+  const accRes = loadFirst(ACC_KEYS, []);
+  const dayRes = loadFirst(DAY_KEYS, {});
+  const accounts = accRes.value || [];
+  const days = dayRes.value || {};
+
+  const accNameById = new Map(accounts.map(a => [a.id, a.name]));
+
+  // ========= Time helpers =========
+  function parseTimeToMinutes(hhmm) {
+    if (!hhmm || typeof hhmm !== "string" || !hhmm.includes(":")) return null;
+    const [h, m] = hhmm.split(":").map(x => parseInt(x, 10));
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+    return h * 60 + m;
+  }
+
+  function slotMinutes(s) {
+    if (!s) return 0;
+
+    if (s.durationMin != null) {
+      const dm = Number(s.durationMin);
+      if (Number.isFinite(dm) && dm > 0) return dm;
     }
 
-    const accRes = loadFirst(ACC_KEYS, []);
-    const dayRes = loadFirst(DAY_KEYS, {});
-    const accounts = accRes.value || [];
-    const days = dayRes.value || {};
+    let a = s.startMin ?? null;
+    let b = s.endMin ?? null;
 
-    // accountId -> name
-    const accNameById = new Map(accounts.map(a => [a.id, a.name]));
-
-    // ---- Time helpers ----
-    function parseTimeToMinutes(hhmm){
-      if (!hhmm || typeof hhmm !== "string" || !hhmm.includes(":")) return null;
-      const [h,m] = hhmm.split(":").map(x => parseInt(x,10));
-      if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
-      return h*60 + m;
+    if (a == null || b == null) {
+      const sa = s.start ?? s.from ?? s.startTime ?? s.slotStart ?? null;
+      const sb = s.end ?? s.to ?? s.endTime ?? s.slotEnd ?? null;
+      const pa = parseTimeToMinutes(sa);
+      const pb = parseTimeToMinutes(sb);
+      if (pa != null && pb != null) { a = pa; b = pb; }
     }
 
-    function slotMinutes(s){
-      if (!s) return 0;
+    a = Number(a);
+    b = Number(b);
+    if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
+    return b - a;
+  }
 
-      if (s.durationMin != null){
-        const dm = Number(s.durationMin);
-        if (Number.isFinite(dm) && dm > 0) return dm;
-      }
+  function isBreakSlot(s) {
+    return !!(s && (s.isBreak ?? s.break ?? s.isPause));
+  }
 
-      let a = s.startMin ?? null;
-      let b = s.endMin ?? null;
+  // ========= Aggregate minutes per account =========
+  const perAccMin = new Map();
 
-      if (a == null || b == null){
-        const sa = s.start ?? s.from ?? s.startTime ?? s.slotStart ?? null;
-        const sb = s.end   ?? s.to   ?? s.endTime   ?? s.slotEnd   ?? null;
-        const pa = parseTimeToMinutes(sa);
-        const pb = parseTimeToMinutes(sb);
-        if (pa != null && pb != null){ a = pa; b = pb; }
-      }
+  const dayKeys = Object.keys(days)
+    .filter(k => month ? k.startsWith(month + "-") : true)
+    .sort();
 
-      a = Number(a);
-      b = Number(b);
-      if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return 0;
-      return b - a;
+  for (const k of dayKeys) {
+    const d = days[k];
+    const slots = (d && Array.isArray(d.slots)) ? d.slots : [];
+    for (const s of slots) {
+      if (isBreakSlot(s)) continue;
+
+      const accId = (s.accountId || "");
+      if (accountParam !== "all" && accId !== accountParam) continue;
+
+      const mins = slotMinutes(s);
+      if (!mins) continue;
+
+      perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
     }
+  }
 
-    function isBreakSlot(s){
-      return !!(s && (s.isBreak ?? s.break ?? s.isPause));
-    }
+  // ========= Render invoice rows =========
+  const rowsEl = document.getElementById("rows");
+  let sumEx = 0;
+  let totalBillableMinutes = 0;
 
-    // ---- Aggregate minutes per account ----
-    const perAccMin = new Map();
+  const entries = [...perAccMin.entries()]
+    .map(([accId, min]) => ({
+      accId,
+      min,
+      name: accNameById.get(accId) || (accId ? accId : "(ej valt)")
+    }))
+    .sort((a, b) => b.min - a.min);
 
-    const dayKeys = Object.keys(days)
-      .filter(k => month ? k.startsWith(month + "-") : true)
-      .sort();
+  if (!entries.length) {
+    const warn = document.getElementById("warn");
+    warn.style.display = "block";
+    warn.textContent = "Inga fakturerbara timmar hittades för vald period/konto.";
+    rowsEl.innerHTML = `<tr><td colspan="4" class="small">—</td></tr>`;
+  } else {
+    for (const e of entries) {
+      totalBillableMinutes += e.min;
 
-    for (const k of dayKeys){
-      const d = days[k];
-      const slots = (d && Array.isArray(d.slots)) ? d.slots : [];
-      for (const s of slots){
-        if (isBreakSlot(s)) continue;
+      const hours = e.min / 60;
+      const amount = hours * price;
+      sumEx += amount;
 
-        const accId = (s.accountId || "");
-        if (accountParam !== "all" && accId !== accountParam) continue;
-
-        const mins = slotMinutes(s);
-        if (!mins) continue;
-
-        perAccMin.set(accId, (perAccMin.get(accId) || 0) + mins);
-      }
-    }
-
-    // ---- Render invoice rows ----
-    const rowsEl = document.getElementById("rows");
-    let sumEx = 0;
-    let totalBillableMinutes = 0;
-
-    const entries = [...perAccMin.entries()]
-      .map(([accId, min]) => ({
-        accId,
-        min,
-        name: accNameById.get(accId) || (accId ? accId : "(ej valt)")
-      }))
-      .sort((a,b) => b.min - a.min);
-
-    if (!entries.length){
-      const warn = document.getElementById("warn");
-      warn.style.display = "block";
-      warn.textContent = "Inga fakturerbara timmar hittades för vald period/konto.";
-      rowsEl.innerHTML = `<tr><td colspan="4" class="small">—</td></tr>`;
-    } else {
-      for (const e of entries){
-        totalBillableMinutes += e.min;
-
-        const hours = e.min / 60;
-        const amount = hours * price;
-        sumEx += amount;
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${escapeHtml(e.name)}</td>
-          <td class="right nowrap">${formatHours(hours)}</td>
-          <td class="right nowrap">${formatSEK(price)}</td>
-          <td class="right nowrap">${formatSEK(amount)}</td>
-        `;
-        rowsEl.appendChild(tr);
-      }
-
-      const totalHours = totalBillableMinutes / 60;
-      const trTot = document.createElement("tr");
-      trTot.className = "total-hours";
-      trTot.innerHTML = `
-        <td>Totalt antal timmar</td>
-        <td class="right nowrap">${formatHours(totalHours)}</td>
-        <td class="right nowrap"></td>
-        <td class="right nowrap"></td>
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHtml(e.name)}</td>
+        <td class="right nowrap">${formatHours(hours)}</td>
+        <td class="right nowrap">${formatSEK(price)}</td>
+        <td class="right nowrap">${formatSEK(amount)}</td>
       `;
-      rowsEl.appendChild(trTot);
+      rowsEl.appendChild(tr);
     }
 
-    const vat = sumEx * vatRate;
-    const total = sumEx + vat;
+    // Totalt antal timmar
+    const totalHours = totalBillableMinutes / 60;
+    const trTot = document.createElement("tr");
+    trTot.className = "total-hours";
+    trTot.innerHTML = `
+      <td>Totalt antal timmar</td>
+      <td class="right nowrap">${formatHours(totalHours)}</td>
+      <td></td>
+      <td></td>
+    `;
+    rowsEl.appendChild(trTot);
+  }
 
-    document.getElementById("sumEx").textContent = formatSEK(sumEx);
-    document.getElementById("vat").textContent = `${formatSEK(vat)} (${Math.round(vatRate*100)}%)`;
-    document.getElementById("total").textContent = formatSEK(total);
-  </>
+  const vat = sumEx * vatRate;
+  const total = sumEx + vat;
+
+  document.getElementById("sumEx").textContent = formatSEK(sumEx);
+  document.getElementById("vat").textContent = `${formatSEK(vat)} (${Math.round(vatRate * 100)}%)`;
+  document.getElementById("total").textContent = formatSEK(total);
+</script>
+
+  
+
+  
 </body>
 </html>
