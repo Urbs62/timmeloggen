@@ -355,9 +355,6 @@
       return false;
     };
   })();
-</script>
-
-
 
     // ---- Query helpers ----
     const q = new URLSearchParams(location.search);
@@ -556,6 +553,6 @@
     document.getElementById("sumEx").textContent = formatSEK(sumEx);
     document.getElementById("vat").textContent = `${formatSEK(vat)} (${Math.round(vatRate*100)}%)`;
     document.getElementById("total").textContent = formatSEK(total);
-  </script>
+  </>
 </body>
 </html>
