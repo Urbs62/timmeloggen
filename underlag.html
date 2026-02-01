@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fakturaunderlag v32</title>
+  <title>Fakturaunderlag</title>
   <style>
     :root{
       --text:#111; --muted:#555; --line:#ddd; --bg:#fff;
@@ -38,11 +38,20 @@
     h1{ margin:0 0 8px; font-size:22px; }
     .kv{ margin: 10px 0 14px; color: var(--muted); font-size:13px; line-height:1.35; }
 
-    table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+      font-size:13px;              /* lite mindre */
+      table-layout:auto;
+    }
     th,td{ border-bottom:1px solid var(--line); padding:10px 8px; text-align:left; vertical-align:top; }
-    th{ font-size:13px; color:var(--muted); font-weight:700; }
+    th{ font-size:12px; color:var(--muted); font-weight:700; }
     td.right, th.right{ text-align:right; }
-    td.nowrap{ white-space:nowrap; }
+    td.nowrap, th.nowrap{ white-space:nowrap; }
+
+    /* Datum ska aldrig wrappa */
+    td.col-date, th.col-date{ white-space:nowrap; width: 9.5em; }
 
     tr.sumrow td{
       font-weight:700;
@@ -77,6 +86,7 @@
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;");
     }
+
     function formatHoursSv(hours){
       const n = Number(hours) || 0;
       return n.toFixed(2).replace(".", ",");
@@ -90,7 +100,6 @@
     }
 
     function loadPayload(){
-      // Primärt: localStorage
       try{
         const raw = localStorage.getItem("tl_underlag_payload_v1");
         if (!raw) return null;
@@ -100,6 +109,21 @@
       }catch{
         return null;
       }
+    }
+
+    // Sätter title för "så bra det går" filnamn.
+    // Mobil kan fortfarande ignorera, men detta är stabilt för desktop + vissa mobiler.
+    function setPdfTitleForUnderlag(payload){
+      const invNo = payload?.invNo || ""; // om du vill: börja skicka invNo i payload senare
+      const month = payload?.month || "";
+      const account = payload?.account || "";
+
+      // Prioritet: invNo om det finns, annars månad+konto
+      const base = invNo
+        ? `Fakturaunderlag-${safeFilePart(invNo)} Jubrion AB`
+        : `Fakturaunderlag-${safeFilePart(month)}-${safeFilePart(account)}`;
+
+      document.title = base;
     }
 
     function render(){
@@ -118,9 +142,6 @@
       const account = payload.account || "";
       const rows = payload.rows || [];
 
-      // Försök sätta PDF-namn via title (funkar bra i desktop, varierar i Android)
-      document.title = `Fakturaunderlag-${safeFilePart(month)}-${safeFilePart(account)}`;
-
       let tr = "";
       let total = 0;
 
@@ -130,7 +151,7 @@
 
         tr += `
           <tr>
-            <td>${escapeHtml(r.date)}</td>
+            <td class="col-date">${escapeHtml(r.date)}</td>
             <td class="nowrap">${escapeHtml(r.start)}–${escapeHtml(r.end)}</td>
             <td class="right nowrap">${escapeHtml(formatHoursSv(h))}</td>
             <td>${escapeHtml(r.text || "")}</td>
@@ -148,7 +169,7 @@
         <table aria-label="Underlag">
           <thead>
             <tr>
-              <th>Datum</th>
+              <th class="col-date">Datum</th>
               <th class="nowrap">Tid</th>
               <th class="right nowrap">Timmar</th>
               <th>Aktivitet</th>
@@ -166,22 +187,52 @@
       `;
     }
 
-    // Print
+    // ===== Print: EN binding, mobilvänlig, ingen dubbelprint =====
     (function(){
       const btn = document.getElementById("printBtn");
-      if (btn){
-        const doPrint = () => {
-          // dubbla rAF brukar hjälpa i mobil
-          requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
-        };
-        btn.addEventListener("click", doPrint);
-        btn.onclick = doPrint;
-      }
-
       const backBtn = document.getElementById("backBtn");
+
       if (backBtn){
         backBtn.addEventListener("click", () => history.back());
       }
+
+      if (!btn) return;
+
+      let printing = false;
+
+      const doPrint = (e) => {
+        if (e) e.preventDefault();
+        if (printing) return;
+        printing = true;
+
+        const payload = loadPayload();
+        const oldTitle = document.title;
+
+        // Sätt title innan print
+        setPdfTitleForUnderlag(payload);
+
+        // På mobil/PWA hjälper det ofta att vänta lite innan print
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              window.print();
+
+              // återställ title efteråt
+              setTimeout(() => {
+                document.title = oldTitle;
+                printing = false;
+              }, 900);
+            });
+          });
+        }, 80);
+      };
+
+      // Bind bara EN gång
+      btn.addEventListener("click", doPrint, { passive: false });
+
+      // Extra: vissa mobiler triggar "pointerup" bättre än click
+      btn.addEventListener("pointerup", doPrint, { passive: false });
+      btn.addEventListener("touchend", doPrint, { passive: false });
     })();
 
     render();
