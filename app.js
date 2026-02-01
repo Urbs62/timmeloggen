@@ -1,4 +1,4 @@
-/* Time Ledger – gymapp-liknande upplägg
+/* Time Ledger
    - 3 flikar: Konton, Tidsloggning, Sammanställning
    - Slots: start + stopptid + konto + text + "rast/lunch"
    - Arbetstid = summa (icke-rast) slots (alla dagar)
