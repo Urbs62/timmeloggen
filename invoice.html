@@ -393,7 +393,22 @@
   // ========= Skriv in meta =========
   document.getElementById("invoiceNo").textContent = invNo;
   document.getElementById("invoiceDate").textContent = invDate;
-  document.getElementById("periodLabel").textContent = month ? month : "—";
+
+  (function(){
+    const el = document.getElementById("periodLabel");
+    if (!el || !month) return;
+
+    // month = "YYYY-MM"
+    const [y, m] = month.split("-").map(Number);
+
+    const from = new Date(y, m - 1, 1);
+    const to   = new Date(y, m, 0); // sista dagen i månaden
+
+    const fmt = (d) =>
+      `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+
+    el.textContent = `${fmt(from)} – ${fmt(to)}`;
+  })();
 
   // ========= Format =========
   function formatSEK(amount) {
