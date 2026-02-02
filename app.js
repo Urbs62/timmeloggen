@@ -11,7 +11,7 @@ const STORE = {
   days: "tl_days_v1",
 };
 function getInvoiceNo(){
-  return "2601";
+  return "26-001";
 }
 function safeFilePart(s){
   return String(s || "")
@@ -1048,8 +1048,8 @@ function exportInvoiceCsv(){
   a.href = url;
 
    const invNo = getInvoiceNo();
-   a.download = `Fakturaunderlag-${invNo} Jubrion AB.csv`;
-//  a.download = `timmeloggen_fakturaunderlag_${monthVal}_${safeAcc}.csv`;
+   a.download = `underlag-${invNo} Jubrion AB.csv`;
+//  a.download = `timmeloggen_underlag_${monthVal}_${safeAcc}.csv`;
  
    document.body.appendChild(a);
   a.click();
@@ -1079,7 +1079,7 @@ function buildInvoicePrintHtml(monthVal, accVal){
   }
 
   return `
-    <h1 class="page-break">Fakturaunderlag</h1>
+    <h1 class="page-break">underlag</h1>
      <div class="kv">
        <div><b>Månad:</b> ${escapeHtml(monthVal)}</div>
        <div><b>Konto:</b> ${escapeHtml(accLabel)}</div>
@@ -1114,7 +1114,7 @@ function setTitleHard(newTitle){
 
 function setPdfTitleForUnderlag(){
   const invNo = safeFilePart(getInvoiceNo());
-  setTitleHard(`Fakturaunderlag-${invNo} Jubrion AB`);
+  setTitleHard(`underlag-${invNo} Jubrion AB`);
 }
 
 function printInvoicePdf(){
@@ -1162,14 +1162,14 @@ function init() {
   const d = getDay(todayKey());
   if (d.startTs && !d.endTs) startChimeLoop();
 
-   // Faktura: init
+   // : init
    if (invoiceMonth) invoiceMonth.value = todayKey().slice(0,7);
       renderInvoiceAccountSelect();
 
    if (exportInvoiceCsvBtn) exportInvoiceCsvBtn.addEventListener("click", exportInvoiceCsv);
    if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
 
-   // --- Öppna faktura (HTML) ---
+   // --- Öppna  (HTML) ---
    const openInvoiceHtmlBtn = document.getElementById("openInvoiceHtmlBtn");
    if (openInvoiceHtmlBtn) {
      openInvoiceHtmlBtn.addEventListener("click", () => {
