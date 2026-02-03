@@ -15,17 +15,6 @@ const STORE = {
 function getInvoiceNo(){
   return "26-001";
 }
-function safeFilePart(s){
-  return String(s || "")
-    .replace(/[\\/:*?"<>|]+/g, "-")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function setPdfTitleForUnderlag(){
-  const invNo = safeFilePart(getInvoiceNo());
-  document.title = `Fakturaunderlag-${invNo} Jubrion AB`;
-}
 
 // ---------- Helpers ----------
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -81,13 +70,6 @@ function saveJSON(key, value) {
 
 function uid() {
   return Math.random().toString(16).slice(2) + Date.now().toString(16);
-}
-
-function safeFilePart(s){
-  return String(s || "")
-    .replace(/[\\/:*?"<>|]+/g, "-")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 function escapeHtml(s) {
@@ -1108,15 +1090,23 @@ function buildInvoicePrintHtml(monthVal, accVal){
   `;
 }
 
-function setTitleHard(newTitle){
-  document.title = newTitle;
-  const t = document.querySelector("title");
-  if (t) t.textContent = newTitle;
+function safeFilePart(s){
+  return String(s || "")
+    .replace(/[\\/:*?"<>|]+/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function setPdfTitleForUnderlag(){
   const invNo = safeFilePart(getInvoiceNo());
-  setTitleHard(`underlag-${invNo} Jubrion AB`);
+  setTitleHard(`Fakturaunderlag-${invNo} Jubrion AB`);
+}
+
+
+function setTitleHard(newTitle){
+  document.title = newTitle;
+  const t = document.querySelector("title");
+  if (t) t.textContent = newTitle;
 }
 
 function printInvoicePdf(){
