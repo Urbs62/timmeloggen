@@ -56,6 +56,11 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   border:1px solid rgba(255,255,255,.10);
   border-radius:14px;
 }
+.logo-large {
+  width: 72px;     /* testa 64–96 */
+  height: 72px;
+}
+
 .logoImg{
   width:40px;
   height:40px;
