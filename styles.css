@@ -76,12 +76,13 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
 }
 
 .title .tm{
-  font-size:.8em;
-  vertical-align:super;
-  margin-left:2px;
-  opacity:.7;
+  font-size: .75em;          /* större än .6 */
+  vertical-align: super;
+  margin-left: 2px;
+  color: #fff;               /* helt vit */
+  opacity: .9;               /* nästan helt solid */
+  font-weight: 600;          /* lite mer pondus */
 }
-
 /* Pill (datum uppe till höger) */
 .pill{
   border-radius:999px;
