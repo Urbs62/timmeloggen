@@ -1,5 +1,5 @@
 /* TimeLedger PWA Service Worker (cache-first för app-skalet) */
-const CACHE_NAME = "timmeloggen-v41";
+const CACHE_NAME = "timmeloggen-v42";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,8 +9,7 @@ const ASSETS = [
   "./manifest.webmanifest",
   "./invoice.html",
   "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/logo-large.png"
+  "./icons/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
