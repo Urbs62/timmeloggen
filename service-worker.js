@@ -1,4 +1,4 @@
-/* Timmeloggen PWA Service Worker (cache-first för app-skalet) */
+/* TimeLedger PWA Service Worker (cache-first för app-skalet) */
 const CACHE_NAME = "timmeloggen-v31";
 const ASSETS = [
   "./",
