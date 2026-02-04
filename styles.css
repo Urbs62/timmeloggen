@@ -70,6 +70,17 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   font-weight:900;
   letter-spacing:.6px;
 }
+.title{
+  font-weight:600;
+  letter-spacing:.2px;
+}
+
+.title .tm{
+  font-size:.6em;
+  vertical-align:super;
+  margin-left:2px;
+  opacity:.7;
+}
 
 /* Pill (datum uppe till höger) */
 .pill{
