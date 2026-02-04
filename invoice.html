@@ -314,7 +314,7 @@
     </div>
     
     <div class="payment-note small" style="margin-top:10px;">
-      <strong>Betalningsinformation</strong><br/>
+      <strong>Betalningsinion</strong><br/>
       Bankgiro meddelas så snart bolagsregistrering och bankuppgifter är klara.
       Betalning kan avvaktas till dess.
     </div>
@@ -411,16 +411,13 @@
     el.textContent = `${fmt(from)} – ${fmt(to)}`;
   })();
 
-  // ========= Format =========
-  function formatSEK(amount) {
-    const n = Number(amount) || 0;
-    const fixed = n.toFixed(2);
-    const parts = fixed.split(".");
-    const intPart = parts[0];
-    const decPart = parts[1];
-    const spaced = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return `${spaced},${decPart} SEK`;
+  // =========  =========
+  function formatSEK(amount){
+    const rounded = Math.round(Number(amount) || 0);
+    const spaced = String(rounded).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return `${spaced} SEK`;
   }
+
 
   function formatHours(h) {
     const n = Number(h) || 0;
@@ -548,7 +545,11 @@
       totalBillableMinutes += e.min;
 
       const hours = e.min / 60;
-      const amount = hours * price;
+      const amountRaw = hours * price;
+      const amount = Math.round(amountRaw);
+
+sumEx += amount;
+
       sumEx += amount;
 
       const tr = document.createElement("tr");
@@ -574,7 +575,7 @@
     rowsEl.appendChild(trTot);
   }
 
-  const vat = sumEx * vatRate;
+  const vat = Math.round(sumEx * vatRate);
   const total = sumEx + vat;
 
   document.getElementById("sumEx").textContent = formatSEK(sumEx);
