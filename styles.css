@@ -48,8 +48,8 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
 }
 
 .logo{
-  width:40px;
-  height:40px;
+  width:96px;
+  height:96px;
   display:grid;
   place-items:center;
   background: rgba(255,255,255,.06);
