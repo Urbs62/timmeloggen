@@ -9,7 +9,7 @@ const ASSETS = [
   "./manifest.webmanifest",
   "./invoice.html",
   "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/icon-512.png",
   "./icons/logo-large.png"
 ];
 
