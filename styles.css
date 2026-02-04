@@ -1,4 +1,4 @@
-/* Ime Ledger – Look & feel (dark/glas) */
+/* TimeLedger – Look & feel (dark/glas) */
 
 /* --- Tokens --- */
 :root{
@@ -48,17 +48,13 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
 }
 
 .logo{
-  width:96px;
-  height:96px;
+  width:40px;
+  height:40px;
   display:grid;
   place-items:center;
   background: rgba(255,255,255,.06);
   border:1px solid rgba(255,255,255,.10);
   border-radius:14px;
-}
-.logo-large {
-  width: 96px;     /* testa 64–96 */
-  height: 96px;
 }
 
 .logoImg{
