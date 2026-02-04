@@ -76,7 +76,7 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
 }
 
 .title .tm{
-  font-size: .75em;          /* större än .6 */
+  font-size: .9em;          /* större än .6 */
   vertical-align: super;
   margin-left: 2px;
   color: #fff;               /* helt vit */
