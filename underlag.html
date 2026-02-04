@@ -99,6 +99,13 @@
         .trim();
     }
 
+    function setTitleHard(newTitle){
+      document.title = newTitle;
+      const t = document.querySelector("title");
+      if (t) t.textContent = newTitle;
+    }
+
+    
     function loadPayload(){
       try{
         const raw = localStorage.getItem("tl_underlag_payload_v1");
@@ -123,7 +130,7 @@
         ? `Fakturaunderlag-${safeFilePart(invNo)} Jubrion AB`
         : `Fakturaunderlag-${safeFilePart(month)}-${safeFilePart(account)}`;
 
-      document.title = base;
+      setTitleHard(base);
     }
 
     function render(){
@@ -206,7 +213,8 @@
         printing = true;
 
         const payload = loadPayload();
-        const oldTitle = document.title;
+        const oldTitle = document.querySelector("title")?.textContent || document.title;
+
 
         // Sätt title innan print
         setPdfTitleForUnderlag(payload);
@@ -219,7 +227,7 @@
 
               // återställ title efteråt
               setTimeout(() => {
-                document.title = oldTitle;
+              setTitleHard(oldTitle);
                 printing = false;
               }, 900);
             });
@@ -229,10 +237,6 @@
 
       // Bind bara EN gång
       btn.addEventListener("click", doPrint, { passive: false });
-
-      // Extra: vissa mobiler triggar "pointerup" bättre än click
-      btn.addEventListener("pointerup", doPrint, { passive: false });
-      btn.addEventListener("touchend", doPrint, { passive: false });
     })();
 
     render();
