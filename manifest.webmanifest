@@ -1,6 +1,6 @@
 {
-  "name": "Timmeloggen",
-  "short_name": "Timmeloggen",
+  "name": "TimeLedger",
+  "short_name": "TimeLedger",
   "description": "Tidloggning per konto – lokalt i webbläsaren.",
   "start_url": "./",
   "scope": "./",
