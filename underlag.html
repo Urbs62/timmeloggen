@@ -213,8 +213,17 @@
 
       content.innerHTML = `
         <div class="header">
-          <img src="logo.svg" alt="Jubrion AB">
-          <div class="title">Fakturaunderlag</div>
+          <div class="logoCol">
+            <img
+              src="icons/Jubrion_AB_logo_horizontal_192.png"
+              alt="Jubrion AB"
+              class="invoice-logo"
+              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
+            />
+        </div>
+        <div class="titleCol">
+          <h1>Fakturaunderlag</h1>
+          </div>
         </div>
 
         <div class="kv">
