@@ -36,17 +36,20 @@
 
     /* Konto + Aktivitet i samma kolumn (två rader) */
     .konto-aktivitet .konto{
-      font-size: 0.85em;
-      color: var(--muted);
+      font-size: 13px;          /* samma som tabellen (font-size:13px) */
+      color: var(--text);       /* samma som datum/tid/timmar */
       margin-bottom: 2px;
       line-height: 1.2;
+      font-weight: 400;         /* normal */
     }
 
     .konto-aktivitet .aktivitet{
-      font-weight: 500;
+      font-size: 10px;          /* lite mindre */
+      color: var(--muted);      /* utgråad */
       line-height: 1.2;
+      font-weight: 400;
     }
- 
+
     @media print{ .noPrint{ display:none !important; } }
     
     h1{ margin:0 0 8px; font-size:22px; }
