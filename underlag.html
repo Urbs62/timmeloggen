@@ -55,6 +55,23 @@
     h1{ margin:0 0 8px; font-size:22px; }
     .kv{ margin: 10px 0 14px; color: var(--muted); font-size:13px; line-height:1.35; }
 
+    .header{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:12px;
+    }
+
+    .header img{
+      height:42px;          /* lagom för underlag */
+      width:auto;
+    }
+
+    .header .title{
+      font-size:22px;
+      font-weight:700;
+    }
+    
     table{
       width:100%;
       border-collapse:collapse;
@@ -195,7 +212,11 @@
       }
 
       content.innerHTML = `
-        <h1>Fakturaunderlag</h1>
+        <div class="header">
+          <img src="logo.svg" alt="Jubrion AB">
+          <div class="title">Fakturaunderlag</div>
+        </div>
+
         <div class="kv">
           <div><b>Månad:</b> ${escapeHtml(month)}</div>
           <div><b>Konto:</b> ${escapeHtml(account)}</div>
