@@ -50,6 +50,26 @@
       font-weight: 400;
     }
 
+    .logoCol{ min-width:0; }
+
+    /* Logga */
+    .invoice-logo{
+      width:180px;
+      height:auto;
+      max-width:100%;
+      object-fit:contain;
+      display:block;
+    }
+    .logoFallback{
+      width:180px;
+      padding:10px;
+      border:1px dashed var(--line);
+      border-radius: var(--r);
+      color: var(--muted);
+      font-size:12px;
+      text-align:center;
+    }
+
     @media print{ .noPrint{ display:none !important; } }
     
     h1{ margin:0 0 8px; font-size:22px; }
