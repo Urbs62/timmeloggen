@@ -33,6 +33,20 @@
       touch-action: manipulation;
     }
     .actions button:hover{ background:#f3f6fb; }
+
+    /* Konto + Aktivitet i samma kolumn (två rader) */
+    .konto-aktivitet .konto{
+      font-size: 0.85em;
+      color: var(--muted);
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+
+    .konto-aktivitet .aktivitet{
+      font-weight: 500;
+      line-height: 1.2;
+    }
+ 
     @media print{ .noPrint{ display:none !important; } }
     
     h1{ margin:0 0 8px; font-size:22px; }
@@ -156,12 +170,23 @@
         const h = Number(r.hours) || 0;
         total += h;
 
+        const kontoNr = r.konto ?? r.account ?? r.accountNo ?? "";
+        const kontoNamn = r.kontonamn ?? r.account_name ?? r.accountName ?? "";
+        const kontoText = (kontoNr || kontoNamn)
+          ? `${kontoNr}${(kontoNr && kontoNamn) ? " – " : ""}${kontoNamn}`
+        : "";
+
+        const aktivitetText = r.text || "";
+
         tr += `
           <tr>
             <td class="col-date">${escapeHtml(r.date)}</td>
             <td class="nowrap">${escapeHtml(r.start)}–${escapeHtml(r.end)}</td>
             <td class="right nowrap">${escapeHtml(formatHoursSv(h))}</td>
-            <td>${escapeHtml(r.text || "")}</td>
+            <td class="konto-aktivitet">
+              ${kontoText ? `<div class="konto">${escapeHtml(kontoText)}</div>` : ``}
+              <div class="aktivitet">${escapeHtml(aktivitetText)}</div>
+            </td>
           </tr>
         `;
       }
