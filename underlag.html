@@ -232,23 +232,24 @@
       }
 
       content.innerHTML = `
-        <div class="header">
-          <div class="logoCol">
-            <img
-              src="icons/Jubrion_AB_logo_horizontal_192.png"
-              alt="Jubrion AB"
-              class="invoice-logo"
-              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
-            />
+
+      <div class="header">
+        <div class="logoCol">
+          <img
+            src="icons/Jubrion_AB_logo_horizontal_192.png"
+            alt="Jubrion AB"
+            class="invoice-logo"
+            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
+          />
         </div>
+        
         <div class="titleCol">
           <h1>Fakturaunderlag</h1>
+            <div class="kv">
+              <div><b>Månad:</b> ${escapeHtml(month)}</div>
+              <div><b>Konto:</b> ${escapeHtml(account)}</div>
+            </div>
           </div>
-        </div>
-
-        <div class="kv">
-          <div><b>Månad:</b> ${escapeHtml(month)}</div>
-          <div><b>Konto:</b> ${escapeHtml(account)}</div>
         </div>
 
         <table aria-label="Underlag">
