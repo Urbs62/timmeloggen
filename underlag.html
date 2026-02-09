@@ -174,7 +174,7 @@
         const kontoNamn = r.kontonamn ?? r.account_name ?? r.accountName ?? "";
         const kontoText = (kontoNr || kontoNamn)
           ? `${kontoNr}${(kontoNr && kontoNamn) ? " – " : ""}${kontoNamn}`
-        : "";
+          : (account || "");
 
         const aktivitetText = r.text || "";
 
