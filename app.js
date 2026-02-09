@@ -1205,7 +1205,20 @@ function init() {
        if (!rows.length) return alert("Inga arbetspass hittades för vald månad/konto.");
 
        const accLabel = accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || accVal);
-       const compactRows = rows.map(r => ({ date:r.date, start:r.start, end:r.end, hours:r.hoursDec, text:r.text || "" }));
+       
+        console.log("rows[0] exempel:", rows[0]);
+
+        const compactRows = rows.map(r => ({
+          date: r.date,
+          start: r.start,
+          end: r.end,
+          hours: r.hoursDec,
+          text: r.text || "",
+
+        // NYTT: konto per rad (tar det som finns, annars tomt)
+           konto: r.konto ?? r.account ?? r.accountNo ?? "",
+           kontonamn: r.kontonamn ?? r.account_name ?? r.accountName ?? ""
+      }));
 
        const invNo = getInvoiceNo();
 
