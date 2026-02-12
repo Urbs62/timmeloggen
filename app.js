@@ -1261,17 +1261,6 @@ function init() {
 
    // ===== Backup Export (localStorage) =====
    
-   document.getElementById("btnBackupExport").addEventListener("click", () => {
-     const now = new Date();
-     const exported = now.toISOString().slice(0, 10);
-   
-     const payload = {
-       app: "TimeLedger",
-       exported,
-       schema: 1,
-       data: Object.fromEntries(TL_KEYS.map(k => [k, localStorage.getItem(k)]))
-     };
-   
      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
      const url = URL.createObjectURL(blob);
    
