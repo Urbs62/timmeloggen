@@ -1261,6 +1261,83 @@ function init() {
      URL.revokeObjectURL(url);
    });
 
+
+   // ===== Backup Import (MERGE) =====
+   document.getElementById("btnBackupImport").addEventListener("click", () => {
+     document.getElementById("backupFileInput").click();
+   });
+   
+   document.getElementById("backupFileInput").addEventListener("change", async (e) => {
+     const file = e.target.files?.[0];
+     if (!file) return;
+   
+     try {
+       const text = await file.text();
+       const backup = JSON.parse(text);
+   
+       if (!backup?.data || typeof backup.data !== "object") {
+         throw new Error("Ogiltig backupfil (saknar data).");
+       }
+   
+       // Läs befintligt
+       const existingDays = safeJsonParse(localStorage.getItem("tl_days_v1"), []);
+       const incomingDays = safeJsonParse(backup.data["tl_days_v1"], []);
+   
+       const existingAcc = safeJsonParse(localStorage.getItem("tl_accounts_v1"), []);
+       const incomingAcc = safeJsonParse(backup.data["tl_accounts_v1"], []);
+   
+       // Merge
+       const mergedDays = mergeByKey(existingDays, incomingDays, dayKey);
+       const mergedAcc  = mergeByKey(existingAcc, incomingAcc, accountKey);
+   
+       const ok = confirm(
+         `Import (merge)\n\n` +
+         `Dagar:\n- Befintligt: ${existingDays.length}\n- I fil: ${incomingDays.length}\n- Efter merge: ${mergedDays.length}\n\n` +
+         `Konton:\n- Befintligt: ${existingAcc.length}\n- I fil: ${incomingAcc.length}\n- Efter merge: ${mergedAcc.length}\n\n` +
+         `Genomföra import?`
+       );
+       if (!ok) return;
+   
+       localStorage.setItem("tl_days_v1", JSON.stringify(mergedDays));
+       localStorage.setItem("tl_accounts_v1", JSON.stringify(mergedAcc));
+   
+       // Underlag: valfritt – vi skriver inte över för säkerhets skull
+       // localStorage.setItem("tl_underlag_payload_v1", backup.data["tl_underlag_payload_v1"] ?? "");
+   
+       alert("Klart! Import genomförd (merge). Ladda om appen vid behov.");
+     } catch (err) {
+       alert("Kunde inte importera: " + (err?.message || err));
+     } finally {
+       e.target.value = "";
+     }
+   });
+   
+   // --- helpers ---
+   function safeJsonParse(s, fallback) {
+     try { return s ? JSON.parse(s) : fallback; } catch { return fallback; }
+   }
+   
+   function mergeByKey(existing, incoming, keyFn) {
+     const map = new Map();
+     for (const x of existing || []) map.set(keyFn(x), x);
+     for (const x of incoming || []) if (!map.has(keyFn(x))) map.set(keyFn(x), x);
+     return Array.from(map.values());
+   }
+   
+   // NYCKLAR: just nu generiska. Vi gör dem exakta när du visat ett exempel-objekt.
+   function dayKey(e) {
+     if (!e || typeof e !== "object") return String(e);
+     const date = (e.date || e.day || e.datum || "").toString().slice(0, 10);
+     const from = (e.from || e.start || e.startTime || "").toString();
+     const to   = (e.to || e.end || e.endTime || "").toString();
+     const acc  = (e.account || e.konto || e.project || "").toString().toLowerCase();
+     return `${date}__${acc}__${from}__${to}`.replace(/\s+/g, "");
+   }
+   
+   function accountKey(a) {
+     if (!a || typeof a !== "object") return String(a);
+     return (a.id || a.code || a.name || JSON.stringify(a)).toString().toLowerCase().trim();
+   }
    
 }
 init();
