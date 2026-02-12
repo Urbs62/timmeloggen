@@ -1313,14 +1313,30 @@ function init() {
    });
    
    // --- helpers ---
+
    function safeJsonParse(s, fallback) {
      try { return s ? JSON.parse(s) : fallback; } catch { return fallback; }
    }
-   
+
+   // Gör vad som helst (array/objekt/annat) till en array av poster
+   function toArray(x) {
+     if (Array.isArray(x)) return x;
+     if (x && typeof x === "object") {
+       // vanligast: objekt med poster under nycklar
+       // ex: { "2026-02-12": {...}, "2026-02-13": {...} }
+       return Object.values(x).flat();
+     }
+     return [];
+   }
+
    function mergeByKey(existing, incoming, keyFn) {
+     const a = toArray(existing);
+     const b = toArray(incoming);
+
      const map = new Map();
-     for (const x of existing || []) map.set(keyFn(x), x);
-     for (const x of incoming || []) if (!map.has(keyFn(x))) map.set(keyFn(x), x);
+     for (const x of a) map.set(keyFn(x), x);
+     for (const x of b) if (!map.has(keyFn(x))) map.set(keyFn(x), x);
+
      return Array.from(map.values());
    }
    
