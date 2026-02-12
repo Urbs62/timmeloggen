@@ -1229,5 +1229,38 @@ function init() {
      });
    }
 
+   // ===== Backup Export (localStorage) =====
+   
+   const TL_KEYS = ["tl_days_v1", "tl_accounts_v1", "tl_underlag_payload_v1"];
+   
+   document.getElementById("btnBackupExport").addEventListener("click", () => {
+     const now = new Date();
+     const exported = now.toISOString().slice(0, 10);
+   
+     const payload = {
+       app: "TimeLedger",
+       exported,
+       schema: 1,
+       data: Object.fromEntries(
+         TL_KEYS.map(k => [k, localStorage.getItem(k)])
+       )
+     };
+   
+     const blob = new Blob(
+       [JSON.stringify(payload, null, 2)],
+       { type: "application/json" }
+     );
+   
+     const url = URL.createObjectURL(blob);
+     const a = document.createElement("a");
+     a.href = url;
+     a.download = `timeledger-backup-${exported}.json`;
+     document.body.appendChild(a);
+     a.click();
+     a.remove();
+     URL.revokeObjectURL(url);
+   });
+
+   
 }
 init();
