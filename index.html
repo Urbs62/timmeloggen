@@ -34,12 +34,6 @@
 
   </header>
 
-  <section class="menu">
-    <button id="btnBackupExport" type="button">Exportera backup (JSON)</button>
-    <button id="btnBackupImport" type="button">Importera backup (JSON)</button>
-    <input id="backupFileInput" type="file" accept="application/json" hidden />
-  </section>
-  
   <nav class="tabs">
     <button class="tab active" data-tab="accounts">Konton</button>
     <button class="tab" data-tab="log">Tidsloggning</button>
@@ -47,6 +41,12 @@
     <button class="tab" data-tab="help" disabled>Kommer snart</button>
   </nav>
 
+  <section class="menu">
+    <button id="btnBackupExport" type="button">Exportera backup</button>
+    <button id="btnBackupImport" type="button">Importera backup</button>
+    <input id="backupFileInput" type="file" accept="application/json" hidden />
+  </section>
+  
   <main class="container">
 
     <!-- Konton -->
@@ -242,6 +242,7 @@
   <div id="printArea" aria-hidden="true"></div>
 </body>
 </html>
+
 
 
 
