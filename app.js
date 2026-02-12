@@ -1261,8 +1261,35 @@ function init() {
      URL.revokeObjectURL(url);
    });
 
-
-   // ===== Backup Import (MERGE) =====
+   // ===== Backup Export (localStorage) =====
+   const TL_KEYS = ["tl_days_v1", "tl_accounts_v1", "tl_underlag_payload_v1"];
+   
+   document.getElementById("btnBackupExport").addEventListener("click", () => {
+     const now = new Date();
+     const exported = now.toISOString().slice(0, 10);
+   
+     const payload = {
+       app: "TimeLedger",
+       exported,
+       schema: 1,
+       data: Object.fromEntries(TL_KEYS.map(k => [k, localStorage.getItem(k)]))
+     };
+   
+     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+     const url = URL.createObjectURL(blob);
+   
+     const a = document.createElement("a");
+     a.href = url;
+     a.download = `timeledger-backup-${exported}.json`;
+     document.body.appendChild(a);
+     a.click();
+     a.remove();
+   
+     URL.revokeObjectURL(url);
+   });
+   
+   
+   // ===== Backup Import (SAFE RESTORE + UNDO) =====
    document.getElementById("btnBackupImport").addEventListener("click", () => {
      document.getElementById("backupFileInput").click();
    });
@@ -1279,32 +1306,52 @@ function init() {
          throw new Error("Ogiltig backupfil (saknar data).");
        }
    
-       // Läs befintligt
-       const existingDays = safeJsonParse(localStorage.getItem("tl_days_v1"), []);
-       const incomingDays = safeJsonParse(backup.data["tl_days_v1"], []);
+       // 1) Visa sammanfattning utan att skriva något
+       const info = TL_KEYS.map(k => {
+         const raw = backup.data[k];
+         const chars = typeof raw === "string" ? raw.length : 0;
+         return `${k}: ${chars} tecken`;
+       }).join("\n");
    
-       const existingAcc = safeJsonParse(localStorage.getItem("tl_accounts_v1"), []);
-       const incomingAcc = safeJsonParse(backup.data["tl_accounts_v1"], []);
-   
-       // Merge
-       const mergedDays = mergeByKey(existingDays, incomingDays, dayKey);
-       const mergedAcc  = mergeByKey(existingAcc, incomingAcc, accountKey);
-   
-       const ok = confirm(
-         `Import (merge)\n\n` +
-         `Dagar:\n- Befintligt: ${existingDays.length}\n- I fil: ${incomingDays.length}\n- Efter merge: ${mergedDays.length}\n\n` +
-         `Konton:\n- Befintligt: ${existingAcc.length}\n- I fil: ${incomingAcc.length}\n- Efter merge: ${mergedAcc.length}\n\n` +
-         `Genomföra import?`
+       const okPreview = confirm(
+         `Backup hittad:\n` +
+         `app: ${backup.app ?? "okänd"}\n` +
+         `exported: ${backup.exported ?? "okänd"}\n` +
+         `schema: ${backup.schema ?? "?"}\n\n` +
+         `Innehåll:\n${info}\n\n` +
+         `Tryck OK för att gå vidare till ÅTERSTÄLLNING (ersätter lokala data).`
        );
-       if (!ok) return;
+       if (!okPreview) return;
    
-       localStorage.setItem("tl_days_v1", JSON.stringify(mergedDays));
-       localStorage.setItem("tl_accounts_v1", JSON.stringify(mergedAcc));
+       // 2) NÖDBROMS: spara nuvarande läge (för ångra)
+       const before = Object.fromEntries(TL_KEYS.map(k => [k, localStorage.getItem(k)]));
+       sessionStorage.setItem("tl_backup_before_import", JSON.stringify(before));
    
-       // Underlag: valfritt – vi skriver inte över för säkerhets skull
-       // localStorage.setItem("tl_underlag_payload_v1", backup.data["tl_underlag_payload_v1"] ?? "");
+       // 3) Sista varningen: detta är “Replace”, inte merge
+       const okReplace = confirm(
+         `ÅTERSTÄLLNING (REPLACE)\n\n` +
+         `Detta ersätter lokala data för:\n` +
+         `${TL_KEYS.join(", ")}\n\n` +
+         `Du kan ångra direkt efteråt med knappen "Ångra senaste import".\n\n` +
+         `Genomföra återställning?`
+       );
+       if (!okReplace) return;
    
-       alert("Klart! Import genomförd (merge). Ladda om appen vid behov.");
+       // 4) Skriv exakt det som fanns i backupen (rå strängar)
+       for (const k of TL_KEYS) {
+         const v = backup.data[k];
+         if (typeof v === "string") {
+           localStorage.setItem(k, v);
+         } else if (v == null) {
+           // om nyckeln saknas i backupen, lämna som den är
+         } else {
+           // om någon råkat göra fel format, stoppa hellre än skriva skräp
+           throw new Error(`Fel format i backupen för ${k} (förväntade string).`);
+         }
+       }
+   
+       alert("Klart! Återställt från backup. Ladda om appen.");
+   
      } catch (err) {
        alert("Kunde inte importera: " + (err?.message || err));
      } finally {
@@ -1312,60 +1359,38 @@ function init() {
      }
    });
    
-   // --- helpers ---
-
-   function safeJsonParse(s, fallback) {
-     try { return s ? JSON.parse(s) : fallback; } catch { return fallback; }
-   }
-
-   // Gör vad som helst (array/objekt/annat) till en array av poster
-   function toArray(x) {
-     if (Array.isArray(x)) return x;
-     if (x && typeof x === "object") {
-       // vanligast: objekt med poster under nycklar
-       // ex: { "2026-02-12": {...}, "2026-02-13": {...} }
-       return Object.values(x).flat();
-     }
-     return [];
-   }
-
-   function mergeByKey(existing, incoming, keyFn) {
-     const a = toArray(existing);
-     const b = toArray(incoming);
-
-     const map = new Map();
-     for (const x of a) map.set(keyFn(x), x);
-     for (const x of b) if (!map.has(keyFn(x))) map.set(keyFn(x), x);
-
-     return Array.from(map.values());
-   }
    
-   // NYCKLAR: just nu generiska. Vi gör dem exakta när du visat ett exempel-objekt.
-   function dayKey(e) {
-     if (!e || typeof e !== "object") return String(e);
-     const date = (e.date || e.day || e.datum || "").toString().slice(0, 10);
-     const from = (e.from || e.start || e.startTime || "").toString();
-     const to   = (e.to || e.end || e.endTime || "").toString();
-     const acc  = (e.account || e.konto || e.project || "").toString().toLowerCase();
-     return `${date}__${acc}__${from}__${to}`.replace(/\s+/g, "");
-   }
+   // ===== UNDO BUTTON (safe) =====
+   (function addUndoButton() {
+     const menu = document.querySelector(".menu");
+     if (!menu) return;
    
-   function accountKey(a) {
-     if (!a || typeof a !== "object") return String(a);
-     return (a.id || a.code || a.name || JSON.stringify(a)).toString().toLowerCase().trim();
-   }
+     const undoBtn = document.createElement("button");
+     undoBtn.type = "button";
+     undoBtn.textContent = "Ångra senaste import";
+     undoBtn.style.marginTop = "10px";
+   
+     undoBtn.addEventListener("click", () => {
+       const s = sessionStorage.getItem("tl_backup_before_import");
+       if (!s) return alert("Ingen import att ångra i denna session.");
+   
+       try {
+         const before = JSON.parse(s);
+         for (const k of TL_KEYS) {
+           const v = before[k];
+           if (typeof v === "string") localStorage.setItem(k, v);
+           else localStorage.removeItem(k);
+         }
+         alert("Återställt läget före import. Ladda om appen.");
+       } catch {
+         alert("Kunde inte ångra (backup saknas eller är trasig).");
+       }
+     });
+   
+     menu.appendChild(undoBtn);
+   })();
 
-   const debugBtn = document.createElement("button");
-   debugBtn.textContent = "DEBUG tl_days";
-   debugBtn.style.marginTop = "10px";
-
-   debugBtn.addEventListener("click", () => {
-     const raw = localStorage.getItem("tl_days_v1");
-     alert(raw?.substring(0, 500)); // visar första 500 tecken
-   });
-
-   document.querySelector(".menu").appendChild(debugBtn);
-
+   
    
 }
 init();
