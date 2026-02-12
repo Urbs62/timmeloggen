@@ -1262,7 +1262,6 @@ function init() {
    });
 
    // ===== Backup Export (localStorage) =====
-   const TL_KEYS = ["tl_days_v1", "tl_accounts_v1", "tl_underlag_payload_v1"];
    
    document.getElementById("btnBackupExport").addEventListener("click", () => {
      const now = new Date();
