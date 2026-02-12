@@ -22,7 +22,7 @@ function todayKey() {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
-
+const TL_KEYS = ["tl_days_v1", "tl_accounts_v1", "tl_underlag_payload_v1"];
 
 function fmtHM(mins) {
   const h = Math.floor(mins / 60);
@@ -1230,8 +1230,6 @@ function init() {
    }
 
    // ===== Backup Export (localStorage) =====
-   
-   const TL_KEYS = ["tl_days_v1", "tl_accounts_v1", "tl_underlag_payload_v1"];
    
    document.getElementById("btnBackupExport").addEventListener("click", () => {
      const now = new Date();
