@@ -1354,6 +1354,18 @@ function init() {
      if (!a || typeof a !== "object") return String(a);
      return (a.id || a.code || a.name || JSON.stringify(a)).toString().toLowerCase().trim();
    }
+
+   const debugBtn = document.createElement("button");
+   debugBtn.textContent = "DEBUG tl_days";
+   debugBtn.style.marginTop = "10px";
+
+   debugBtn.addEventListener("click", () => {
+     const raw = localStorage.getItem("tl_days_v1");
+     alert(raw?.substring(0, 500)); // visar första 500 tecken
+   });
+
+   document.querySelector(".menu").appendChild(debugBtn);
+
    
 }
 init();
