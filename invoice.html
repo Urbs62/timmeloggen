@@ -63,8 +63,16 @@
     }
     .metaList{ display:grid; gap:6px; }
     .metaRow{ display:flex; gap:10px; justify-content:flex-end; }
+
+    /* labels (k) */
     .metaRow .k{ color:var(--muted); font-size:13px; }
-    .metaRow .v{ font-weight:700; }
+
+    /* values (v) - SNÄVARE: 1px mindre + lite mindre tyngd */
+    .metaRow .v{
+      font-weight:600;     /* var 700 */
+      font-size:12px;      /* var default (ärvde ~14), nu 1px mindre än label */
+      letter-spacing:0;
+    }
 
     /* Logga */
     .invoice-logo{
@@ -129,23 +137,26 @@
     .footer{
       margin-top:18px;
       border-top:1px solid var(--line);
-      padding-top:12px;
+      padding-top:10px;        /* var 12px - SNÄVARE */
       color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
+      font-size:12px;          /* var 13px - SNÄVARE */
+      line-height:1.25;        /* var 1.4 - SNÄVARE */
     }
     .footerInner{
       max-width: 760px;
       margin: 0 auto;
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap:32px;
+      gap:24px;                /* var 32px - SNÄVARE */
     }
     .footerCol{ min-width:0; }
     .footerCol.rightCol{
       text-align:right;
       padding-right:48px;
     }
+
+    /* BONUS: minska vertikal höjd per rad i footer */
+    .footerCol > div{ margin: 1px 0; } /* snävare rader */
 
     /* ===== Mobil (SKÄRM) ===== */
     @media (max-width: 720px){
@@ -163,7 +174,7 @@
         margin-top:6px;
       }
 
-      .footerInner{ gap:16px; }
+      .footerInner{ gap:14px; }           /* var 16px - lite snävare */
       .footerCol.rightCol{ padding-right:12px; }
     }
 
@@ -212,7 +223,7 @@
 
       /* ===== FIXED FOOTER I PRINT ===== */
       .page{
-        padding-bottom: 22mm;
+        padding-bottom: 20mm;   /* var 22mm - SNÄVARE (justera 18–22mm vid behov) */
       }
 
       .footer{
@@ -223,7 +234,7 @@
 
         margin: 0;
         border-top: 1px solid var(--line);
-        padding-top: 6mm;
+        padding-top: 5mm;      /* var 6mm - SNÄVARE */
         background: #fff;
       }
     }
@@ -259,7 +270,7 @@
           <div class="metaRow"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
           <div class="metaRow"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
 
-          <!-- NYTT: fast "Er referens" -->
+          <!-- NYTT: Er referens (fast) -->
           <div class="metaRow"><span class="k">Er referens:</span> <span class="v">xxxx</span></div>
         </div>
       </div>
@@ -326,8 +337,6 @@
           <div>Bankgiro: xxxx-xxxx</div>
           <div>F-skatt: SExxxxxxxxxxxx</div>
           <div>E-post: info@jubrion.se</div>
-
-          <!-- NYTT: fast kontakt under E-post -->
           <div>Kontakt: xxxx, xxxx</div>
         </div>
       </div>
