@@ -142,6 +142,25 @@
       font-size:12px;          /* var 13px - SNÄVARE */
       line-height:1.25;        /* var 1.4 - SNÄVARE */
     }
+
+    /* ===== Footer ===== */
+    .footer{
+      margin-top:18px;
+      border-top:0;            /* <-- bort med linjen här */
+      padding-top:0;           /* <-- ingen "tomrad" */
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.25;
+    }
+    
+    /* Linjen flyttas "ner" in i footern och kan ligga tight mot texten */
+    .footer::before{
+      content:"";
+      display:block;
+      border-top:1px solid var(--line);
+      margin: 0 0 4px 0;       /* <-- justera 2–6px för hur tight du vill ha den */
+    }
+
     .footerInner{
       max-width: 760px;
       margin: 0 auto;
@@ -231,12 +250,15 @@
         left: 12mm;
         right: 12mm;
         bottom: 12mm;
-
+        border-top:0;          /* <-- viktigt: ingen dubbel-linje */
+        padding-top:0;         /* <-- bort med extra luft */
+        background:#fff;
         margin: 0;
-        border-top: 1px solid var(--line);
-        padding-top: 5mm;      /* var 6mm - SNÄVARE */
-        background: #fff;
       }
+      footer::before{
+        border-top:1px solid var(--line);
+        margin: 0 0 4mm 0;     /* <-- tight i print, justera 3–6mm om du vill */
+      } 
     }
   </style>
 </head>
