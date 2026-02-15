@@ -247,7 +247,7 @@ const addSlotBtn = document.getElementById("addSlotBtn");
 
 const slotList = document.getElementById("slotList");
 const clearTodayBtn = document.getElementById("clearTodayBtn");
-// const exportCsvBtn = document.getElementById("exportCsvBtn");
+const exportCsvBtn = document.getElementById("exportCsvBtn");
 
 // History / Sammanställning
 const periodType = document.getElementById("periodType");
