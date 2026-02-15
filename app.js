@@ -1248,7 +1248,7 @@ function init() {
    
      const undoBtn = document.createElement("button");
      undoBtn.type = "button";
-     undoBtn.textContent = "Ångra senaste import";
+     undoBtn.textContent = "Ångra restore";
      undoBtn.style.marginTop = "10px";
    
      undoBtn.addEventListener("click", () => {
