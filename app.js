@@ -192,6 +192,7 @@ function monthForecast(daysObj, yyyyMm){
   };
 }
 
+
 // ---------- Data model ----------
 /*
 days = {
