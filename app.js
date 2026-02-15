@@ -247,7 +247,7 @@ const addSlotBtn = document.getElementById("addSlotBtn");
 
 const slotList = document.getElementById("slotList");
 const clearTodayBtn = document.getElementById("clearTodayBtn");
-const exportCsvBtn = document.getElementById("exportCsvBtn");
+// const exportCsvBtn = document.getElementById("exportCsvBtn");
 
 // History / Sammanställning
 const periodType = document.getElementById("periodType");
@@ -695,6 +695,7 @@ function stopChimeLoop() {
 }
 
 // ---------- CSV export ----------
+/*
 exportCsvBtn.addEventListener("click", () => {
   const rows = [];
   rows.push(["Datum", "SlotStart", "SlotSlut", "Minuter", "Konto", "Rast", "Text"].join(";"));
@@ -721,6 +722,7 @@ exportCsvBtn.addEventListener("click", () => {
       ].join(";"));
     });
   }
+  */
 
   const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
