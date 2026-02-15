@@ -950,55 +950,6 @@ function renderInvoiceAccountSelect(){
     });
 }
 
-/*
-function exportInvoiceCsv(){
-  const monthVal = (invoiceMonth?.value || "").trim(); // "YYYY-MM"
-  if (!monthVal) return alert("Välj en månad.");
-
-  const accVal = invoiceAccount?.value || "ALL";
-  const { rows, totalMinutes } = buildInvoiceRows(monthVal, accVal);
-
-  if (!rows.length){
-    return alert("Inga arbetspass hittades för vald månad/konto.");
-  }
-
-  const header = ["Datum","Konto","Start","Slut","Timmar","Aktivitet"].join(";");
-  const lines = [header];
-
-  for (const r of rows){
-    const text = (r.text || "").replaceAll('"','""');
-    lines.push([
-      formatDateSv(r.date),
-      r.accountName,
-      r.start,
-      r.end,
-      formatHoursSv(r.hoursDec),
-      `"${text}"`
-    ].join(";"));
-  }
-
-  const totalHours = minutesToDecimalHours(totalMinutes);
-  lines.push(["SUMMA","","","","" + formatHoursSv(totalHours),""].join(";"));
-
-  const blob = new Blob([lines.join("\n")], { type:"text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-
-  const accName = accVal === "ALL" ? "alla" : (accountNameById(accVal) || "konto");
-  const safeAcc = accName.replace(/[^\w\-]+/g,"_");
-
-  const a = document.createElement("a");
-  a.href = url;
-
-   const invNo = getInvoiceNo();
-   a.download = `underlag-${invNo} Jubrion AB.csv`;
- 
-   document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-*/
-
 function buildInvoicePrintHtml(monthVal, accVal){
   const { rows, totalMinutes } = buildInvoiceRows(monthVal, accVal);
 
