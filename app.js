@@ -249,7 +249,6 @@ const addSlotBtn = document.getElementById("addSlotBtn");
 
 const slotList = document.getElementById("slotList");
 const clearTodayBtn = document.getElementById("clearTodayBtn");
-// const exportCsvBtn = document.getElementById("exportCsvBtn");
 
 // History / Sammanställning
 const periodType = document.getElementById("periodType");
@@ -262,7 +261,6 @@ const forecastBox = document.getElementById("forecastBox");
 
 const invoiceAccount = document.getElementById("invoiceAccount");
 const invoiceMonth = document.getElementById("invoiceMonth");
-// const exportInvoiceCsvBtn = document.getElementById("exportInvoiceCsvBtn");
 const printInvoiceBtn = document.getElementById("printInvoiceBtn");
 const printArea = document.getElementById("printArea");
 
@@ -695,49 +693,6 @@ function stopChimeLoop() {
   chimeTimer = null;
   chimeNextTs = null;
 }
-
-// ---------- CSV export ----------
-/*
-exportCsvBtn.addEventListener("click", () => {
-  const rows = [];
-  rows.push(["Datum", "SlotStart", "SlotSlut", "Minuter", "Konto", "Rast", "Text"].join(";"));
-
-  const keys = Object.keys(days).sort();
-  for (const k of keys) {
-    const d = days[k];
-    if (!d.slots?.length) continue;
-
-    d.slots.forEach((s) => {
-      const acc = accountNameById(s.accountId);
-      const isBreak = s.isBreak ? "1" : "0";
-      const text = (s.text || "").replaceAll('"', '""');
-      const mins = slotDurationMin(s);
-
-      rows.push([
-        k,
-        minutesToTime(s.startMin),
-        minutesToTime(s.endMin),
-        mins,
-        acc,
-        isBreak,
-        `"${text}"`
-      ].join(";"));
-    });
-  }
-
-  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-   
-  a.download = `TimeLedger-export-_${todayKey()}.csv`;
-
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-*/
 
 // ---------- History ----------
 function isoWeekKeyFromDate(dateObj) {
