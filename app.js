@@ -722,7 +722,6 @@ exportCsvBtn.addEventListener("click", () => {
       ].join(";"));
     });
   }
-  */
 
   const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -736,6 +735,7 @@ exportCsvBtn.addEventListener("click", () => {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 });
+*/
 
 // ---------- History ----------
 function isoWeekKeyFromDate(dateObj) {
