@@ -990,7 +990,6 @@ function exportInvoiceCsv(){
 
    const invNo = getInvoiceNo();
    a.download = `underlag-${invNo} Jubrion AB.csv`;
-//  a.download = `timmeloggen_underlag_${monthVal}_${safeAcc}.csv`;
  
    document.body.appendChild(a);
   a.click();
@@ -1115,7 +1114,6 @@ function init() {
    if (invoiceMonth) invoiceMonth.value = todayKey().slice(0,7);
       renderInvoiceAccountSelect();
 
-   // if (exportInvoiceCsvBtn) exportInvoiceCsvBtn.addEventListener("click", exportInvoiceCsv);
    if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
 
    // --- Öppna  (HTML) ---
