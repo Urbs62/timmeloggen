@@ -950,6 +950,7 @@ function renderInvoiceAccountSelect(){
     });
 }
 
+/*
 function exportInvoiceCsv(){
   const monthVal = (invoiceMonth?.value || "").trim(); // "YYYY-MM"
   if (!monthVal) return alert("Välj en månad.");
@@ -996,6 +997,7 @@ function exportInvoiceCsv(){
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+*/
 
 function buildInvoicePrintHtml(monthVal, accVal){
   const { rows, totalMinutes } = buildInvoiceRows(monthVal, accVal);
