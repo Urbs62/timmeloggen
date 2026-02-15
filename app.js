@@ -260,7 +260,7 @@ const forecastBox = document.getElementById("forecastBox");
 
 const invoiceAccount = document.getElementById("invoiceAccount");
 const invoiceMonth = document.getElementById("invoiceMonth");
-// const exportInvoiceCsvBtn = document.getElementById("exportInvoiceCsvBtn");
+const exportInvoiceCsvBtn = document.getElementById("exportInvoiceCsvBtn");
 const printInvoiceBtn = document.getElementById("printInvoiceBtn");
 const printArea = document.getElementById("printArea");
 
@@ -1158,7 +1158,7 @@ function init() {
    if (invoiceMonth) invoiceMonth.value = todayKey().slice(0,7);
       renderInvoiceAccountSelect();
 
-  // if (exportInvoiceCsvBtn) exportInvoiceCsvBtn.addEventListener("click", exportInvoiceCsv);
+   if (exportInvoiceCsvBtn) exportInvoiceCsvBtn.addEventListener("click", exportInvoiceCsv);
    if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
 
    // --- Öppna  (HTML) ---
