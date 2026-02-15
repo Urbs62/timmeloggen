@@ -193,7 +193,7 @@ function monthForecast(daysObj, yyyyMm){
 }
 
 // ---------- Data model ----------
-
+/*
 days = {
   "YYYY-MM-DD": {
      startTs: number|null,  // endast relevant för "idag" (timljud)
@@ -204,6 +204,7 @@ days = {
   }
 }
 accounts = [{id,name}]
+*/
 
 let accounts = loadJSON(STORE.accounts, []);
 let days = loadJSON(STORE.days, {});
