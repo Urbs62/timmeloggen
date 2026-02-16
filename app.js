@@ -625,9 +625,9 @@ function renderDay() {
         <div class="meta">${escapeHtml(s.text || "")}</div>
       </div>
       <div class="row" style="margin:0; gap:8px;">
-        <button class="secondary" data-edit="${s.id}">Ändra</button>
-        <button class="secondary" data-break="${s.id}">${s.isBreak ? "Ej rast" : "Rast"}</button>
-        <button class="danger secondary" data-del="${s.id}">Ta bort</button>
+        <button class="secondary" data-edit="${s.id}">Edit</button>
+        <button class="secondary" data-break="${s.id}">${s.isBreak ? "Mark break" : "Unmark break"}</button>
+        <button class="danger secondary" data-del="${s.id}">Delete</button>
       </div>
     `;
     el.querySelector(`[data-del="${s.id}"]`).addEventListener("click", () => deleteSlot(s.id));
