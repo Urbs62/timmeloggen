@@ -119,17 +119,19 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   border-color: rgba(96,165,250,.55);
   background: rgba(96,165,250,.12);
 }
-/* Knappraden i varje item: tryck höger + lika breda knappar */
+
+/* Knappgrupp i varje rad */
 .item .row{
   margin-left: auto;
   display: flex;
-  gap: 8px;
-  align-items: center;
+  gap: 6px;
 }
+
+/* Mindre, fast bredd */
 .item .row button{
-  flex: 1 1 0;
-  width: 0;        /* viktigt för att text-längd inte ska styra bredden */
-  min-width: 92px; /* valfritt: sätter en bas så de inte blir för små på mobil */
+  width: 88px;        /* justera 80–100px efter smak */
+  padding: 6px 8px;   /* mindre luft */
+  font-size: 0.85rem; /* något mindre text */
 }
 
 
