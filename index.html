@@ -34,10 +34,10 @@
   </header>
 
   <nav class="tabs">
-    <button class="tab active" data-tab="accounts">Konton</button>
-    <button class="tab" data-tab="log">Tidsloggning</button>
-    <button class="tab" data-tab="history">Sammanställning</button>
-    <button class="tab" data-tab="help" disabled>Kommer snart</button>
+    <button class="tab active" data-tab="accounts">Accounts</button>
+    <button class="tab" data-tab="log">Time Entries</button>
+    <button class="tab" data-tab="history">Reports</button>
+    <button class="tab" data-tab="help" disabled>Coming Soon</button>
   </nav>
 
   <section class="menu">
@@ -52,13 +52,13 @@
     <!-- Konton -->
     <section class="panel active" id="tab-accounts">
       <div class="card">
-        <h2>Konton / projekt</h2>
+        <h2>Accounts / Projects</h2>
 
         <div class="row">
           <div class="grow">
-            <input id="accountName" type="text" placeholder="Ex: 3010, Projekt X, Kund Y..." />
+            <input id="accountName" type="text" placeholder="Eg: 3010, Account X, Customer Y..." />
           </div>
-          <button id="addAccountBtn" class="primary">Lägg till</button>
+          <button id="addAccountBtn" class="primary">Add Entry</button>
         </div>
 
         <div class="list" id="accountList"></div>
@@ -79,8 +79,8 @@
         </div>
 
         <div class="row">
-          <button id="startDayBtn">Starta dag</button>
-          <button id="endDayBtn" class="secondary">Avsluta dag</button>
+          <button id="startDayBtn">Start Day</button>
+          <button id="endDayBtn" class="secondary">End Day</button>
         </div>
 
           <hr class="sep" />
@@ -91,33 +91,33 @@
               <div class="pill" id="dayStartView">—</div>
             </div>
             <div>
-              <label>Slut</label>
+              <label>End</label>
               <div class="pill" id="dayEndView">—</div>
             </div>
           </div>
 
           <div class="grid" style="margin-top:10px;">
             <div>
-              <label>Rast/lunch</label>
+              <label>Break</label>
               <div class="pill" id="breakView">0:00</div>
             </div>
             <div>
-              <label>Arbetstid</label>
+              <label>Work Time</label>
               <div class="pill" id="workView">0:00</div>
             </div>
           </div>
 
           <hr class="sep" />
 
-          <h3>Skapa tidsrad</h3>
+          <h3>Add time entry</h3>
 
           <div class="grid">
             <div>
-              <label>Starttid</label>
+              <label>Start time</label>
               <input id="slotStart" type="time" />
             </div>
             <div>
-              <label>Stopptid</label>
+              <label>End time</label>
               <input id="slotEnd" type="time" />
             </div>
           </div>
@@ -128,20 +128,20 @@
           </div>
 
           <div style="margin-top:10px;">
-            <label>Aktivitet (fritext)</label>
-            <input id="slotText" type="text" placeholder="Vad gjorde du?" />
+            <label>Activity</label>
+            <input id="slotText" type="text" placeholder="Task description" />
           </div>
 
           <div class="checklist" style="margin-top:10px;">
             <div class="rowline">
-              <label class="badge">Avdrag</label>
+              <label class="badge">Mark as non-billable (break / lunch</label>
               <label style="display:flex; gap:10px; align-items:center; margin:0;">
                 <input id="slotIsBreak" type="checkbox" />
-                <span class="muted">Rast/lunch (dras av)</span>
+                <span class="muted">Break / lunch (excluded from billing)</span>
               </label>
 
               <div style="flex:1"></div>
-              <button id="addSlotBtn" class="primary">Lägg till</button>
+              <button id="addSlotBtn" class="primary">Add</button>
             </div>
           </div>
         </div>
@@ -240,6 +240,7 @@
   <div id="printArea" aria-hidden="true"></div>
 </body>
 </html>
+
 
 
 
