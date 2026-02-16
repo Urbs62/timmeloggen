@@ -119,9 +119,19 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   border-color: rgba(96,165,250,.55);
   background: rgba(96,165,250,.12);
 }
-.item > .row{
-  justify-content: flex-end;
+/* Knappraden i varje item: tryck höger + lika breda knappar */
+.item .row{
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
+.item .row button{
+  flex: 1 1 0;
+  width: 0;        /* viktigt för att text-längd inte ska styra bredden */
+  min-width: 92px; /* valfritt: sätter en bas så de inte blir för små på mobil */
+}
+
 
 @media (pointer: coarse){
   .tabs{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
