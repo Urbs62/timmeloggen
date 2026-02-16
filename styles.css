@@ -120,17 +120,14 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   background: rgba(96,165,250,.12);
 }
 
-/* Knappgrupp i varje rad */
 .item .row{
   margin-left: auto;
-  display: flex;
-  gap: 6px;
+  display:flex;
+  gap:8px;
 }
 
-.item .row{
-  margin-left: auto;
-  display: flex;
-  gap: 6px;
+.item .row button{
+  min-width: 90px;
 }
 
 @media (pointer: coarse){
