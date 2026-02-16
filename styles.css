@@ -120,12 +120,19 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   background: rgba(96,165,250,.12);
 }
 
+/* Knappgrupp i slot-rader */
 .item .row{
-  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  margin-left: auto;      /* trycker hela gruppen till höger */
+  justify-content: flex-end;
 }
 
+/* Kompakt och lika breda */
 .item .row button{
-  min-width: 90px;
+  width: 84px;            /* samma känsla som Ta bort i Konton */
+  padding: 6px 8px;
+  font-size: 0.85rem;
 }
 
 @media (pointer: coarse){
