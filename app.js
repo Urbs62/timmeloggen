@@ -626,7 +626,7 @@ function renderDay() {
       </div>
       <div class="row" style="margin:0; gap:8px;">
         <button class="secondary" data-edit="${s.id}">Edit</button>
-        <button class="secondary" data-break="${s.id}">${s.isBreak ? "Mark break" : "Unmark break"}</button>
+        <button class="secondary" data-break="${s.id}">${s.isBreak ? "Work" : "Break"}</button>
         <button class="danger secondary" data-del="${s.id}">Delete</button>
       </div>
     `;
