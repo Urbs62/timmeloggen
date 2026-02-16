@@ -69,11 +69,11 @@
     <section class="panel" id="tab-log">
       <div class="grid">
         <div class="card">
-          <h2>Dagen</h2>
+          <h2>Today</h2>
       
         <div class="row">
           <div class="grow">
-            <label>Aktiv dag</label>
+            <label>Selected dae</label>
             <input id="activeDate" type="date" />
           </div>
         </div>
@@ -123,7 +123,7 @@
           </div>
 
           <div style="margin-top:10px;">
-            <label>Konto</label>
+            <label>Account</label>
             <select id="slotAccount"></select>
           </div>
 
@@ -147,13 +147,13 @@
         </div>
 
         <div class="card">
-          <h2>Dagens rader</h2>
+          <h2>Entries for selected date</h2>
           <div class="hint" id="dayKeyView"></div>
 
           <div class="list" id="slotList"></div>
 
           <div class="actions">
-            <button id="clearTodayBtn" class="danger">Rensa dagen</button>
+            <button id="clearTodayBtn" class="danger">Clear entries</button>
           </div>
         </div>
       </div>
@@ -162,20 +162,20 @@
     <!-- Sammanställning -->
     <section class="panel" id="tab-history">
       <div class="card">
-        <h2>Sammanställning</h2>
+        <h2>Summary</h2>
        
         <div class="row">
           <div class="grow">
             <label>Period</label>
             <select id="periodType">
-              <option value="day">Dag</option>
-              <option value="week">Vecka</option>
-              <option value="month">Månad</option>
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
             </select>
           </div>
 
           <div class="grow">
-            <label>Datum</label>
+            <label>Date</label>
             <input id="periodDate" type="date" />
           </div>
 
@@ -189,17 +189,17 @@
 
         <div class="row">
           <div class="grow">
-            <label>Konto</label>
+            <label>Account</label>
             <select id="invoiceAccount"></select>
           </div>
 
           <div class="grow">
-            <label>Månad</label>
+            <label>Month</label>
             <input id="invoiceMonth" type="month" />
           </div>
 
-          <button id="openInvoiceHtmlBtn" class="secondary">Öppna faktura</button>
-          <button id="openUnderlagHtmlBtn" class="secondary">Öppna underlag</button>
+          <button id="openInvoiceHtmlBtn" class="secondary">Open invoice</button>
+          <button id="openUnderlagHtmlBtn" class="secondary">Open details</button>
         </div>
         
         <hr />
@@ -209,19 +209,19 @@
 
         <div class="grid">
           <div class="card" style="margin:0;">
-            <h3>Prognos</h3>
+            <h3>Forecast</h3>
             <div id="forecastBox"></div>
           </div>
         </div>
 
         <div class="grid">
           <div class="card" style="margin:0;">
-            <h3>Översikt</h3>
+            <h3>Overview</h3>
             <div id="overviewBox"></div>
           </div>
 
           <div class="card" style="margin:0;">
-            <h3>Per konto</h3>
+            <h3>Per account</h3>
             <div id="perAccountBox"></div>
           </div>
         </div>
@@ -240,6 +240,7 @@
   <div id="printArea" aria-hidden="true"></div>
 </body>
 </html>
+
 
 
 
