@@ -1241,5 +1241,25 @@ function init() {
      }
    });
 
+   const undoBtn = document.getElementById("btnUndoRestore");
+   if (undoBtn) {
+     undoBtn.addEventListener("click", () => {
+       const s = sessionStorage.getItem("tl_backup_before_import");
+       if (!s) return alert("No restore to undo in this session.");
+   
+       try {
+         const before = JSON.parse(s);
+         for (const k of TL_KEYS) {
+           const v = before[k];
+           if (typeof v === "string") localStorage.setItem(k, v);
+           else localStorage.removeItem(k);
+         }
+         alert("Restored previous state. Reload the app.");
+       } catch {
+         alert("Could not undo restore.");
+       }
+     });
+   }
+   
 }
 init();
