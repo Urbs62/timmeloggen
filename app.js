@@ -1240,39 +1240,6 @@ function init() {
        e.target.value = "";
      }
    });
-   
-   
-   // ===== UNDO BUTTON (safe) =====
-   (function addUndoButton() {
-     const menu = document.querySelector(".menu");
-     if (!menu) return;
-   
-     const undoBtn = document.createElement("button");
-     undoBtn.type = "button";
-     undoBtn.textContent = "Ångra restore";
-     undoBtn.style.marginTop = "10px";
-   
-     undoBtn.addEventListener("click", () => {
-       const s = sessionStorage.getItem("tl_backup_before_import");
-       if (!s) return alert("Ingen import att ångra i denna session.");
-   
-       try {
-         const before = JSON.parse(s);
-         for (const k of TL_KEYS) {
-           const v = before[k];
-           if (typeof v === "string") localStorage.setItem(k, v);
-           else localStorage.removeItem(k);
-         }
-         alert("Återställt läget före import. Ladda om appen.");
-       } catch {
-         alert("Kunde inte ångra (backup saknas eller är trasig).");
-       }
-     });
-   
-     menu.appendChild(undoBtn);
-   })();
 
-   
-   
 }
 init();
