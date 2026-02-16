@@ -122,8 +122,6 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
 
 .item .row{
   margin-left: auto;
-  display:flex;
-  gap:8px;
 }
 
 .item .row button{
