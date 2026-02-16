@@ -127,13 +127,11 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   gap: 6px;
 }
 
-/* Mindre, fast bredd */
-.item .row button{
-  width: 88px;        /* justera 80–100px efter smak */
-  padding: 6px 8px;   /* mindre luft */
-  font-size: 0.85rem; /* något mindre text */
+.item .row{
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
 }
-
 
 @media (pointer: coarse){
   .tabs{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
