@@ -35,8 +35,8 @@
 
   <nav class="tabs">
     <button class="tab active" data-tab="accounts">Accounts</button>
-    <button class="tab" data-tab="log">Time Entries</button>
-    <button class="tab" data-tab="history">Reports</button>
+    <button class="tab" data-tab="log">Time Log</button>
+    <button class="tab" data-tab="history">Summaty</button>
     <button class="tab" data-tab="help" disabled>Coming Soon</button>
   </nav>
 
@@ -79,8 +79,8 @@
         </div>
 
         <div class="row">
-          <button id="startDayBtn">Start Day</button>
-          <button id="endDayBtn" class="secondary">End Day</button>
+          <button id="startDayBtn">Start day</button>
+          <button id="endDayBtn" class="secondary">End day</button>
         </div>
 
           <hr class="sep" />
@@ -102,7 +102,7 @@
               <div class="pill" id="breakView">0:00</div>
             </div>
             <div>
-              <label>Work Time</label>
+              <label>Work time</label>
               <div class="pill" id="workView">0:00</div>
             </div>
           </div>
@@ -184,7 +184,7 @@
 
         <hr />
 
-        <h3>Fakturaunderlag</h3>
+        <h3>Supporting documents</h3>
         <p class="muted">Export for selected month and account (billable hours only)</p>
 
         <div class="row">
@@ -204,7 +204,7 @@
         
         <hr />
 
-        <h3>Prognos (budget 3,2 h/arbetsdag)</h3>
+        <h3>Forecast (target 3,2 h per working day)</h3>
         <p class="muted">Based on hours to date and continued pace toward target.</p>
 
         <div class="grid">
@@ -228,7 +228,7 @@
 
         <hr class="sep" />
 
-        <h3>Poster i perioden</h3>
+        <h3>Time entries</h3>
         <div class="list" id="historyList"></div>
       </div>
     </section>
@@ -240,6 +240,7 @@
   <div id="printArea" aria-hidden="true"></div>
 </body>
 </html>
+
 
 
 
