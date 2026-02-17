@@ -363,7 +363,6 @@ function renderAccounts() {
                 outline:none;
               " />
           </div>
-          <div class="meta">ID: ${a.id}</div>
         </div>
         <div>
           <button class="danger secondary" data-del="${a.id}">Delete</button>
