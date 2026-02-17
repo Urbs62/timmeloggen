@@ -561,20 +561,20 @@ function renderDay() {
   const isToday = isTodayActive();
 
   // Pills/labels
-  setText(dayKeyView, `Aktiv dag: ${activeDayKey}`);
-  setText(todayPill, `Idag: ${todayKey()}`);
+  setText(dayKeyView, `Active day: ${activeDayKey}`);
+  setText(todayPill, `Today: ${todayKey()}`);
 
   // Start/Slut: bara “idag”
   setText(
     dayStartView,
     isToday && d.startTs
-      ? new Date(d.startTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+      ? new Date(d.startTs).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
       : "—"
   );
   setText(
     dayEndView,
     isToday && d.endTs
-      ? new Date(d.endTs).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+      ? new Date(d.endTs).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
       : "—"
   );
 
@@ -587,9 +587,9 @@ function renderDay() {
   endDayBtn.disabled = !isToday || !d.startTs || !!d.endTs;
 
   if (!isToday) {
-    setText(chimeView, "Start/Slut bara för idag (timljud kräver att dagen är igång).");
+    setText(chimeView, "Start/End is only available for today (hourly chime requires an active day).");
   } else {
-    setText(chimeView, d.startTs && !d.endTs ? "Timljud: på (varje timme efter start)" : "Timljud: av");
+    setText(chimeView, d.startTs && !d.endTs ? "Hourly chime: on (every hour after start)" : "Hourly chime: off");
   }
 
   // Default för slot start
@@ -612,7 +612,7 @@ function renderDay() {
   }
 
   d.slots.forEach((s) => {
-    const acc = accountNameById(s.accountId) || "(ej valt)";
+    const acc = accountNameById(s.accountId) || "Unassigned";
     const timeLabel = `${minutesToTime(s.startMin)}–${minutesToTime(s.endMin)}`;
     const dur = fmtHM(slotDurationMin(s));
     const meta = `${timeLabel} • ${dur} • ${acc}${s.isBreak ? " • Rast/Lunch" : ""}`;
@@ -843,7 +843,7 @@ function renderHistory() {
   // ---- Prognos (endast meningsfull för månad) ----
   if (forecastBox) {
     if (type !== "month") {
-      forecastBox.innerHTML = `<div class="muted">Välj period: <strong>Månad</strong> för att se prognos.</div>`;
+      forecastBox.innerHTML = `<div class="muted">Select period: <strong>Month</strong> To view forecast.</div>`;
     } else {
       const yyyyMm = (dateStr || todayKey()).slice(0, 7);
       const f = monthForecast(days, yyyyMm);
