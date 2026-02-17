@@ -850,21 +850,21 @@ function renderHistory() {
 
       forecastBox.innerHTML = `
         <div class="kv">
-          <div><span class="k">Arbetsdagar (månad)</span> <span class="v">${f.workdaysInMonth}</span></div>
-          <div><span class="k">Arbetsdagar hittills</span> <span class="v">${f.elapsedWorkdays}</span></div>
-          <div><span class="k">Budget hittills</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Utfall hittills</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Diff nu</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Working days (month)</span> <span class="v">${f.workdaysInMonth}</span></div>
+          <div><span class="k">Working dys elapsed</span> <span class="v">${f.elapsedWorkdays}</span></div>
+          <div><span class="k">Target hours to date</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Actual hours to date</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Variance to date</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
 
           <hr class="sep" />
 
-          <div><span class="k">Budget kvar</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Krävs snitt/dag (resten)</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
+          <div><span class="k">Remaining target</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Remaining average per remaining day</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
 
           <hr class="sep" />
 
-          <div><span class="k">Prognos månad</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Prognos vs budget</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Projected month total</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Projected variance</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
         </div>
       `;
     }
@@ -918,7 +918,7 @@ function buildInvoiceRows(monthYYYYMM, accountIdOrAll){
 
       rows.push({
         date: k,
-        accountName: accountNameById(s.accountId) || "(ej valt)",
+        accountName: accountNameById(s.accountId) || "Unassigned",
         start: minutesToTime(s.startMin),
         end: minutesToTime(s.endMin),
         minutes: mins,
@@ -937,7 +937,7 @@ function renderInvoiceAccountSelect(){
   invoiceAccount.innerHTML = "";
   const optAll = document.createElement("option");
   optAll.value = "ALL";
-  optAll.textContent = "Alla konton";
+  optAll.textContent = "All accounts";
   invoiceAccount.appendChild(optAll);
 
   accounts
@@ -955,7 +955,7 @@ function buildInvoicePrintHtml(monthVal, accVal){
   const { rows, totalMinutes } = buildInvoiceRows(monthVal, accVal);
 
   const accLabel =
-    accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || "(ej valt)");
+    accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || "Unassigned");
 
   const totalHours = minutesToDecimalHours(totalMinutes);
 
