@@ -366,12 +366,12 @@ function renderAccounts() {
           <div class="meta">ID: ${a.id}</div>
         </div>
         <div>
-          <button class="danger secondary" data-del="${a.id}">Ta bort</button>
+          <button class="danger secondary" data-del="${a.id}">Delete</button>
         </div>
       `;
 
       el.querySelector(`[data-del="${a.id}"]`).addEventListener("click", () => {
-        if (confirm(`Ta bort konto "${a.name}"?`)) deleteAccount(a.id);
+        if (confirm(`Delete account "${a.name}"?`)) deleteAccount(a.id);
       });
 
       el.querySelector(".account-edit").addEventListener("change", (e) => {
@@ -421,11 +421,11 @@ function addSlot() {
   const endMin = parseTimeToMinutes(slotEnd.value);
 
   if (startMin === null || endMin === null) {
-    alert("Välj både start- och stopptid.");
+    alert("Select both start and end time");
     return;
   }
   if (endMin <= startMin) {
-    alert("Stopptid måste vara efter starttid.");
+    alert("End time must be after start time");
     return;
   }
 
@@ -544,7 +544,7 @@ function accountNameById(id) {
 
 // ---------- Render log tab ----------
 function renderAccountSelect() {
-  slotAccount.innerHTML = `<option value="">(Välj konto)</option>`;
+  slotAccount.innerHTML = `<option value="">Select account</option>`;
   accounts
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name, "sv"))
@@ -604,8 +604,8 @@ function renderDay() {
     slotList.innerHTML = `
       <div class="item">
         <div class="left">
-          <div class="title muted">Inga rader ännu</div>
-          <div class="meta">Lägg till en rad med start + stopptid.</div>
+          <div class="title muted">No entries yet</div>
+          <div class="meta">Add a time entry with start and end time.</div>
         </div>
       </div>`;
     return;
@@ -982,10 +982,10 @@ function buildInvoicePrintHtml(monthVal, accVal){
     <table>
       <thead>
         <tr>
-          <th>Datum</th>
-          <th>Tid</th>
-          <th class="right">Timmar</th>
-          <th>Aktivitet</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th class="right">Hours</th>
+          <th>Activity</th>
         </tr>
       </thead>
       <tbody>
