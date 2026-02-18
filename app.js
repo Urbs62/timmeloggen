@@ -777,9 +777,9 @@ function renderHistory() {
 
   overviewBox.innerHTML = `
     <div><span class="k">Period</span> <span class="v">${label}</span></div>
-    <div><span class="k">Work time</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
-    <div><span class="k">Break/Lunch</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
-    <div><span class="k">Days with entries</span> <span class="v">${keys.length}</span></div>
+    <div><span class="k">Work time:</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
+    <div><span class="k">Break/Lunch:</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
+    <div><span class="k">Days with entries:</span> <span class="v">${keys.length}</span></div>
   `;
 
   // Per konto
