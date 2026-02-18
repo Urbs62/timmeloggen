@@ -1,6 +1,6 @@
 /* Time Ledger
    - 3 flikar: Konton, Tidsloggning, Sammanställning
-   - Slots: start + stopptid + konto + text + "rast/lunch"
+   - Slots: start + stopptid + konto + text + rast/lunch"
    - Arbetstid = summa (icke-rast) slots (alla dagar)
    - Start/Slut + timljud: endast för idag
    - localStorage
@@ -614,7 +614,7 @@ function renderDay() {
     const acc = accountNameById(s.accountId) || "Unassigned";
     const timeLabel = `${minutesToTime(s.startMin)}–${minutesToTime(s.endMin)}`;
     const dur = fmtHM(slotDurationMin(s));
-    const meta = `${timeLabel} • ${dur} • ${acc}${s.isBreak ? " • Rast/Lunch" : ""}`;
+    const meta = `${timeLabel} • ${dur} • ${acc}${s.isBreak ? " • Break/Lunch" : ""}`;
 
     const el = document.createElement("div");
     el.className = "item";
@@ -778,13 +778,13 @@ function renderHistory() {
   overviewBox.innerHTML = `
     <div><span class="k">Period</span> <span class="v">${label}</span></div>
     <div><span class="k">Arbetstid</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
-    <div><span class="k">Rast/lunch</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
+    <div><span class="k">Break/lunch</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
     <div><span class="k">Dagar med data</span> <span class="v">${keys.length}</span></div>
   `;
 
   // Per konto
   if (perAccMin.size === 0) {
-    perAccountBox.innerHTML = `<div class="muted">Inga slots i perioden.</div>`;
+    perAccountBox.innerHTML = `<div class="muted">No time entries in this period.</div>`;
   } else {
     const entries = [...perAccMin.entries()]
       .map(([accId, min]) => ({ accId, min, name: accountNameById(accId) || "(ej valt)" }))
@@ -811,8 +811,8 @@ function renderHistory() {
     historyList.innerHTML = `
       <div class="item">
         <div class="left">
-          <div class="title muted">Inga poster</div>
-          <div class="meta">Inget att visa i vald period.</div>
+          <div class="title muted">No entries</div>
+          <div class="meta">Nothing to display for the selected period.</div>
         </div>
       </div>`;
   } else {
@@ -825,7 +825,7 @@ function renderHistory() {
         const acc = accountNameById(r.accountId) || "(ej valt)";
         const timeLabel = `${minutesToTime(r.startMin)}–${minutesToTime(r.endMin)}`;
         const dur = fmtHM(slotDurationMin(r));
-        const meta = `${r.date} • ${timeLabel} • ${dur} • ${acc}${r.isBreak ? " • Rast/Lunch" : ""}`;
+        const meta = `${r.date} • ${timeLabel} • ${dur} • ${acc}${r.isBreak ? " • Break/Lunch" : ""}`;
 
         const el = document.createElement("div");
         el.className = "item";
@@ -1020,12 +1020,12 @@ function setTitleHard(newTitle){
 
 function printInvoicePdf(){
   const monthVal = (invoiceMonth?.value || "").trim();
-  if (!monthVal) return alert("Välj en månad.");
+  if (!monthVal) return alert("Select month");
 
   const accVal = invoiceAccount?.value || "ALL";
   const { rows } = buildInvoiceRows(monthVal, accVal);
   if (!rows.length){
-    return alert("Inga arbetspass hittades för vald månad/konto.");
+    return alert("No time entries found for the selected month/account.");
   }
 
   if (!printArea) return alert("printArea saknas i index.html.");
