@@ -842,7 +842,7 @@ function renderHistory() {
   // ---- Prognos (endast meningsfull för månad) ----
   if (forecastBox) {
     if (type !== "month") {
-      forecastBox.innerHTML = `<div class="muted">Select period: <strong>Month</strong> To view forecast.</div>`;
+      forecastBox.innerHTML = `<div class="muted">Select <strong>Month</strong> to view forecast.</div>`;
     } else {
       const yyyyMm = (dateStr || todayKey()).slice(0, 7);
       const f = monthForecast(days, yyyyMm);
@@ -850,7 +850,7 @@ function renderHistory() {
       forecastBox.innerHTML = `
         <div class="kv">
           <div><span class="k">Working days (month)</span> <span class="v">${f.workdaysInMonth}</span></div>
-          <div><span class="k">Working dys elapsed</span> <span class="v">${f.elapsedWorkdays}</span></div>
+          <div><span class="k">Working days elapsed</span> <span class="v">${f.elapsedWorkdays}</span></div>
           <div><span class="k">Target hours to date</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Actual hours to date</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Variance to date</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
