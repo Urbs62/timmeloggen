@@ -508,7 +508,7 @@ function editSlot(slotId) {
 
 function clearDay() {
   const d = getDay(activeDayKey);
-  if (!confirm("Rensa alla rader för vald dag?")) return;
+  if (!confirm("Clear all entries for the selected day?")) return;
   d.slots = [];
   saveDays();
   renderDay();
@@ -770,15 +770,15 @@ function renderHistory() {
 
   const label =
     type === "day"
-      ? `Dag: ${dateStr}`
+      ? `Day: ${dateStr}`
       : type === "month"
-      ? `Månad: ${dateStr.slice(0, 7)}`
-      : `Vecka: ${isoWeekKeyFromDate(new Date(dateStr + "T12:00:00"))}`;
+      ? `Month: ${dateStr.slice(0, 7)}`
+      : `Week: ${isoWeekKeyFromDate(new Date(dateStr + "T12:00:00"))}`;
 
   overviewBox.innerHTML = `
     <div><span class="k">Period</span> <span class="v">${label}</span></div>
-    <div><span class="k">Arbetstid</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
-    <div><span class="k">Break/lunch</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
+    <div><span class="k">Work time</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
+    <div><span class="k">Break/Lunch</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
     <div><span class="k">Days with entries</span> <span class="v">${keys.length}</span></div>
   `;
 
