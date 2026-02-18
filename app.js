@@ -768,19 +768,26 @@ function renderHistory() {
   const keys = periodKeys(type, dateStr);
   const { totalWorkMin, totalBreakMin, perAccMin, rows } = aggregateForKeys(keys);
 
-  const label =
-    type === "day"
-      ? `Day: ${dateStr}`
-      : type === "month"
-      ? `Month: ${dateStr.slice(0, 7)}`
-      : `Week: ${isoWeekKeyFromDate(new Date(dateStr + "T12:00:00"))}`;
+  const periodLabel =
+     type === "day"
+       ? "Date"
+       : type === "month"
+       ? "Month"
+       : "Week";
 
-  overviewBox.innerHTML = `
-    <div><span class="k">Period</span> <span class="v">${label}</span></div>
-    <div><span class="k">Work time:</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
-    <div><span class="k">Break/Lunch:</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
-    <div><span class="k">Days with entries:</span> <span class="v">${keys.length}</span></div>
-  `;
+   const periodValue =
+     type === "day"
+       ? dateStr
+       : type === "month"
+       ? dateStr.slice(0, 7)
+       : isoWeekKeyFromDate(new Date(dateStr + "T12:00:00"));
+
+   overviewBox.innerHTML = `
+     <div><span class="k">${periodLabel}:</span> <span class="v">${periodValue}</span></div>
+     <div><span class="k">Work time:</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
+     <div><span class="k">Break/Lunch:</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
+     <div><span class="k">Days with entries:</span> <span class="v">${keys.length}</span></div>
+   `;
 
   // Per konto
   if (perAccMin.size === 0) {
