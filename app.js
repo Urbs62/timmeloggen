@@ -1028,7 +1028,7 @@ function printInvoicePdf(){
     return alert("No time entries found for the selected month/account.");
   }
 
-  if (!printArea) return alert("printArea saknas i index.html.");
+  if (!printArea) return alert("Print layout is not available.");
 
   printArea.innerHTML = buildInvoicePrintHtml(monthVal, accVal);
 
@@ -1112,7 +1112,7 @@ function init() {
 
        const accVal = (invoiceAccount?.value || "ALL").trim();
        const { rows } = buildInvoiceRows(monthVal, accVal);
-       if (!rows.length) return alert("Inga arbetspass hittades för vald månad/konto.");
+       if (!rows.length) return alert("No time entries found for the selected month/account.");
 
        const accLabel = accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || accVal);
        
@@ -1184,7 +1184,7 @@ function init() {
        const backup = JSON.parse(text);
    
        if (!backup?.data || typeof backup.data !== "object") {
-         throw new Error("Ogiltig backupfil (saknar data).");
+         throw new Error("Invalid backup file (missing data).");
        }
    
        // 1) Visa sammanfattning utan att skriva något
