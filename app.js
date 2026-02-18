@@ -109,7 +109,7 @@ function isWeekday(dateObj){
 function monthBounds(yyyyMm){
   const [y, m] = yyyyMm.split("-").map(Number);
   const start = new Date(y, m - 1, 1);
-  const end = new Date(y, m, 0); // sista dagen i månaden
+  const end = new Date(y, m, 0); // sista en i månaden
   return { start, end };
 }
 
@@ -198,7 +198,7 @@ function monthForecast(daysObj, yyyyMm){
 /*
 days = {
   "YYYY-MM-DD": {
-     startTs: number|null,  // endast relevant för "idag" (timljud)
+     startTs: number|null,  // endast relevant för "i" (timljud)
      endTs: number|null,
      slots: [
        { id, startMin, endMin, accountId, text, isBreak }
@@ -211,7 +211,7 @@ accounts = [{id,name}]
 let accounts = loadJSON(STORE.accounts, []);
 let days = loadJSON(STORE.days, {});
 
-// Aktiv dag (för bakåtredigering)
+// Aktiv  (för bakåtredigering)
 let activeDayKey = todayKey();
 
 // ---------- DOM ----------
@@ -387,9 +387,9 @@ accountName.addEventListener("keydown", (e) => {
   if (e.key === "Enter") addAccount(accountName.value);
 });
 
-// ---------- Slots + Start/Slut (endast idag) ----------
+// ---------- Slots + Start/Slut (endast i) ----------
 function startDay() {
-  if (!isTodayActive()) return; // skydd: endast idag
+  if (!isTodayActive()) return; // skydd: endast i
 
   const d = getDay(activeDayKey);
   if (d.startTs) return;
@@ -402,10 +402,10 @@ function startDay() {
 }
 
 function endDay() {
-  if (!isTodayActive()) return; // skydd: endast idag
+  if (!isTodayActive()) return; // skydd: endast i
 
   const d = getDay(activeDayKey);
-  if (!d.startTs) return alert("Starta dagen först.");
+  if (!d.startTs) return alert("Start the day first.");
 
   d.endTs = Date.now();
   saveDays();
@@ -474,24 +474,24 @@ function editSlot(slotId) {
   const currentStart = minutesToTime(s.startMin);
   const currentEnd = minutesToTime(s.endMin);
 
-  const newStart = prompt("Ny starttid (HH:MM)", currentStart);
+  const newStart = prompt("New start time (HH:MM)", currentStart);
   if (newStart === null) return;
-  const newEnd = prompt("Ny stopptid (HH:MM)", currentEnd);
+  const newEnd = prompt("New end time (HH:MM)", currentEnd);
   if (newEnd === null) return;
 
   const startMin = parseTimeToMinutes(newStart);
   const endMin = parseTimeToMinutes(newEnd);
 
   if (startMin === null || endMin === null || endMin <= startMin) {
-    alert("Ogiltig start/stopptid.");
+    alert("Invalid start/end time.");
     return;
   }
 
-  const newText = prompt("Ny text", s.text || "");
+  const newText = prompt("New description", s.text || "");
   if (newText === null) return;
 
   const currentAccName = accountNameById(s.accountId);
-  const newAccName = prompt("Konto (skriv exakt namn, eller tomt)", currentAccName || "");
+  const newAccName = prompt("Account (enter exact name or leave blank)", currentAccName || "");
   if (newAccName !== null) {
     const found = accounts.find((a) => a.name.toLowerCase() === newAccName.trim().toLowerCase());
     s.accountId = found ? found.id : "";
@@ -779,7 +779,7 @@ function renderHistory() {
     <div><span class="k">Period</span> <span class="v">${label}</span></div>
     <div><span class="k">Arbetstid</span> <span class="v strong">${fmtHM(totalWorkMin)}</span></div>
     <div><span class="k">Break/lunch</span> <span class="v">${fmtHM(totalBreakMin)}</span></div>
-    <div><span class="k">Dagar med data</span> <span class="v">${keys.length}</span></div>
+    <div><span class="k">Days with entries</span> <span class="v">${keys.length}</span></div>
   `;
 
   // Per konto
