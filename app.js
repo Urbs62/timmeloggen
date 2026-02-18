@@ -849,21 +849,21 @@ function renderHistory() {
 
       forecastBox.innerHTML = `
         <div class="kv">
-          <div><span class="k">Working days (month)</span> <span class="v">${f.workdaysInMonth}</span></div>
-          <div><span class="k">Working days elapsed</span> <span class="v">${f.elapsedWorkdays}</span></div>
-          <div><span class="k">Target hours to date</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Actual hours to date</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Variance to date</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Working days (month):</span> <span class="v">${f.workdaysInMonth}</span></div>
+          <div><span class="k">Working days elapsed:</span> <span class="v">${f.elapsedWorkdays}</span></div>
+          <div><span class="k">Target hours to date:</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Actual hours to date:</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Variance to date:</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
 
           <hr class="sep" />
 
-          <div><span class="k">Remaining target</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Remaining average per remaining day</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
+          <div><span class="k">Remaining target:</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Remaining average per remaining day:</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
 
           <hr class="sep" />
 
-          <div><span class="k">Projected month total</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Projected variance</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Projected month total:</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Projected variance:</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
         </div>
       `;
     }
