@@ -37,7 +37,9 @@
       touch-action: manipulation;
     }
     .invoice-actions button:hover{ background:#f3f6fb; }
-    @media { .no{ display:none !important; } }
+    @media print{
+      .noPrint{ display:none !important; }
+    }
 
     /* ===== Header: 2 kolumner (logo | meta) ===== */
     .top{
@@ -256,7 +258,7 @@
         background:#fff;
         margin: 0;
       }
-      footer::before{
+      .footer::before{
         border-top:1px solid var(--line);
         margin: 0 0 4mm 0;     /* <-- tight i print, justera 3–6mm om du vill */
       } 
