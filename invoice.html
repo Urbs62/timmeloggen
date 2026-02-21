@@ -4,7 +4,7 @@
   <link rel="stylesheet" href="styles.css" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Faktura-26-002 – Jubrion AB</title>
+  <title>Faktura 26-001 Jubrion AB</title>
 
   <style>
     :root{
@@ -267,7 +267,7 @@
 
 <body>
   <div class="invoice-actions noPrint">
-    <button type="button" id="printBtn" onclick="window.print()">Print / Save as PDF</button>
+    <button type="button" id="printBtn">Skriv ut/Spara som PDF</button>
     <button type="button" onclick="history.back()">Back</button>
   </div>
 
@@ -369,6 +369,17 @@
   </div>
 
 <script>
+  const SETTINGS_KEY = "tl_settings_v1";
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }catch{
+      return {};
+    }
+  }
+  const settings = loadSettings();
+  
   // ========= Print (mobil): EN binding, synkront =========
   (function () {
     const btn = document.getElementById("printBtn");
@@ -398,9 +409,9 @@
   const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
   const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
 
-  const price = Number(q.get("price") || "650");
-  const vatRate = Number(q.get("vat") || "0.25");
-  const invNo = (q.get("no") || "26-001").trim();
+  const invNo = (q.get("no") || settings?.invoiceNo || "26-001").trim();
+  const price = Number(q.get("price") || settings?.hourlyRate || "650");
+  const vatRate = Number(q.get("vat") || settings?.vatRate || "0.25");
 
   function safeFilePart(s) {
     return String(s || "")
@@ -410,7 +421,7 @@
   }
 
   function setPdfTitleForInvoice() {
-    document.title = `Faktura-${safeFilePart(invNo)} Jubrion AB`;
+    document.title = `Faktura ${safeFilePart(invNo)} Jubrion AB`;
   }
 
   const invDate = q.get("date") || (() => {
