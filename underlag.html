@@ -1,6 +1,4 @@
 <!doctype html>
-
-
 <html lang="sv">
 <head>
   <meta charset="utf-8" />
@@ -182,9 +180,11 @@
       const account = payload?.account || "";
 
       // Prioritet: invNo om det finns, annars månad+konto
-      const base = invNo
-        ? `Fakturaunderlag-${safeFilePart(invNo)} Jubrion AB`
-        : `Fakturaunderlag-${safeFilePart(month)}-${safeFilePart(account)}`;
+      const invNoClean = (invNo || "").trim();
+
+      const base = invNoClean
+      ? `Fakturaunderlag ${safeFilePart(invNoClean)} Jubrion AB`
+      : `Fakturaunderlag ${safeFilePart(month)} ${safeFilePart(account)}`;
 
       setTitleHard(base);
     }
