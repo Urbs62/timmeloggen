@@ -10,8 +10,29 @@ const STORE = {
   accounts: "tl_accounts_v1",
   days: "tl_days_v1",
 };
+
 function getInvoiceNo(){
-  return "26-001";
+  return getSettings().invoiceNo; // t.ex. "26-002"
+}
+
+const SETTINGS_KEY = "tl_settings_v1";
+
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch{
+    return {};
+  }
+}
+
+function getSettings(){
+  const s = loadSettings();
+  return {
+    invoiceNo: (s?.invoiceNo || "26-001").trim(),
+    hourlyRate: Number.isFinite(Number(s?.hourlyRate)) ? Number(s.hourlyRate) : 650,
+    vatRate: Number.isFinite(Number(s?.vatRate)) ? Number(s.vatRate) : 0.25
+  };
 }
 
 // ---------- Helpers ----------
@@ -1014,7 +1035,7 @@ function safeFilePart(s){
 
 function setPdfTitleForUnderlag(){
   const invNo = safeFilePart(getInvoiceNo());
-  setTitleHard(`Fakturaunderlag-${invNo} Jubrion AB`);
+   setTitleHard(`Fakturaunderlag ${invNo} Jubrion AB`);
 }
 
 
@@ -1086,17 +1107,19 @@ function init() {
        }
 
        const accId = (invoiceAccount?.value || "ALL").trim();
-
-       const price = 650;   // á-pris
-       const vat = 0.25;    // 25 % moms
-
+     
+      const s = getSettings();
+      const price = s.hourlyRate; // timpris från settings
+      const vat = s.vatRate;      // moms som andel, t.ex. 0.25
+        
        const d = new Date();
        const yyyy = d.getFullYear();
        const mm = String(d.getMonth() + 1).padStart(2, "0");
        const dd = String(d.getDate()).padStart(2, "0");
        const invDate = `${yyyy}-${mm}-${dd}`;
 
-       const invNo = getInvoiceNo();
+      const invNo = s.invoiceNo;
+        
        const url =
          `invoice.html?month=${encodeURIComponent(month)}` +
          `&account=${encodeURIComponent(accId)}` +
