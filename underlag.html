@@ -175,7 +175,7 @@
     // Sätter title för "så bra det går" filnamn.
     // Mobil kan fortfarande ignorera, men detta är stabilt för desktop + vissa mobiler.
     function setPdfTitleForUnderlag(payload){
-      const invNo = payload?.invNo || ""; // om du vill: börja skicka invNo i payload senare
+      const invNo = payload?.invNo || "";
       const month = payload?.month || "";
       const account = payload?.account || "";
 
@@ -200,7 +200,9 @@
         content.innerHTML = "";
         return;
       }
-
+      // NYTT:
+      setPdfTitleForUnderlag(payload);
+      
       const month = payload.month || "";
       const account = payload.account || "";
       const rows = payload.rows || [];
@@ -296,24 +298,15 @@
         const payload = loadPayload();
         const oldTitle = document.querySelector("title")?.textContent || document.title;
 
-
-        // Sätt title innan print
+        // Sätt title och print DIREKT (viktigt på mobil)
         setPdfTitleForUnderlag(payload);
+        window.print();
 
-        // På mobil/PWA hjälper det ofta att vänta lite innan print
+        // återställ title efteråt
         setTimeout(() => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              window.print();
-
-              // återställ title efteråt
-              setTimeout(() => {
-              setTitleHard(oldTitle);
-                printing = false;
-              }, 900);
-            });
-          });
-        }, 80);
+          setTitleHard(oldTitle);
+          printing = false;
+        }, 900);
       };
 
       // Bind bara EN gång
