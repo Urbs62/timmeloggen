@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Inställningar – TimeLedger</title>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">
+          <div class="logoMark">TL</div>
+        </div>
+        <div>
+          <h1>Inställningar</h1>
+          <div class="sub">Fakturainställningar (sparas lokalt i webbläsaren).</div>
+        </div>
+      </div>
+      <div class="pill">TimeLedger</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Faktura</h2>
+
+        <div class="row">
+          <div class="grow">
+            <label>Fakturanummer</label>
+            <input id="s_invoiceNo" type="text" placeholder="t.ex. 26-002" />
+          </div>
+
+          <div class="grow">
+            <label>Timpris (SEK)</label>
+            <input id="s_rate" type="number" inputmode="decimal" placeholder="650" />
+          </div>
+
+          <div class="grow">
+            <label>Moms (%)</label>
+            <input id="s_vat" type="number" inputmode="decimal" placeholder="25" />
+          </div>
+        </div>
+
+        <div class="row" style="justify-content:flex-end;">
+          <button id="btnSave" class="primary">Spara</button>
+          <button id="btnBack" class="secondary" type="button">Tillbaka</button>
+        </div>
+
+        <div id="status" class="muted" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <div class="foot">
+      Inställningarna sparas i localStorage (nyckel: <code>tl_settings_v1</code>).
+    </div>
+  </div>
+
+  <script>
+    const SETTINGS_KEY = "tl_settings_v1";
+
+    function loadSettings(){
+      try{
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      }catch{
+        return {};
+      }
+    }
+
+    function saveSettings(s){
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    }
+
+    const elNo  = document.getElementById("s_invoiceNo");
+    const elRate = document.getElementById("s_rate");
+    const elVat  = document.getElementById("s_vat");
+    const status = document.getElementById("status");
+
+    function hydrate(){
+      const s = loadSettings();
+      elNo.value = s.invoiceNo ?? "26-001";
+      elRate.value = s.hourlyRate ?? 650;
+      // lagra i settings som andel (0.25) i appen, men här redigerar man i %
+      elVat.value = typeof s.vatRate === "number" ? Math.round(s.vatRate * 100) : 25;
+    }
+
+    document.getElementById("btnSave").addEventListener("click", () => {
+      const invoiceNo = (elNo.value || "").trim() || "26-001";
+
+      const hourlyRate = Number(elRate.value);
+      const vatPercent = Number(elVat.value);
+
+      if (!Number.isFinite(hourlyRate) || hourlyRate <= 0){
+        alert("Ange ett giltigt timpris.");
+        return;
+      }
+      if (!Number.isFinite(vatPercent) || vatPercent < 0 || vatPercent > 100){
+        alert("Ange en giltig moms (0–100).");
+        return;
+      }
+
+      const s = {
+        invoiceNo,
+        hourlyRate,
+        vatRate: vatPercent / 100
+      };
+
+      saveSettings(s);
+      status.textContent = `Sparat: Fakturanummer ${s.invoiceNo}, Timpris ${s.hourlyRate} SEK, Moms ${Math.round(s.vatRate*100)}%.`;
+    });
+
+    document.getElementById("btnBack").addEventListener("click", () => history.back());
+
+    hydrate();
+  </script>
+</body>
+</html>
