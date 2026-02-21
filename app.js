@@ -1034,10 +1034,10 @@ function safeFilePart(s){
 }
 
 function setPdfTitleForUnderlag(){
-  const invNo = safeFilePart(getInvoiceNo());
-   setTitleHard(`Fakturaunderlag ${invNo} Jubrion AB`);
+  const invNoRaw = getInvoiceNo();
+  const invNo = safeFilePart(invNoRaw || "").trim() || "26-000"; // fallback
+  setTitleHard(`Fakturaunderlag ${invNo} Jubrion AB`);
 }
-
 
 function setTitleHard(newTitle){
   document.title = newTitle;
