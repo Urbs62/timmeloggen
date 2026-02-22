@@ -1,5 +1,5 @@
 /* Time Ledger
-   - 3 flikar: Konton, Tidsloggning, Sammanställning
+   - 4 flikar: Konton, Tidsloggning, Sammanställning och Settings
    - Slots: start + stopptid + konto + text + rast/lunch"
    - Arbetstid = summa (icke-rast) slots (alla dagar)
    - Start/Slut + timljud: endast för idag
