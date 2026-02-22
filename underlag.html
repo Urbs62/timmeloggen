@@ -145,6 +145,8 @@
     }
 
     const settings = loadSettings();
+    const invNo = (settings.invoiceNo || "26-000").trim();
+    document.title = `Fakturaunderlag ${invNo} Jubrion AB`;
     
     function escapeHtml(s){
       return String(s ?? "")
