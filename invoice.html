@@ -1,11 +1,10 @@
 <!doctype html>
-
 <html lang="sv">
 <head>
   <link rel="stylesheet" href="styles.css" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Faktura 26-001 Jubrion AB</title>
+  <title>Faktura</title>
 
   <style>
     :root{
@@ -414,6 +413,7 @@
   const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
 
   const invNo = (q.get("no") || settings?.invoiceNo || "26-001").trim();
+  document.title = `Faktura ${safeFilePart(invNo)} Jubrion AB`;
   const price = Number(q.get("price") || settings?.hourlyRate || "650");
   const vatRate = Number(q.get("vat") || settings?.vatRate || "0.25");
 
