@@ -380,6 +380,9 @@
     }
   }
   const settings = loadSettings();
+  console.log("SETTINGS OBJECT:", settings);
+  console.log("invoiceNo in settings:", settings.invoiceNo);
+  console.log("URL no param:", new URLSearchParams(location.search).get("no"));
   
   // ========= Print (mobil): EN binding, synkront =========
   (function () {
