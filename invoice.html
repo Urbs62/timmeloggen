@@ -370,14 +370,32 @@
 
 <script>
   const SETTINGS_KEY = "tl_settings_v1";
+  function getDefaultSettings() {
+    return {
+      invoiceNo: "26-001",
+      hourlyRate: 650,
+      vatRate: 0.25,
+      company: {
+        address: {
+          street: "",
+          postalCode: "",
+          city: "",
+          country: "Sweden"
+        }
+      }
+    };
+  }
+
   function loadSettings(){
     try{
       const raw = localStorage.getItem(SETTINGS_KEY);
-      return raw ? JSON.parse(raw) : {};
+      const saved = raw ? JSON.parse(raw) : {};
+      return { ...getDefaultSettings(), ...saved };
     }catch{
-      return {};
+      return getDefaultSettings();
     }
   }
+  
   const settings = loadSettings();
   console.log("SETTINGS OBJECT:", settings);
   console.log("invoiceNo in settings:", settings.invoiceNo);
