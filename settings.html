@@ -25,17 +25,27 @@
     <div class="grid">
       <div class="card">
         <h2>Faktura</h2>
-
         <div class="row">
           <div class="grow">
             <label>Company name</label>
             <input id="s_companyName" type="text" placeholder="t.ex. Jubrion AB" />
           </div>
           <div class="grow">
+            <label>Street</label>
+            <input id="s_companyStreet" type="text" placeholder="Tullgatan 17" />
+          </div>
+          <div class="grow">
+            <label>Postal code</label>
+            <input id="s_companyPostalCode" type="text" placeholder="972 38" />
+          </div>
+          <div class="grow">
+            <label>City</label>
+            <input id="s_companyCity" type="text" placeholder="Luleå" />
+          </div>
+          <div class="grow">
             <label>Fakturanummer</label>
             <input id="s_invoiceNo" type="text" placeholder="t.ex. 26-002" />
           </div>
-
           <div class="grow">
             <label>Timpris (SEK)</label>
             <input id="s_rate" type="number" inputmode="decimal" placeholder="650" />
@@ -65,6 +75,9 @@
   
   <script>
     const elCompany = document.getElementById("s_companyName");
+    const elCompanyStreet = document.getElementById("s_companyStreet");
+    const elCompanyPostalCode = document.getElementById("s_companyPostalCode");
+    const elCompanyCity = document.getElementById("s_companyCity");
     const elNo  = document.getElementById("s_invoiceNo");
     const elRate = document.getElementById("s_rate");
     const elVat  = document.getElementById("s_vat");
@@ -73,6 +86,9 @@
     function hydrate(){
       const s = loadSettings();
       elCompany.value = s.companyName ?? "Jubrion AB";
+      elCompanyStreet.value = s.companyStreet ?? "";
+      elCompanyPostalCode.value = s.companyPostalCode ?? "";
+      elCompanyCity.value = s.companyCity ?? "";
       elNo.value = s.invoiceNo ?? "26-001";
       elRate.value = s.hourlyRate ?? 650;
       // lagra i settings som andel (0.25) i appen, men här redigerar man i %
@@ -81,6 +97,9 @@
 
     document.getElementById("btnSave").addEventListener("click", () => {
       const companyName = (elCompany.value || "").trim();
+      const companyStreet = (elCompanyStreet.value || "").trim();
+      const companyPostalCode = (elCompanyPostalCode.value || "").trim();
+      const companyCity = (elCompanyCity.value || "").trim();
       const invoiceNo = (elNo.value || "").trim() || "26-001";
 
       const hourlyRate = Number(elRate.value);
@@ -98,6 +117,9 @@
       const prev = loadSettings();
       const s = saveSettingsMerge({
         companyName,
+        companyStreet,
+        companyPostalCode,
+        companyCity,
         invoiceNo,
         hourlyRate,
         vatRate: vatPercent / 100
