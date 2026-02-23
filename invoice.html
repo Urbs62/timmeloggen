@@ -473,8 +473,10 @@
   // const ftCompany = (settings.companyName || "Jubrion AB").trim();
   const ftCompany = companyName;
   
-  const ftStreet  = (settings.companyStreet || "Tullgatan 17").trim();
-  const ftCity    = (settings.companyCityLine || "972 38 Luleå").trim();
+  const ftStreet = (settings.companyStreet || "Tullgatan 17").trim();
+  const postal = settings.companyPostalCode || "972 38";
+  const city   = settings.companyCity || "Luleå";
+  const ftCity = `${postal} ${city}`.trim();
 
   const ftBank    = (settings.bankLine || "Bankgiro: xxxx-xxxx").trim();
   const ftTax     = (settings.taxLine  || "F-skatt: SExxxxxxxxxxxx").trim();
