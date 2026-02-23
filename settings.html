@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="sv">
 <head>
   <meta charset="utf-8" />
@@ -114,7 +113,6 @@
         return;
       }
 
-      const prev = loadSettings();
       const s = saveSettingsMerge({
         companyName,
         companyStreet,
@@ -125,18 +123,19 @@
         vatRate: vatPercent / 100
       });
 
-     const addr = [s.companyStreet, s.companyPostalCode, s.companyCity]
-      .filter(Boolean)
-      .join(", ");
+      const addr = [s.companyStreet, s.companyPostalCode, s.companyCity]
+        .filter(Boolean)
+        .join(", ");
 
-    status.textContent =
-      `Sparat: ${s.companyName || "Jubrion AB"} • ` +
-      `Faktura ${s.invoiceNo} • ` +
-      `${s.hourlyRate} SEK/h • ` +
-      `Moms ${Math.round(s.vatRate*100)}%` +
-      (addr ? ` • ${addr}` : "");
-      
-      document.getElementById("btnBack").addEventListener("click", () => history.back());
+      status.textContent =
+        `Sparat: ${s.companyName || "Jubrion AB"} • ` +
+        `Faktura ${s.invoiceNo} • ` +
+        `${s.hourlyRate} SEK/h • ` +
+        `Moms ${Math.round(s.vatRate*100)}%` +
+        (addr ? ` • ${addr}` : "");
+    });
+
+    document.getElementById("btnBack").addEventListener("click", () => history.back());
 
     hydrate();
   </script>
