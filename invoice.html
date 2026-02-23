@@ -351,16 +351,16 @@
     <div class="footer">
       <div class="footerInner">
         <div class="footerCol">
-          <div><strong>Jubrion AB</strong></div>
-          <div>Tullgatan 17</div>
-          <div>972 38 Luleå</div>
+          <div><strong id="ftCompany">Jubrion AB</strong></div>
+          <div id="ftStreet">Tullgatan 17</div>
+          <div id="ftCity">972 38 Luleå</div>
         </div>
-
+        
         <div class="footerCol rightCol">
-          <div>Bankgiro: xxxx-xxxx</div>
-          <div>F-skatt: SExxxxxxxxxxxx</div>
-          <div>E-post: info@jubrion.se</div>
-          <div>Kontakt: Urban Sandlund, 070 524 65 84</div>
+          <div id="ftBank">Bankgiro: xxxx-xxxx</div>
+          <div id="ftTax">F-skatt: SExxxxxxxxxxxx</div>
+          <div id="ftEmail">E-post: info@jubrion.se</div>
+          <div id="ftContact">Kontakt: Urban Sandlund, 070 524 65 84</div>
         </div>
       </div>
     </div>
@@ -473,6 +473,25 @@
 
   document.getElementById("paymentTerms").textContent = `${paymentTermsDays} dagar`;
   document.getElementById("yourRef").textContent = yourRef;
+
+  // Footer (fallbacks = det du redan har idag)
+  const ftCompany = (settings.companyName || "Jubrion AB").trim();
+  const ftStreet  = (settings.companyStreet || "Tullgatan 17").trim();
+  const ftCity    = (settings.companyCityLine || "972 38 Luleå").trim();
+
+  const ftBank    = (settings.bankLine || "Bankgiro: xxxx-xxxx").trim();
+  const ftTax     = (settings.taxLine  || "F-skatt: SExxxxxxxxxxxx").trim();
+  const ftEmail   = (settings.companyEmail ? `E-post: ${settings.companyEmail}` : "E-post: info@jubrion.se").trim();
+  const ftContact = (settings.contactLine || "Kontakt: Urban Sandlund, 070 524 65 84").trim();
+
+  document.getElementById("ftCompany").textContent = ftCompany;
+  document.getElementById("ftStreet").textContent = ftStreet;
+  document.getElementById("ftCity").textContent = ftCity;
+
+  document.getElementById("ftBank").textContent = ftBank;
+  document.getElementById("ftTax").textContent = ftTax;
+  document.getElementById("ftEmail").textContent = ftEmail;
+  document.getElementById("ftContact").textContent = ftContact;
 
   (function(){
     const el = document.getElementById("periodLabel");
