@@ -412,7 +412,13 @@
       const oldTitle = document.title;
 
       // sätt filnamn via title (vissa mobiler använder title som PDF-namn)
-      setPdfTitleForInvoice();
+      // setPdfTitleForInvoice();
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const oldTitle = document.title;
+        window.print();
+        setTimeout(() => { document.title = oldTitle; }, 1000);
+      }, { passive: false });
 
       // VIKTIGT: window.print() direkt i click (ingen requestAnimationFrame)
       window.print();
