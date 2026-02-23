@@ -89,15 +89,12 @@
       }
 
       const prev = loadSettings();
-
-      const s = {
-        ...prev,
+      const s = saveSettingsMerge({
         invoiceNo,
         hourlyRate,
         vatRate: vatPercent / 100
-      };
+      });
 
-      saveSettings(s);
       status.textContent = `Sparat: Fakturanummer ${s.invoiceNo}, Timpris ${s.hourlyRate} SEK, Moms ${Math.round(s.vatRate*100)}%.`;
     });
 
