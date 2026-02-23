@@ -279,7 +279,8 @@
       <div class="logoCol">
         <img
           src="icons/Jubrion_AB_logo_horizontal_192.png"
-          alt="Jubrion AB"
+          alt=""
+          id="companyLogo"
           class="invoice-logo"
           onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
         />
@@ -399,6 +400,9 @@
   const settings = loadSettings();
 
   const companyName = (settings.companyName || "Jubrion AB").trim();
+  const logo = document.getElementById("companyLogo");
+  if (logo) logo.alt = companyName;
+  
   const paymentTermsDays = Number(settings.paymentTermsDays || 30);
   const yourRef = (settings.yourReference || "Sandra Ström").trim();
   
@@ -456,7 +460,7 @@
   }
 
   function setPdfTitleForInvoice() {
-    document.title = `Faktura ${safeFilePart(invNo)} Jubrion AB`;
+    document.title = `Faktura ${safeFilePart(invNo)} ${safeFilePart(companyName)}`;
   }
 
   const invDate = q.get("date") || (() => {
@@ -475,7 +479,9 @@
   document.getElementById("yourRef").textContent = yourRef;
 
   // Footer (fallbacks = det du redan har idag)
-  const ftCompany = (settings.companyName || "Jubrion AB").trim();
+  // const ftCompany = (settings.companyName || "Jubrion AB").trim();
+  const ftCompany = companyName;
+  
   const ftStreet  = (settings.companyStreet || "Tullgatan 17").trim();
   const ftCity    = (settings.companyCityLine || "972 38 Luleå").trim();
 
