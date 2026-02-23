@@ -12,3 +12,10 @@ function loadSettings(){
 function saveSettings(s){
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
 }
+
+function saveSettingsMerge(patch){
+  const prev = loadSettings();
+  const next = { ...prev, ...patch };
+  saveSettings(next);
+  return next;
+}
