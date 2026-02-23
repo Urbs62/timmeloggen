@@ -101,7 +101,10 @@
         return;
       }
 
+      const prev = loadSettings();
+
       const s = {
+        ...prev,
         invoiceNo,
         hourlyRate,
         vatRate: vatPercent / 100
