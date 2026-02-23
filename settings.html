@@ -56,23 +56,10 @@
       Inställningarna sparas i localStorage (nyckel: <code>tl_settings_v1</code>).
     </div>
   </div>
-
+  
+  <script src="settings.js"></script>
+  
   <script>
-    const SETTINGS_KEY = "tl_settings_v1";
-
-    function loadSettings(){
-      try{
-        const raw = localStorage.getItem(SETTINGS_KEY);
-        return raw ? JSON.parse(raw) : {};
-      }catch{
-        return {};
-      }
-    }
-
-    function saveSettings(s){
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-    }
-
     const elNo  = document.getElementById("s_invoiceNo");
     const elRate = document.getElementById("s_rate");
     const elVat  = document.getElementById("s_vat");
