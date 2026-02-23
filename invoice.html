@@ -291,7 +291,7 @@
           <div class="metaRow"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">—</span></div>
           <div class="metaRow"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">—</span></div>
           <div class="metaRow"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
-          <div class="metaRow"><span class="k">Betalningsvillkor:</span> <span class="v">30 dagar</span></div>
+          <div class="metaRow"><span class="k">Betalningsvillkor:</span> <span class="v" id="paymentTerms">—</span></div>
 
           <!-- NYTT: Er referens (fast) -->
           <div class="metaRow"><span class="k">Er referens:</span> <span class="v">Mats Jakobsson</span></div>
@@ -397,6 +397,10 @@
   }
   
   const settings = loadSettings();
+
+  const companyName = (settings.companyName || "Jubrion AB").trim();
+  const paymentTermsDays = Number(settings.paymentTermsDays || 30);
+  
   console.log("SETTINGS OBJECT:", settings);
   console.log("invoiceNo in settings:", settings.invoiceNo);
   console.log("URL no param:", new URLSearchParams(location.search).get("no"));
@@ -437,7 +441,9 @@
   const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
 
   const invNo = (q.get("no") || settings?.invoiceNo || "26-001").trim();
-  document.title = `Faktura ${safeFilePart(invNo)} Jubrion AB`;
+  // document.title = `Faktura ${safeFilePart(invNo)} Jubrion AB`;
+  document.title = `Faktura ${safeFilePart(invNo)} ${safeFilePart(companyName)}`;
+
   const price = Number(q.get("price") || settings?.hourlyRate || "650");
   const vatRate = Number(q.get("vat") || settings?.vatRate || "0.25");
 
@@ -463,6 +469,8 @@
   // ========= Skriv in meta =========
   document.getElementById("invoiceNo").textContent = invNo;
   document.getElementById("invoiceDate").textContent = invDate;
+
+  document.getElementById("paymentTerms").textContent = `${paymentTermsDays} dagar`;
 
   (function(){
     const el = document.getElementById("periodLabel");
