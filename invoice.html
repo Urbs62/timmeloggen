@@ -372,7 +372,6 @@
 <script src="settings.js"></script>
   
 <script>
-  const SETTINGS_KEY = "tl_settings_v1";
   function getDefaultSettings() {
     return {
       invoiceNo: "26-001",
@@ -387,16 +386,6 @@
         }
       }
     };
-  }
-
-  function loadSettings(){
-    try{
-      const raw = localStorage.getItem(SETTINGS_KEY);
-      const saved = raw ? JSON.parse(raw) : {};
-      return { ...getDefaultSettings(), ...saved };
-    }catch{
-      return getDefaultSettings();
-    }
   }
   
   const settings = loadSettings();
