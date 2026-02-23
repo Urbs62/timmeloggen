@@ -28,6 +28,10 @@
 
         <div class="row">
           <div class="grow">
+            <label>Company name</label>
+            <input id="s_companyName" type="text" placeholder="t.ex. Jubrion AB" />
+          </div>
+          <div class="grow">
             <label>Fakturanummer</label>
             <input id="s_invoiceNo" type="text" placeholder="t.ex. 26-002" />
           </div>
@@ -74,6 +78,7 @@
     }
 
     document.getElementById("btnSave").addEventListener("click", () => {
+      const companyName = (elCompany.value || "").trim();
       const invoiceNo = (elNo.value || "").trim() || "26-001";
 
       const hourlyRate = Number(elRate.value);
@@ -90,6 +95,7 @@
 
       const prev = loadSettings();
       const s = saveSettingsMerge({
+        companyName,
         invoiceNo,
         hourlyRate,
         vatRate: vatPercent / 100
