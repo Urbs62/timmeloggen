@@ -64,6 +64,7 @@
   <script src="settings.js"></script>
   
   <script>
+    const elCompany = document.getElementById("s_companyName");
     const elNo  = document.getElementById("s_invoiceNo");
     const elRate = document.getElementById("s_rate");
     const elVat  = document.getElementById("s_vat");
@@ -71,7 +72,6 @@
 
     function hydrate(){
       const s = loadSettings();
-      const elCompany = document.getElementById("s_companyName");
       elCompany.value = s.companyName ?? "Jubrion AB";
       elNo.value = s.invoiceNo ?? "26-001";
       elRate.value = s.hourlyRate ?? 650;
