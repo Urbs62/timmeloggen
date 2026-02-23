@@ -125,14 +125,18 @@
         vatRate: vatPercent / 100
       });
 
-     status.textContent =
-      `Sparat: Företag ${s.companyName}, ` +
-      `Fakturanummer ${s.invoiceNo}, ` +
-      `Timpris ${s.hourlyRate} SEK, ` +
-      `Moms ${Math.round(s.vatRate*100)}%.`;
-    });
+     const addr = [s.companyStreet, s.companyPostalCode, s.companyCity]
+      .filter(Boolean)
+      .join(", ");
 
-    document.getElementById("btnBack").addEventListener("click", () => history.back());
+    status.textContent =
+      `Sparat: ${s.companyName || "Jubrion AB"} • ` +
+      `Faktura ${s.invoiceNo} • ` +
+      `${s.hourlyRate} SEK/h • ` +
+      `Moms ${Math.round(s.vatRate*100)}%` +
+      (addr ? ` • ${addr}` : "");
+      
+      document.getElementById("btnBack").addEventListener("click", () => history.back());
 
     hydrate();
   </script>
