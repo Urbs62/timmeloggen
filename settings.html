@@ -42,6 +42,18 @@
             <input id="s_companyCity" type="text" placeholder="Luleå" />
           </div>
           <div class="grow">
+            <label>Email</label>
+            <input id="s_companyEmail" type="email" placeholder="info@jubrion.se" />
+          </div>
+          <div class="grow">
+            <label>Contact line</label>
+            <input id="s_contactLine" type="text" placeholder="Urban Sandlund, 070..." />
+          </div>
+          <div class="grow">
+            <label>Bank line</label>
+            <input id="s_bankLine" type="text" placeholder="Bankgiro: xxxx-xxxx" />
+          </div>
+          <div class="grow">
             <label>Fakturanummer</label>
             <input id="s_invoiceNo" type="text" placeholder="t.ex. 26-002" />
           </div>
@@ -77,6 +89,9 @@
     const elCompanyStreet = document.getElementById("s_companyStreet");
     const elCompanyPostalCode = document.getElementById("s_companyPostalCode");
     const elCompanyCity = document.getElementById("s_companyCity");
+    const elCompanyEmail = document.getElementById("s_companyEmail");
+    const elContactLine = document.getElementById("s_contactLine");
+    const elBankLine = document.getElementById("s_bankLine");
     const elNo  = document.getElementById("s_invoiceNo");
     const elRate = document.getElementById("s_rate");
     const elVat  = document.getElementById("s_vat");
@@ -88,6 +103,9 @@
       elCompanyStreet.value = s.companyStreet ?? "";
       elCompanyPostalCode.value = s.companyPostalCode ?? "";
       elCompanyCity.value = s.companyCity ?? "";
+      elCompanyEmail.value = s.companyEmail ?? "";
+      elContactLine.value = s.contactLine ?? "";
+      elBankLine.value = s.bankLine ?? "";
       elNo.value = s.invoiceNo ?? "26-001";
       elRate.value = s.hourlyRate ?? 650;
       // lagra i settings som andel (0.25) i appen, men här redigerar man i %
@@ -114,10 +132,14 @@
       }
 
       const s = saveSettingsMerge({
+        const s = saveSettingsMerge({
         companyName,
         companyStreet,
         companyPostalCode,
         companyCity,
+        companyEmail,
+        contactLine,
+        bankLine,
         invoiceNo,
         hourlyRate,
         vatRate: vatPercent / 100
