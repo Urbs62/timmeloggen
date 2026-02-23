@@ -71,6 +71,8 @@
 
     function hydrate(){
       const s = loadSettings();
+      const elCompany = document.getElementById("s_companyName");
+      elCompany.value = s.companyName ?? "Jubrion AB";
       elNo.value = s.invoiceNo ?? "26-001";
       elRate.value = s.hourlyRate ?? 650;
       // lagra i settings som andel (0.25) i appen, men här redigerar man i %
