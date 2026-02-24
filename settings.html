@@ -118,6 +118,9 @@
       const companyPostalCode = (elCompanyPostalCode.value || "").trim();
       const companyCity = (elCompanyCity.value || "").trim();
       const invoiceNo = (elNo.value || "").trim() || "26-001";
+      const companyEmail = (elCompanyEmail.value || "").trim();
+      const contactLine = (elContactLine.value || "").trim();
+      const bankgiro = (elBankgiro.value || "").trim();
 
       const hourlyRate = Number(elRate.value);
       const vatPercent = Number(elVat.value);
@@ -137,6 +140,7 @@
         companyPostalCode,
         companyCity,
         contactLine,
+        companyEmail,
         bankgiro,
         invoiceNo,
         hourlyRate,
