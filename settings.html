@@ -54,6 +54,10 @@
             <input id="s_bankgiro" type="text" placeholder="xxxx-xxxx" />
           </div>
           <div class="grow">
+            <label>F-tax / VAT line</label>
+            <input id="s_taxLine" type="text" placeholder="SExxxxxxxxxxxx" />
+          </div>
+          <div class="grow">
             <label>Fakturanummer</label>
             <input id="s_invoiceNo" type="text" placeholder="t.ex. 26-002" />
           </div>
@@ -96,6 +100,7 @@
     const elRate = document.getElementById("s_rate");
     const elVat  = document.getElementById("s_vat");
     const status = document.getElementById("status");
+    const elTaxLine = document.getElementById("s_taxLine");
 
     function hydrate(){
       const s = loadSettings();
@@ -108,6 +113,7 @@
       elBankgiro.value = s.bankgiro ?? "";
       elNo.value = s.invoiceNo ?? "26-001";
       elRate.value = s.hourlyRate ?? 650;
+      elTaxLine.value = s.taxLine ?? "";
       // lagra i settings som andel (0.25) i appen, men här redigerar man i %
       elVat.value = typeof s.vatRate === "number" ? Math.round(s.vatRate * 100) : 25;
     }
@@ -121,6 +127,7 @@
       const companyEmail = (elCompanyEmail.value || "").trim();
       const contactLine = (elContactLine.value || "").trim();
       const bankgiro = (elBankgiro.value || "").trim();
+      const taxLine = (elTaxLine.value || "").trim();
 
       const hourlyRate = Number(elRate.value);
       const vatPercent = Number(elVat.value);
@@ -141,6 +148,7 @@
         companyCity,
         contactLine,
         companyEmail,
+        taxLine,
         bankgiro,
         invoiceNo,
         hourlyRate,
