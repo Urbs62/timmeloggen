@@ -482,10 +482,13 @@
   ? `Bankgiro: ${settings.bankgiro}`
   : "Bankgiro: xxxx-xxxx";
   
-  const ftTax     = (settings.taxLine  || "F-skatt: SExxxxxxxxxxxx").trim();
+  // const ftTax     = (settings.taxLine  || "F-skatt: SExxxxxxxxxxxx").trim();
   const ftEmail   = (settings.companyEmail ? `E-post: ${settings.companyEmail}` : "E-post: info@jubrion.se").trim();
   const ftContact = settings.contactLine ? `Kontakt: ${settings.contactLine}` : "Kontakt: Urban Sandlund, 070 524 65 84";
-  const ftTax = settings.taxLine ? `F-skatt: ${settings.taxLine}` : "F-skatt: SExxxxxxxxxxxx";
+  const ftTax = settings.taxLine
+    ? `F-skatt: ${settings.taxLine}`
+    : "F-skatt: SExxxxxxxxxxxx";
+
 
   document.getElementById("ftCompany").textContent = ftCompany;
   document.getElementById("ftStreet").textContent = ftStreet;
