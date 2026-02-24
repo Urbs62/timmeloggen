@@ -478,9 +478,9 @@
   const city   = settings.companyCity || "Luleå";
   const ftCity = `${postal} ${city}`.trim();
 
- const ftBank = settings.bankgiro
-  ? `Bankgiro: ${settings.bankgiro}`
-  : "Bankgiro: xxxx-xxxx";
+  const ftBank = (settings.bankgiro || "").trim()
+    ? `Bankgiro: ${settings.bankgiro.trim()}`
+    : "";
   
   // const ftTax     = (settings.taxLine  || "F-skatt: SExxxxxxxxxxxx").trim();
   const ftEmail   = (settings.companyEmail ? `E-post: ${settings.companyEmail}` : "E-post: info@jubrion.se").trim();
