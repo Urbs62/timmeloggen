@@ -467,14 +467,12 @@
   document.getElementById("invoiceDate").textContent = invDate;
 
   const ptd = Number(settings.paymentTermsDays);
+
   document.getElementById("paymentTerms").textContent =
     Number.isFinite(ptd) ? `${ptd} dagar` : "";
 
-document.getElementById("yourRef").textContent =
-  (settings.yourReference || "").trim();
-  const ptd = Number(settings.paymentTermsDays);
-  document.getElementById("paymentTerms").textContent =
-    Number.isFinite(ptd) ? `${ptd} dagar` : "";
+  document.getElementById("yourRef").textContent =
+    (settings.yourReference || "").trim();
   
   // Footer (fallbacks = det du redan har idag)
   // const ftCompany = (settings.companyName || "Jubrion AB").trim();
