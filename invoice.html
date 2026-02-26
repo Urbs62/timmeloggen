@@ -355,13 +355,13 @@
           <div><strong id="ftCompany">Jubrion AB</strong></div>
           <div id="ftStreet">Tullgatan 17</div>
           <div id="ftCity">972 38 Luleå</div>
+          <div id="ftEmail"></div>
+          <div id="ftContact"></div>
         </div>
         
         <div class="footerCol rightCol">
           <div id="ftBank"></div>
           <div id="ftTax"></div>
-          <div id="ftEmail"></div>
-          <div id="ftContact"></div>
         </div>
       </div>
     </div>
@@ -475,9 +475,7 @@
     (settings.yourReference || "").trim();
   
   // Footer (fallbacks = det du redan har idag)
-  // const ftCompany = (settings.companyName || "Jubrion AB").trim();
-  const ftCompany = companyName;
-  
+  const ftCompany = companyName;  
   const ftStreet = (settings.companyStreet || "Tullgatan 17").trim();
   const postal = settings.companyPostalCode || "972 38";
   const city   = settings.companyCity || "Luleå";
@@ -488,10 +486,14 @@
   document.getElementById("ftBank").textContent =
     bankText ? `Bankgiro: ${bankText}` : "";
   
-  // F-skatt
+  // F-skatt - VAT-nummer
   const taxText = (settings.taxLine || "").trim();
   document.getElementById("ftTax").textContent =
     taxText ? `F-skatt: ${taxText}` : "";
+  
+  // Godkänd för F-skatt
+  const ftTax = document.getElementById("ftTax");
+    if (ftTax) ftTax.textContent = "Godkänd för F-skatt";
   
   // Email
   const emailText = (settings.companyEmail || "").trim();
