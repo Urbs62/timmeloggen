@@ -83,7 +83,11 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   opacity: .85;
   font-weight: 600;
 }
-
+.invoiceNo {
+  font-size: 0.65em;
+  font-weight: normal;
+  opacity: 0.75;
+}
 /* Pill (datum uppe till höger) */
 .pill{
   border-radius:999px;
