@@ -147,6 +147,8 @@
     const settings = loadSettings();
     const invNo = (settings.invoiceNo || "26-000").trim();
     document.title = `Fakturaunderlag ${invNo} Jubrion AB`;
+    document.querySelector(".invoiceNo").textContent =
+      invNo ? ` ${invNo}` : "";
     
     function escapeHtml(s){
       return String(s ?? "")
@@ -263,7 +265,9 @@
         </div>
         
         <div class="titleCol">
-          <h1>Fakturaunderlag</h1>
+          <h1>
+            Underlag faktura<span class="invoiceNo"></span>
+          </h1>
             <div class="kv">
               <div><b>Månad:</b> ${escapeHtml(month)}</div>
               <div><b>Konto:</b> ${escapeHtml(account)}</div>
