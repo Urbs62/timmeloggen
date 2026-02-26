@@ -147,8 +147,6 @@
     const settings = loadSettings();
     const invNo = (settings.invoiceNo || "26-000").trim();
     document.title = `Fakturaunderlag ${invNo} Jubrion AB`;
-    document.querySelector(".invoiceNo").textContent =
-      invNo ? ` ${invNo}` : "";
     
     function escapeHtml(s){
       return String(s ?? "")
@@ -200,8 +198,8 @@
       const invNoClean = (invNo || "").trim();
 
       const base = invNoClean
-      ? `Fakturaunderlag ${safeFilePart(invNoClean)} Jubrion AB`
-      : `Fakturaunderlag ${safeFilePart(month)} ${safeFilePart(account)}`;
+      ? `Underlag faktura ${safeFilePart(invNoClean)} | Jubrion AB`
+      : `Underlag faktura ${safeFilePart(month)} ${safeFilePart(account)} | Jubrion AB`;
 
       setTitleHard(base);
     }
@@ -253,6 +251,9 @@
       }
 
       content.innerHTML = `
+     
+      const invEl = document.querySelector(".invoiceNo");
+        if (invEl) invEl.textContent = invNo ? ` ${invNo}` : "";
 
       <div class="header">
         <div class="logoCol">
