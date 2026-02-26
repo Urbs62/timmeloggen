@@ -146,7 +146,7 @@
 
     const settings = loadSettings();
     const invNo = (settings.invoiceNo || "26-000").trim();
-    document.title = `Fakturaunderlag ${invNo} Jubrion AB`;
+    document.title = `Underlag faktura ${invNo} | Jubrion AB`;
     
     function escapeHtml(s){
       return String(s ?? "")
@@ -250,8 +250,7 @@
         `;
       }
 
-      content.innerHTML = `
-
+     content.innerHTML = `
       <div class="header">
         <div class="logoCol">
           <img
@@ -261,39 +260,38 @@
             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
           />
         </div>
-        
+    
         <div class="titleCol">
-          <h1>
-            Underlag faktura<span class="invoiceNo"></span>
-          </h1>
-            <div class="kv">
-              <div><b>Månad:</b> ${escapeHtml(month)}</div>
-              <div><b>Konto:</b> ${escapeHtml(account)}</div>
-            </div>
+          <h1>Underlag faktura<span class="invoiceNo"></span></h1>
+          <div class="kv">
+            <div><b>Månad:</b> ${escapeHtml(month)}</div>
+            <div><b>Konto:</b> ${escapeHtml(account)}</div>
           </div>
         </div>
-
-        <table aria-label="Underlag">
-          <thead>
-            <tr>
-              <th class="col-date">Datum</th>
-              <th class="nowrap">Tid</th>
-              <th class="right nowrap">Timmar</th>
-              <th>Konto / Aktivitet</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tr}
-            <tr class="sumrow">
-              <td colspan="2">SUMMA</td>
-              <td class="right nowrap">${escapeHtml(formatHoursSv(total))}</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      `;    
-      const invEl = document.querySelector(".invoiceNo");
-        if (invEl) invEl.textContent = invNo ? ` ${invNo}` : "";
+      </div>
+    
+      <table aria-label="Underlag">
+        <thead>
+          <tr>
+            <th class="col-date">Datum</th>
+            <th class="nowrap">Tid</th>
+            <th class="right nowrap">Timmar</th>
+            <th>Konto / Aktivitet</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tr}
+          <tr class="sumrow">
+            <td colspan="2">SUMMA</td>
+            <td class="right nowrap">${escapeHtml(formatHoursSv(total))}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+    
+    const invEl = document.querySelector(".invoiceNo");
+    if (invEl) invEl.textContent = invNo ? (" " + invNo) : "";
     }
 
     // ===== Print: EN binding, mobilvänlig, ingen dubbelprint =====
