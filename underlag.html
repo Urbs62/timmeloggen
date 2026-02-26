@@ -251,9 +251,6 @@
       }
 
       content.innerHTML = `
-     
-      const invEl = document.querySelector(".invoiceNo");
-        if (invEl) invEl.textContent = invNo ? ` ${invNo}` : "";
 
       <div class="header">
         <div class="logoCol">
@@ -294,7 +291,9 @@
             </tr>
           </tbody>
         </table>
-      `;
+      `;    
+      const invEl = document.querySelector(".invoiceNo");
+        if (invEl) invEl.textContent = invNo ? ` ${invNo}` : "";
     }
 
     // ===== Print: EN binding, mobilvänlig, ingen dubbelprint =====
