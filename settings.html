@@ -54,6 +54,14 @@
             <input id="s_bankgiro" type="text" placeholder="1234-5678" />
           </div>
           <div class="grow">
+            <label>Organisationsnummer</label>
+            <input id="s_orgNo" type="text" placeholder="559123-4567" />
+          </div>
+          <div class="grow">
+            <label>Momsreg.nr (VAT)</label>
+            <input id="s_vatNo" type="text" placeholder="SE559123456701" />
+          </div>
+          <div class="grow">
             <label>F-tax / VAT line</label>
             <input id="s_taxLine" type="text" placeholder="SE123456789001" />
           </div>
@@ -104,7 +112,9 @@
     const elCompanyEmail = document.getElementById("s_companyEmail");
     const elContactLine = document.getElementById("s_contactLine");
     const elBankgiro = document.getElementById("s_bankgiro");
-    const elNo  = document.getElementById("s_invoiceNo");
+    const elOrgNo = document.getElementById("s_orgNo");
+    const elVatNo = document.getElementById("s_vatNo");
+    const elNo = document.getElementById("s_invoiceNo");
     const elPaymentTermsDays = document.getElementById("s_paymentTermsDays");
     const elYourReference = document.getElementById("s_yourReference");
     const elRate = document.getElementById("s_rate");
@@ -121,6 +131,8 @@
       elCompanyEmail.value = s.companyEmail ?? "";
       elContactLine.value = s.contactLine ?? "";
       elBankgiro.value = s.bankgiro ?? "";
+      elOrgNo.value = s.orgNo ?? "";
+      elVatNo.value = s.vatNo ?? "";
       elNo.value = s.invoiceNo ?? "26-001";
       elPaymentTermsDays.value = s.paymentTermsDays ?? 30;
       elYourReference.value = s.yourReference ?? "";
@@ -139,6 +151,8 @@
       const companyEmail = (elCompanyEmail.value || "").trim();
       const contactLine = (elContactLine.value || "").trim();
       const bankgiro = (elBankgiro.value || "").trim();
+      const orgNo = (elOrgNo.value || "").trim();
+      const vatNo = (elVatNo.value || "").trim();
       const taxLine = (elTaxLine.value || "").trim();
       const hourlyRate = Number(elRate.value);
       const vatPercent = Number(elVat.value);
@@ -166,6 +180,8 @@
         companyEmail,
         contactLine,
         bankgiro,
+        orgNo,
+        vatNo,
         taxLine,
         invoiceNo,
         paymentTermsDays,
