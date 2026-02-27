@@ -123,8 +123,8 @@
 <body>
 
   <div class="actions noPrint">
-    <button type="button" id="printBtn">Skriv ut / Spara som PDF</button>
-    <button type="button" id="backBtn">Tillbaka</button>
+    <button type="button" id="printBtn">Print/Export PDF</button>
+    <button type="button" id="backBtn">Back</button>
   </div>
 
   <div class="page">
@@ -211,7 +211,7 @@
 
       if (!payload){
         warn.style.display = "block";
-        warn.textContent = "Inget underlag hittades. Gå tillbaka och öppna underlaget från appen igen.";
+        warn.textContent = "No invoice data found. Please reopen the invoice from the app.";
         content.innerHTML = "";
         return;
       }
