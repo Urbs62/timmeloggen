@@ -55,11 +55,11 @@
             <input id="s_bankgiro" type="text" placeholder="1234-5678" />
           </div>
           <div class="grow">
-            <label>Organisationsnummer</label>
+            <label>Company Registration Number</label>
             <input id="s_orgNo" type="text" placeholder="559123-4567" />
           </div>
           <div class="grow">
-            <label>Momsreg.nr (VAT)</label>
+            <label>VAT Registration Number</label>
             <input id="s_vatNo" type="text" placeholder="SE559123456701" />
           </div>
           <div class="grow">
@@ -67,7 +67,7 @@
             <input id="s_taxLine" type="text" placeholder="SE123456789001" />
           </div>
           <div class="grow">
-            <label>Fakturanummer</label>
+            <label>Invoice number</label>
             <input id="s_invoiceNo" type="text" placeholder="ÅÅ-001" />
           </div>
           <div class="grow">
@@ -79,39 +79,39 @@
             <input id="s_yourReference" type="text" placeholder="För- och efternamn" />
           </div>
           <div class="grow">
-            <label>Timpris (SEK)</label>
+            <label>Hourly Rate (SEK)</label>
             <input id="s_rate" type="number" inputmode="decimal" placeholder="650" />
           </div>
           <div class="grow">
-            <label>Moms (%)</label>
+            <label>VAT (%)</label>
             <input id="s_vat" type="number" inputmode="decimal" placeholder="25" />
           </div>
         </div>
         
         <!-- ===== Kund: Leveransadress ===== -->
         <div class="grow">
-          <label>Kundnamn</label>
+          <label>Customer Name</label>
           <input id="s_customerName" type="text" placeholder="Kund AB" />
         </div>
         
         <div class="grow">
-          <label>Leveransadress (gata)</label>
+          <label>Street Address</label>
           <input id="s_customerStreet" type="text" placeholder="Exempelgatan 1" />
         </div>
         
         <div class="grow">
-          <label>Postnummer</label>
+          <label>Postal code</label>
           <input id="s_customerPostalCode" type="text" placeholder="111 22" />
         </div>
         
         <div class="grow">
-          <label>Stad</label>
+          <label>City</label>
           <input id="s_customerCity" type="text" placeholder="Stockholm" />
         </div>
         
         <!-- ===== Fakturaadress (PDF via e-post) ===== -->
         <div class="grow">
-          <label>Fakturaadress (e-post)</label>
+          <label>Invoice Email (PDF delivery)</label>
           <input id="s_invoiceEmail" type="email" placeholder="invoice@kund.se" />
         </div>
         <div class="row" style="justify-content:flex-end;">
@@ -147,6 +147,11 @@
     const elVat  = document.getElementById("s_vat");
     const status = document.getElementById("status");
     const elTaxLine = document.getElementById("s_taxLine");
+    const elCustomerName = document.getElementById("s_customerName");
+    const elCustomerStreet = document.getElementById("s_customerStreet");
+    const elCustomerPostalCode = document.getElementById("s_customerPostalCode");
+    const elCustomerCity = document.getElementById("s_customerCity");
+    const elInvoiceEmail = document.getElementById("s_invoiceEmail");
 
     function hydrate(){
       const s = loadSettings();
@@ -164,8 +169,12 @@
       elYourReference.value = s.yourReference ?? "";
       elRate.value = s.hourlyRate ?? 650;
       elTaxLine.value = s.taxLine ?? "";
-      // lagra i settings som andel (0.25) i appen, men här redigerar man i %
       elVat.value = typeof s.vatRate === "number" ? Math.round(s.vatRate * 100) : 25;
+      elCustomerName.value = s.customerName ?? "";
+      elCustomerStreet.value = s.customerStreet ?? "";
+      elCustomerPostalCode.value = s.customerPostalCode ?? "";
+      elCustomerCity.value = s.customerCity ?? "";
+      elInvoiceEmail.value = s.invoiceEmail ?? "";
     }
 
     document.getElementById("btnSave").addEventListener("click", () => {
@@ -184,6 +193,11 @@
       const vatPercent = Number(elVat.value);
       const paymentTermsDays = Number(elPaymentTermsDays.value);
       const yourReference = (elYourReference.value || "").trim();
+      const customerName = (elCustomerName.value || "").trim();
+      const customerStreet = (elCustomerStreet.value || "").trim();
+      const customerPostalCode = (elCustomerPostalCode.value || "").trim();
+      const customerCity = (elCustomerCity.value || "").trim();
+      const invoiceEmail = (elInvoiceEmail.value || "").trim();
 
       if (!Number.isFinite(hourlyRate) || hourlyRate <= 0){
         alert("Ange ett giltigt timpris.");
@@ -214,6 +228,11 @@
         yourReference,
         hourlyRate,
         vatRate: vatPercent / 100
+        customerName,
+        customerStreet,
+        customerPostalCode,
+        customerCity,
+        invoiceEmail,
       });
 
       const addr = [s.companyStreet, s.companyPostalCode, s.companyCity]
