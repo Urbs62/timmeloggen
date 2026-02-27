@@ -314,9 +314,9 @@ function isTodayActive() {
 // ---------- Accounts ----------
 function addAccount(name) {
   const n = (name || "").trim();
-  if (!n) return alert("Skriv ett kontonamn/nummer.");
+  if (!n) return alert("Enter an account name/number.");
   if (accounts.some((a) => a.name.toLowerCase() === n.toLowerCase())) {
-    return alert("Kontot finns redan.");
+    return alert("Account already exists.");
   }
   accounts.push({ id: uid(), name: n });
   saveJSON(STORE.accounts, accounts);
@@ -336,7 +336,7 @@ function updateAccountName(id, newName) {
   if (!n) return;
 
   if (accounts.some((a) => a.id !== id && a.name.toLowerCase() === n.toLowerCase())) {
-    alert("Det finns redan ett konto med det namnet.");
+    alert("An account with that name already exists.");
     renderAccounts();
     return;
   }
@@ -356,8 +356,8 @@ function renderAccounts() {
     accountList.innerHTML = `
       <div class="item">
         <div class="left">
-          <div class="title muted">Inga konton ännu</div>
-          <div class="meta">Lägg till ett konto ovan.</div>
+          <div class="title muted">No accounts yet.</div>
+          <div class="meta">Add an account above.</div>
         </div>
       </div>`;
     return;
@@ -1224,12 +1224,12 @@ function init() {
        }).join("\n");
    
        const okPreview = confirm(
-         `Backup hittad:\n` +
-         `app: ${backup.app ?? "okänd"}\n` +
-         `exported: ${backup.exported ?? "okänd"}\n` +
-         `schema: ${backup.schema ?? "?"}\n\n` +
-         `Innehåll:\n${info}\n\n` +
-         `Tryck OK för att gå vidare till ÅTERSTÄLLNING (ersätter lokala data).`
+         `Backup found:\n` +
+         `App: ${backup.app ?? "okänd"}\n` +
+         `Exported: ${backup.exported ?? "okänd"}\n` +
+         `Schema: ${backup.schema ?? "?"}\n\n` +
+         `Contents:\n${info}\n\n` +
+         `Press OK to continue with RESTORE (this will replace all local data).`
        );
        if (!okPreview) return;
    
@@ -1239,11 +1239,11 @@ function init() {
    
        // 3) Sista varningen: detta är “Replace”, inte merge
        const okReplace = confirm(
-         `ÅTERSTÄLLNING (REPLACE)\n\n` +
-         `Detta ersätter lokala data för:\n` +
+         `RESTORE (REPLACE)\n\n` +
+         `This will replace local data for:\n` +
          `${TL_KEYS.join(", ")}\n\n` +
-         `Du kan ångra direkt efteråt med knappen "Ångra senaste import".\n\n` +
-         `Genomföra återställning?`
+          `You can undo this immediately using the "Undo last import" button.\n\n` +
+          `Proceed with restore?`
        );
        if (!okReplace) return;
    
@@ -1256,14 +1256,14 @@ function init() {
            // om nyckeln saknas i backupen, lämna som den är
          } else {
            // om någon råkat göra fel format, stoppa hellre än skriva skräp
-           throw new Error(`Fel format i backupen för ${k} (förväntade string).`);
+          throw new Error(`Invalid backup format for ${k} (expected string).`);
          }
        }
    
-       alert("Klart! Återställt från backup. Ladda om appen.");
+       alert("Done! Restored from backup. Please reload the app.");
    
      } catch (err) {
-       alert("Kunde inte importera: " + (err?.message || err));
+        alert("Import failed: " + (err?.message || err));
      } finally {
        e.target.value = "";
      }
