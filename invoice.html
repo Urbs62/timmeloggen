@@ -361,7 +361,11 @@
         
         <div class="footerCol rightCol">
           <div id="ftBank"></div>
-          <div id="ftTax"></div>
+          <div id="ftOrgNo"></div>
+          <div id="ftVatNo"></div>
+          <div id="ftFtax"></div>
+          <div id="ftEmail"></div>
+          <div id="ftContact"></div>
         </div>
       </div>
     </div>
@@ -486,15 +490,20 @@
   document.getElementById("ftBank").textContent =
     bankText ? `Bankgiro: ${bankText}` : "";
   
-  // F-skatt - VAT-nummer
-  const taxText = (settings.taxLine || "").trim();
-  document.getElementById("ftTax").textContent =
-    taxText ? `F-skatt: ${taxText}` : "";
-  
+  // Organisationsnummer
+  const orgText = (settings.orgNo || "").trim();
+  document.getElementById("ftOrgNo").textContent =
+    orgText ? `Org.nr: ${orgText}` : "";
+
+  // Momsregistreringsnummer (VAT)
+  const vatText = (settings.vatNo || "").trim();
+  document.getElementById("ftVatNo").textContent =
+    vatText ? `Momsreg.nr: ${vatText}` : "";
+
   // Godkänd för F-skatt
-  const ftTax = document.getElementById("ftTax");
-    if (ftTax) ftTax.textContent = "Godkänd för F-skatt";
-  
+  document.getElementById("ftFtax").textContent =
+    "Godkänd för F-skatt";
+
   // Email
   const emailText = (settings.companyEmail || "").trim();
   document.getElementById("ftEmail").textContent =
