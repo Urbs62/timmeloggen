@@ -304,20 +304,22 @@
     <div class="box addrBox">
       <div class="addrGrid">
         <div class="addrCol">
-          <h3>Leveransadress</h3>
+          <h3>Delivery Address</h3>
           <p class="small">
-            Mobilaris Industrial Solutions AB<br/>
-            Sundsbacken 6<br/>
-            972 42 Luleå
+            <span id="invCustomerName"></span><br/>
+            <span id="invCustomerStreet"></span><br/>
+            <span id="invCustomerCity"></span>
           </p>
-        </div>
+      </div>
 
-        <div class="addrCol">
-          <h3>Fakturaadress</h3>
-          <p class="small">mb_22901@xledger.net</p>
-        </div>
+      <div class="addrCol">
+        <h3>Invoice Address</h3>
+        <p class="small">
+          <span id="invInvoiceEmail"></span>
+        </p>
       </div>
     </div>
+  </div>
 
     <table aria-label="Fakturarader">
       <thead>
@@ -518,6 +520,22 @@
   document.getElementById("ftStreet").textContent = ftStreet;
   document.getElementById("ftCity").textContent = ftCity;
 
+  // Delivery address
+  document.getElementById("invCustomerName").textContent =
+    settings.customerName || "";
+  
+  document.getElementById("invCustomerStreet").textContent =
+    settings.customerStreet || "";
+  
+  document.getElementById("invCustomerCity").textContent =
+    settings.customerPostalCode && settings.customerCity
+      ? `${settings.customerPostalCode} ${settings.customerCity}`
+      : "";
+  
+  // Invoice email
+  document.getElementById("invInvoiceEmail").textContent =
+    settings.invoiceEmail || "";
+  
   (function(){
     const el = document.getElementById("periodLabel");
     if (!el || !month) return;
