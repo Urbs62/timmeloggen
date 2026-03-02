@@ -1288,6 +1288,22 @@ function init() {
        }
      });
    }
-   
+
+   // Settings shortcuts
+      const goAccountsBtn = document.getElementById("goAccountsBtn");
+      if (goAccountsBtn) {
+        goAccountsBtn.addEventListener("click", () => {
+          document.querySelector('[data-tab="accounts"]')?.click();
+        });
+      }
+      
+      const goBackupBtn = document.getElementById("goBackupBtn");
+      if (goBackupBtn) {
+        goBackupBtn.addEventListener("click", () => {
+          const el = document.getElementById("backupSection");
+          if (el) el.style.display = (el.style.display === "none" ? "block" : "none");
+        });
+      }
+
 }
 init();
