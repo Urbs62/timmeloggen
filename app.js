@@ -1310,5 +1310,11 @@ function init() {
         });
       }
 
+      console.log("Settings shortcuts bound:", {
+        goAccountsBtn: !!document.getElementById("goAccountsBtn"),
+        goBackupBtn: !!document.getElementById("goBackupBtn"),
+        backupSection: !!document.getElementById("backupSection")
+      });
+   
 }
 init();
