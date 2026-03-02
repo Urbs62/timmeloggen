@@ -1303,7 +1303,10 @@ function init() {
       if (goBackupBtn) {
         goBackupBtn.addEventListener("click", () => {
           const el = document.getElementById("backupSection");
-          if (el) el.style.display = (el.style.display === "none" ? "block" : "none");
+          if (!el) return;
+      
+          const isHidden = getComputedStyle(el).display === "none";
+          el.style.display = isHidden ? "block" : "none";
         });
       }
 
