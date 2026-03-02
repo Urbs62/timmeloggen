@@ -52,7 +52,7 @@
   <main class="container">
 
     <!-- Konton -->
-    <section class="panel active" id="tab-accounts">
+    <section class="panel" id="tab-accounts">
       <div class="card">
         <h2>Accounts/Projects</h2>
 
@@ -68,7 +68,7 @@
     </section>
 
     <!-- Tidsloggning -->
-    <section class="panel" id="tab-log">
+    <section class="panel active" id="tab-log">
       <div class="grid">
         <div class="card">
           <h2>Day</h2>
@@ -235,6 +235,22 @@
       </div>
     </section>
 
+    <section class="panel" id="tab-settings">
+      <div class="card">
+        <h2>Settings</h2>
+    
+        <div class="row">
+          <button type="button" class="secondary" onclick="location.href='accounts.html'">Accounts</button>
+          <button type="button" class="secondary" onclick="location.href='settings.html'">Invoice Settings</button>
+          <button type="button" class="secondary" onclick="location.href='backup.html'">Backup / Restore</button>
+        </div>
+    
+        <p class="muted" style="margin-top:10px;">
+          Configure accounts, invoice settings, and backup/restore.
+        </p>
+      </div>
+    </section>
+    
   </main>
 
   <script src="app.js?v=26"></script>
@@ -242,6 +258,7 @@
   <div id="printArea" aria-hidden="true"></div>
 </body>
 </html>
+
 
 
 
