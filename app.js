@@ -1292,12 +1292,19 @@ function init() {
    }
 
    // Settings shortcuts
-      const goAccountsBtn = document.getElementById("goAccountsBtn");
-      if (goAccountsBtn) {
-        goAccountsBtn.addEventListener("click", () => {
-          document.querySelector('[data-tab="accounts"]')?.click();
-        });
-      }
+   const goAccountsBtn = document.getElementById("goAccountsBtn");
+   if (goAccountsBtn) {
+     goAccountsBtn.addEventListener("click", () => {
+       // (valfritt) ta bort markering på topp-tabs
+       tabBtns.forEach((b) => b.classList.remove("active"));
+   
+       // stäng alla panels
+       Object.values(panels).forEach((p) => p.classList.remove("active"));
+   
+       // öppna Accounts-panelen
+       panels.accounts?.classList.add("active");
+     });
+   }
       
       const goBackupBtn = document.getElementById("goBackupBtn");
       if (goBackupBtn) {
