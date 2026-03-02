@@ -242,6 +242,8 @@ const panels = {
   accounts: document.getElementById("tab-accounts"),
   log: document.getElementById("tab-log"),
   history: document.getElementById("tab-history"),
+  settings: document.getElementById("tab-settings"),
+  instructions: document.getElementById("tab-instructions"),
 };
 
 const activeDate = document.getElementById("activeDate");
@@ -292,7 +294,7 @@ tabBtns.forEach((btn) => {
     btn.classList.add("active");
     const key = btn.dataset.tab;
     Object.values(panels).forEach((p) => p.classList.remove("active"));
-    panels[key].classList.add("active");
+    if (panels[key]) panels[key].classList.add("active");
     if (key === "history") renderHistory();
   });
 });
