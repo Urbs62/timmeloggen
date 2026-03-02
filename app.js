@@ -1290,7 +1290,7 @@ function init() {
        }
      });
    }
-
+   
    // Settings shortcuts
    const goAccountsBtn = document.getElementById("goAccountsBtn");
    if (goAccountsBtn) {
