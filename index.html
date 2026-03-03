@@ -232,33 +232,22 @@
     <section class="panel" id="tab-settings">
       <div class="card">
         <h2>Settings</h2>
-        <section class="panel" id="tab-settings">
-          <div class="card">
-            <h2>Settings</h2>
-        
-            <!-- KNAPPRAD -->
-            <div class="row">
-              <button type="button" class="secondary" id="goAccountsBtn">Accounts</button>
-              <button type="button" class="secondary" onclick="location.href='settings.html'">Invoice Settings</button>
-              <button type="button" class="secondary" id="goBackupBtn">Backup / Restore</button>
-            </div>
-        
-            <!-- HÄR = direkt under knappraden -->
-            <section class="menu" id="backupSection" style="display:none; margin-top:12px;">
-              <button id="btnBackupExport" type="button">Backup</button>
-              <button id="btnBackupImport" type="button">Restore</button>
-              <button id="btnUndoRestore" class="secondary">Undo restore</button>
-              <input id="backupFileInput" type="file" accept="application/json" hidden />
-            </section>
-            
-            <!-- Beskrivning längst ner -->
-            <p class="muted" style="margin-top:10px;">
-              Configure accounts, invoice settings, and backup/restore.
-            </p>
-        
-          </div>
+    
+        <!-- KNAPPRAD -->
+        <div class="row">
+          <button type="button" class="secondary" id="goAccountsBtn">Accounts</button>
+          <button type="button" class="secondary" onclick="location.href='settings.html'">Invoice Settings</button>
+          <button type="button" class="secondary" id="goBackupBtn">Backup / Restore</button>
+        </div>
+    
+        <!-- HÄR = direkt under knappraden -->
+        <section class="menu" id="backupSection" style="display:none; margin-top:12px;">
+          <button id="btnBackupExport" type="button">Backup</button>
+          <button id="btnBackupImport" type="button">Restore</button>
+          <button id="btnUndoRestore" class="secondary" type="button">Undo restore</button>
+          <input id="backupFileInput" type="file" accept="application/json" hidden />
         </section>
-
+    
         <p class="muted" style="margin-top:10px;">
           Configure accounts, invoice settings, and backup/restore.
         </p>
@@ -289,6 +278,7 @@
   <div id="printArea" aria-hidden="true"></div>
 </body>
 </html>
+
 
 
 
