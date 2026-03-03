@@ -1170,107 +1170,110 @@ function init() {
      });
    }
 
-   // ===== Backup Export (localStorage) =====
+   // ===== Backup Export (SAFE) =====
+   const btnBackupExport = document.getElementById("btnBackupExport");
+   if (btnBackupExport) {
+     btnBackupExport.addEventListener("click", () => {
+       const now = new Date();
+       const exported = now.toISOString().slice(0, 10);
    
-   document.getElementById("btnBackupExport").addEventListener("click", () => {
-     const now = new Date();
-     const exported = now.toISOString().slice(0, 10);
+       const payload = {
+         app: "TimeLedger",
+         exported,
+         schema: 1,
+         data: Object.fromEntries(
+           TL_KEYS.map(k => [k, localStorage.getItem(k)])
+         )
+       };
    
-     const payload = {
-       app: "TimeLedger",
-       exported,
-       schema: 1,
-       data: Object.fromEntries(
-         TL_KEYS.map(k => [k, localStorage.getItem(k)])
-       )
-     };
+       const blob = new Blob(
+         [JSON.stringify(payload, null, 2)],
+         { type: "application/json" }
+       );
    
-     const blob = new Blob(
-       [JSON.stringify(payload, null, 2)],
-       { type: "application/json" }
-     );
-   
-     const url = URL.createObjectURL(blob);
-     const a = document.createElement("a");
-     a.href = url;
-     a.download = `timeledger-backup-${exported}.json`;
-     document.body.appendChild(a);
-     a.click();
-     a.remove();
-     URL.revokeObjectURL(url);
-   });
-   
+       const url = URL.createObjectURL(blob);
+       const a = document.createElement("a");
+       a.href = url;
+       a.download = `timeledger-backup-${exported}.json`;
+       document.body.appendChild(a);
+       a.click();
+       a.remove();
+       URL.revokeObjectURL(url);
+     });
+   }
    
    // ===== Backup Import (SAFE RESTORE + UNDO) =====
-   document.getElementById("btnBackupImport").addEventListener("click", () => {
-     document.getElementById("backupFileInput").click();
-   });
+   const btnBackupImport = document.getElementById("btnBackupImport");
+   const backupFileInput = document.getElementById("backupFileInput");
    
-   document.getElementById("backupFileInput").addEventListener("change", async (e) => {
-     const file = e.target.files?.[0];
-     if (!file) return;
+   if (btnBackupImport && backupFileInput) {
+     btnBackupImport.addEventListener("click", () => {
+       backupFileInput.click();
+     });
    
-     try {
-       const text = await file.text();
-       const backup = JSON.parse(text);
+     backupFileInput.addEventListener("change", async (e) => {
+       const file = e.target.files?.[0];
+       if (!file) return;
    
-       if (!backup?.data || typeof backup.data !== "object") {
-         throw new Error("Invalid backup file (missing data).");
-       }
+       try {
+         const text = await file.text();
+         const backup = JSON.parse(text);
    
-       // 1) Visa sammanfattning utan att skriva något
-       const info = TL_KEYS.map(k => {
-         const raw = backup.data[k];
-         const chars = typeof raw === "string" ? raw.length : 0;
-         return `${k}: ${chars} tecken`;
-       }).join("\n");
-   
-       const okPreview = confirm(
-         `Backup found:\n` +
-         `App: ${backup.app ?? "okänd"}\n` +
-         `Exported: ${backup.exported ?? "okänd"}\n` +
-         `Schema: ${backup.schema ?? "?"}\n\n` +
-         `Contents:\n${info}\n\n` +
-         `Press OK to continue with RESTORE (this will replace all local data).`
-       );
-       if (!okPreview) return;
-   
-       // 2) NÖDBROMS: spara nuvarande läge (för ångra)
-       const before = Object.fromEntries(TL_KEYS.map(k => [k, localStorage.getItem(k)]));
-       sessionStorage.setItem("tl_backup_before_import", JSON.stringify(before));
-   
-       // 3) Sista varningen: detta är “Replace”, inte merge
-       const okReplace = confirm(
-         `RESTORE (REPLACE)\n\n` +
-         `This will replace local data for:\n` +
-         `${TL_KEYS.join(", ")}\n\n` +
-          `You can undo this immediately using the "Undo last import" button.\n\n` +
-          `Proceed with restore?`
-       );
-       if (!okReplace) return;
-   
-       // 4) Skriv exakt det som fanns i backupen (rå strängar)
-       for (const k of TL_KEYS) {
-         const v = backup.data[k];
-         if (typeof v === "string") {
-           localStorage.setItem(k, v);
-         } else if (v == null) {
-           // om nyckeln saknas i backupen, lämna som den är
-         } else {
-           // om någon råkat göra fel format, stoppa hellre än skriva skräp
-          throw new Error(`Invalid backup format for ${k} (expected string).`);
+         if (!backup?.data || typeof backup.data !== "object") {
+           throw new Error("Invalid backup file (missing data).");
          }
+   
+         const info = TL_KEYS.map(k => {
+           const raw = backup.data[k];
+           const chars = typeof raw === "string" ? raw.length : 0;
+           return `${k}: ${chars} chars`;
+         }).join("\n");
+   
+         const okPreview = confirm(
+           `Backup found:\n` +
+           `App: ${backup.app ?? "unknown"}\n` +
+           `Exported: ${backup.exported ?? "unknown"}\n\n` +
+           `Contents:\n${info}\n\n` +
+           `Press OK to continue with RESTORE (this will replace local data).`
+         );
+         if (!okPreview) return;
+   
+         const before = Object.fromEntries(
+           TL_KEYS.map(k => [k, localStorage.getItem(k)])
+         );
+         sessionStorage.setItem("tl_backup_before_import", JSON.stringify(before));
+   
+         const okReplace = confirm(
+           `RESTORE (REPLACE)\n\n` +
+           `This will replace local data for:\n` +
+           `${TL_KEYS.join(", ")}\n\n` +
+           `You can undo this using "Undo restore".\n\n` +
+           `Proceed?`
+         );
+         if (!okReplace) return;
+   
+         for (const k of TL_KEYS) {
+           const v = backup.data[k];
+           if (typeof v === "string") {
+             localStorage.setItem(k, v);
+           } else if (v == null) {
+             // do nothing
+           } else {
+             throw new Error(`Invalid backup format for ${k}`);
+           }
+         }
+   
+         alert("Done! Restored from backup. Reload the app.");
+   
+       } catch (err) {
+         alert("Import failed: " + (err?.message || err));
+       } finally {
+         e.target.value = "";
        }
+     });
+   }
    
-       alert("Done! Restored from backup. Please reload the app.");
-   
-     } catch (err) {
-        alert("Import failed: " + (err?.message || err));
-     } finally {
-       e.target.value = "";
-     }
-   });
-
+   // ===== Undo Restore (SAFE) =====
    const undoBtn = document.getElementById("btnUndoRestore");
    if (undoBtn) {
      undoBtn.addEventListener("click", () => {
@@ -1284,7 +1287,7 @@ function init() {
            if (typeof v === "string") localStorage.setItem(k, v);
            else localStorage.removeItem(k);
          }
-         alert("Restored previous state. Reload the app.");
+         alert("Previous state restored. Reload the app.");
        } catch {
          alert("Could not undo restore.");
        }
