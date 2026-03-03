@@ -427,16 +427,20 @@ hr, .sep{
     -webkit-appearance: none;
     -moz-appearance: none;
   }
-  .settings-buttons {
+  .settings-buttons{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
-  .settings-buttons button {
+  
+  .settings-buttons button{
     width: 100%;
   }
-  .settings-buttons {
-    outline: 3px solid hotpink !important;
+  
+  /* Mobil: 1 per rad */
+  @media (max-width: 520px){
+    .settings-buttons{
+      grid-template-columns: 1fr;
+    }
   }
 }
