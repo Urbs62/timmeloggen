@@ -1295,14 +1295,24 @@ function init() {
    const goAccountsBtn = document.getElementById("goAccountsBtn");
    if (goAccountsBtn) {
      goAccountsBtn.addEventListener("click", () => {
-       // (valfritt) ta bort markering på topp-tabs
+       // markera Settings-tabben som aktiv (så UI känns rätt)
        tabBtns.forEach((b) => b.classList.remove("active"));
-   
-       // stäng alla panels
+       document.querySelector('[data-tab="settings"]')?.classList.add("active");
+
+       // visa accounts-panelen
        Object.values(panels).forEach((p) => p.classList.remove("active"));
-   
-       // öppna Accounts-panelen
        panels.accounts?.classList.add("active");
+     });
+   }
+
+   const backToSettingsBtn = document.getElementById("backToSettingsBtn");
+   if (backToSettingsBtn) {
+     backToSettingsBtn.addEventListener("click", () => {
+       tabBtns.forEach((b) => b.classList.remove("active"));
+       document.querySelector('[data-tab="settings"]')?.classList.add("active");
+
+       Object.values(panels).forEach((p) => p.classList.remove("active"));
+       panels.settings?.classList.add("active");
      });
    }
       
