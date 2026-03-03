@@ -424,14 +424,13 @@ hr, .sep{
     -moz-appearance: none;
   }
   .settings-buttons {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    flex-wrap: wrap;
   }
-  
+
   .settings-buttons button {
-    flex: 1;
-    min-width: 180px; /* så de inte blir för små på mobil */
+    width: 100%;
   }
   
 }
