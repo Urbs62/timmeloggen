@@ -423,4 +423,15 @@ hr, .sep{
     -webkit-appearance: none;
     -moz-appearance: none;
   }
+  .settings-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .settings-buttons button {
+    flex: 1;
+    min-width: 180px; /* så de inte blir för små på mobil */
+  }
+  
 }
