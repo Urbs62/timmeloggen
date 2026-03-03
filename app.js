@@ -324,6 +324,9 @@ function addAccount(name) {
   saveJSON(STORE.accounts, accounts);
   renderAccounts();
   renderAccountSelect();
+   
+   accountName.value = "";
+   accountName.focus(); // valfritt men trevligt
 }
 
 function deleteAccount(id) {
