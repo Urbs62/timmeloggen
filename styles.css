@@ -167,7 +167,11 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
     max-width: 220px !important;
   }
 }
-
+@media (max-width: 600px) {
+  .settings-buttons {
+    grid-template-columns: 1fr;
+  }
+}
 .panel{ display:none; }
 .panel.active{ display:block; }
 
