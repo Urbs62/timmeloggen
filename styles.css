@@ -436,5 +436,7 @@ hr, .sep{
   .settings-buttons button {
     width: 100%;
   }
-  
+  .settings-buttons {
+    outline: 3px solid hotpink !important;
+  }
 }
