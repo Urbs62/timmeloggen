@@ -276,6 +276,8 @@ const clearTodayBtn = document.getElementById("clearTodayBtn");
 // History / Sammanställning
 const periodType = document.getElementById("periodType");
 const periodDate = document.getElementById("periodDate");
+// Default: Month i Summary/History
+periodType.value = "month";
 const refreshHistoryBtn = document.getElementById("refreshHistoryBtn");
 const overviewBox = document.getElementById("overviewBox");
 const perAccountBox = document.getElementById("perAccountBox");
