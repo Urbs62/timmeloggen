@@ -406,28 +406,19 @@
   console.log("invoiceNo in settings:", settings.invoiceNo);
   console.log("URL no param:", new URLSearchParams(location.search).get("no"));
   
-  // ========= Print (mobil): EN binding, synkront =========
+  // ========= Print/Save (en binding) =========
   (function () {
     const btn = document.getElementById("printBtn");
     if (!btn) return;
-
+  
     btn.addEventListener("click", (e) => {
       e.preventDefault();
-
+  
       const oldTitle = document.title;
-
-      // sätt filnamn via title (vissa mobiler använder title som PDF-namn)
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const oldTitle = document.title;
-        window.print();
-        setTimeout(() => { document.title = oldTitle; }, 1000);
-      }, { passive: false });
-
-      // VIKTIGT: window.print() direkt i click (ingen requestAnimationFrame)
+  
+      // (vi lägger in dialog + inkrementering i steg 3)
       window.print();
-
-      // återställ title efteråt
+  
       setTimeout(() => {
         document.title = oldTitle;
       }, 1000);
