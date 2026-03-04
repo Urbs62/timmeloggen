@@ -1092,7 +1092,19 @@ function init() {
   renderDay();
 
   periodDate.value = todayKey();
-
+   
+   periodType.addEventListener("change", () => {
+     if (periodType.value === "month") {
+       const d = new Date(periodDate.value);
+       if (Number.isFinite(d.getTime())) {
+         // Normalisera till första dagen i månaden
+         const y = d.getFullYear();
+         const m = pad2(d.getMonth() + 1);
+         periodDate.value = `${y}-${m}-01`;
+       }
+     }
+   });
+   
   // start chime om dagens loggning redan är igång
   const d = getDay(todayKey());
   if (d.startTs && !d.endTs) startChimeLoop();
