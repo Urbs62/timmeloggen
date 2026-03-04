@@ -428,22 +428,22 @@ hr, .sep{
     -moz-appearance: none;
   }
   .settings-buttons{
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex !important;
+    gap: 10px !important;
   }
-  
-  .settings-buttons button{
-    width: 100%;
+
+  .settings-buttons > button{
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    width: auto !important;
   }
-  
-  /* Mobil: 1 per rad */
+
   @media (max-width: 520px){
     .settings-buttons{
-      grid-template-columns: 1fr;
+      flex-direction: column !important;
     }
-  }
-  .settings-buttons {
-    outline: 3px solid hotpink !important;
+    .settings-buttons > button{
+      width: 100% !important;
+    }
   }
 }
