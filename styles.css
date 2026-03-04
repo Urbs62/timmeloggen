@@ -443,4 +443,7 @@ hr, .sep{
       grid-template-columns: 1fr;
     }
   }
+  .settings-buttons {
+    outline: 3px solid hotpink !important;
+  }
 }
