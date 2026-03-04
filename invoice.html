@@ -426,7 +426,7 @@
     localStorage.setItem(KEY, JSON.stringify(obj));
   }
 
-  // ========= Print/Save (en binding) =========
+  // ========= Print/Save (en binding + valfri inkrementering) =========
   (function () {
     const btn = document.getElementById("printBtn");
     if (!btn) return;
@@ -436,8 +436,31 @@
   
       const oldTitle = document.title;
   
-      // (vi lägger in dialog + inkrementering i steg 3)
+      // Fakturanumret som används just nu
+      const currentInvoiceNo = (invNo || "").trim() || "—";
+  
+      // Fråga användaren
+      const ok = confirm(`Create invoice ${currentInvoiceNo} and increment the invoice number?`);
+  
+      // Skriv alltid ut / spara PDF
       window.print();
+  
+      if (ok) {
+        const noFromUrl = (q.get("no") || "").trim();          // ditt fall: "26-001"
+        const noFromSettings = (settings?.invoiceNo || "").trim(); // ditt fall: "26-001"
+  
+        // Inkrementera bara om URL-numret inte "tvingar" ett annat nummer än settings
+        if (!noFromUrl || noFromUrl === noFromSettings) {
+          const nextNo = incrementInvoiceNo(currentInvoiceNo);
+          saveSettingsInvoiceNo(nextNo);
+  
+          // Uppdatera på skärmen direkt (valfritt men trevligt)
+          const el = document.getElementById("invoiceNo");
+          if (el) el.textContent = nextNo;
+        } else {
+          console.log("Not incrementing: invoice no is forced by URL param:", noFromUrl);
+        }
+      }
   
       setTimeout(() => {
         document.title = oldTitle;
