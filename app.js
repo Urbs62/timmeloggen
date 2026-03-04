@@ -1092,7 +1092,10 @@ function init() {
   renderDay();
 
   periodDate.value = todayKey();
-   
+  // Default: Month när sidan öppnas
+   periodType.value = "month";
+   periodType.dispatchEvent(new Event("change")); 
+ 
    periodType.addEventListener("change", () => {
      if (periodType.value === "month") {
        const d = new Date(periodDate.value);
