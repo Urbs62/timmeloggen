@@ -64,7 +64,7 @@
           </div>
           <div class="grow">
             <label>F-tax / VAT line</label>
-            <input id="s_taxLine" type="text" placeholder="SE123456789001" />
+            <input id="s_taxLine" type="text" placeholder="Ex. Godkänd för F-skatt" />
           </div>
           <div class="grow">
             <label>Invoice number</label>
@@ -73,6 +73,10 @@
           <div class="grow">
             <label>Payment terms (days)</label>
             <input id="s_paymentTermsDays" type="number" inputmode="numeric" placeholder="30" />
+          </div>
+          <div class="grow">
+            <label>Payment note</label>
+            <input id="s_paymentNote" type="text" placeholder="Ex. Ange fakturanummer vid betalning" />
           </div>
           <div class="grow">
             <label>Your reference</label>
@@ -142,6 +146,7 @@
     const elVatNo = document.getElementById("s_vatNo");
     const elNo = document.getElementById("s_invoiceNo");
     const elPaymentTermsDays = document.getElementById("s_paymentTermsDays");
+    const elPaymentNote = document.getElementById("s_paymentNote");
     const elYourReference = document.getElementById("s_yourReference");
     const elRate = document.getElementById("s_rate");
     const elVat  = document.getElementById("s_vat");
@@ -166,6 +171,7 @@
       elVatNo.value = s.vatNo ?? "";
       elNo.value = s.invoiceNo ?? "26-001";
       elPaymentTermsDays.value = s.paymentTermsDays ?? 30;
+      elPaymentNote.value = s.paymentNote ?? "";
       elYourReference.value = s.yourReference ?? "";
       elRate.value = s.hourlyRate ?? 650;
       elTaxLine.value = s.taxLine ?? "";
@@ -192,6 +198,7 @@
       const hourlyRate = Number(elRate.value);
       const vatPercent = Number(elVat.value);
       const paymentTermsDays = Number(elPaymentTermsDays.value);
+      const paymentNote = (elPaymentNote.value || "").trim();
       const yourReference = (elYourReference.value || "").trim();
       const customerName = (elCustomerName.value || "").trim();
       const customerStreet = (elCustomerStreet.value || "").trim();
@@ -225,6 +232,7 @@
         taxLine,
         invoiceNo,
         paymentTermsDays,
+        paymentNote,
         yourReference,
         hourlyRate,
         vatRate: vatPercent / 100,
