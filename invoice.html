@@ -405,7 +405,27 @@
   console.log("SETTINGS OBJECT:", settings);
   console.log("invoiceNo in settings:", settings.invoiceNo);
   console.log("URL no param:", new URLSearchParams(location.search).get("no"));
+
+  function incrementInvoiceNo(current) {
+    const s = String(current || "").trim();
+    // Ex: "26-001" → prefix "26-" + num "001"
+    const m = s.match(/^(.*?)(\d+)$/);
+    if (!m) return s || "1";
   
+    const prefix = m[1];
+    const numStr = m[2];
+    const nextNum = String(Number(numStr) + 1).padStart(numStr.length, "0");
+    return prefix + nextNum;
+  }
+  
+  function saveSettingsInvoiceNo(newInvoiceNo) {
+    const KEY = "tl_settings_v1";
+    const raw = localStorage.getItem(KEY);
+    const obj = raw ? JSON.parse(raw) : {};
+    obj.invoiceNo = newInvoiceNo;
+    localStorage.setItem(KEY, JSON.stringify(obj));
+  }
+
   // ========= Print/Save (en binding) =========
   (function () {
     const btn = document.getElementById("printBtn");
