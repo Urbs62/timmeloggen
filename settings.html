@@ -83,6 +83,10 @@
             <input id="s_yourReference" type="text" placeholder="För- och efternamn" />
           </div>
           <div class="grow">
+            <label>Contract / PO Reference</label>
+            <input id="s_contractRef" type="text" placeholder="Agreement 2026-01 / PO-12345" />
+          </div>
+          <div class="grow">
             <label>Hourly Rate (SEK)</label>
             <input id="s_rate" type="number" inputmode="decimal" placeholder="650" />
           </div>
@@ -148,6 +152,7 @@
     const elPaymentTermsDays = document.getElementById("s_paymentTermsDays");
     const elPaymentNote = document.getElementById("s_paymentNote");
     const elYourReference = document.getElementById("s_yourReference");
+    const elContractRef = document.getElementById("s_contractRef");
     const elRate = document.getElementById("s_rate");
     const elVat  = document.getElementById("s_vat");
     const status = document.getElementById("status");
@@ -173,6 +178,7 @@
       elPaymentTermsDays.value = s.paymentTermsDays ?? 30;
       elPaymentNote.value = s.paymentNote ?? "";
       elYourReference.value = s.yourReference ?? "";
+      elContractRef.value = s.contractRef ?? "";
       elRate.value = s.hourlyRate ?? 650;
       elTaxLine.value = s.taxLine ?? "";
       elVat.value = typeof s.vatRate === "number" ? Math.round(s.vatRate * 100) : 25;
@@ -200,6 +206,7 @@
       const paymentTermsDays = Number(elPaymentTermsDays.value);
       const paymentNote = (elPaymentNote.value || "").trim();
       const yourReference = (elYourReference.value || "").trim();
+      const contractRef = (elContractRef.value || "").trim();
       const customerName = (elCustomerName.value || "").trim();
       const customerStreet = (elCustomerStreet.value || "").trim();
       const customerPostalCode = (elCustomerPostalCode.value || "").trim();
@@ -234,6 +241,7 @@
         paymentTermsDays,
         paymentNote,
         yourReference,
+        contractRef,
         hourlyRate,
         vatRate: vatPercent / 100,
         customerName,
