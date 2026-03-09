@@ -284,7 +284,7 @@
 
 <body>
   <div class="invoice-actions noPrint">
-    <button type="button" id="printBtn">Print/Save as PDF</button>
+    <button type="button" id="printBtn">Print / Save as PDF</button>
     <button type="button" onclick="history.back()">Back</button>
   </div>
 
@@ -312,7 +312,7 @@
           <div class="metaRow"><span class="k">Payment terms:</span> <span class="v" id="paymentTerms">—</span></div>
           <div class="metaRow"><span class="k">Your reference:</span> <span class="v" id="yourRef">—</span></div>
           <div class="metaRow">
-            <span class="k">Contract/PO reference:</span>
+            <span class="k">Contract / PO reference:</span>
           </div>
           <div class="metaRow">
             <span class="v" id="contractRef">—</span>
@@ -459,7 +459,7 @@
       const currentInvoiceNo = (invNo || "").trim() || "—";
   
       // Fråga användaren
-      const ok = confirm(`Create invoice ${currentInvoiceNo} and increment the invoice number?`);
+      const ok = confirm(`Create invoice ${currentInvoiceNo} and increment the next invoice number?`);
   
       // Skriv alltid ut / spara PDF
       window.print();
@@ -493,7 +493,7 @@
   const rawAccount = (q.get("account") || "all").trim();      // kontoId eller "all"/"ALL"
   const accountParam = rawAccount.toLowerCase() === "all" ? "all" : rawAccount;
   const invNo = (q.get("no") || settings?.invoiceNo || "26-001").trim();
-  document.title = `Faktura ${safeFilePart(invNo)} ${safeFilePart(companyName)}`;
+  document.title = `Invoice ${safeFilePart(invNo)} ${safeFilePart(companyName)}`;
   const price = Number(q.get("price") || settings?.hourlyRate || "650");
   const vatRate = Number(q.get("vat") || settings?.vatRate || "0.25");
 
@@ -504,8 +504,9 @@
       .trim();
   }
   function setPdfTitleForInvoice() {
-    document.title = `Faktura ${safeFilePart(invNo)} ${safeFilePart(companyName)}`;
+    document.title = `Invoice ${safeFilePart(invNo)} ${safeFilePart(companyName)}`;
   }
+
   const invDate = q.get("date") || (() => {
     const d = new Date();
     const yyyy = d.getFullYear();
@@ -547,12 +548,12 @@
   // Organisationsnummer
   const orgText = (settings.orgNo || "").trim();
   document.getElementById("ftOrgNo").textContent =
-    orgText ? `Company reg. no: ${orgText}` : "";
+    orgText ? `Company reg. no.: ${orgText}` : "";
 
   // Momsregistreringsnummer (VAT)
   const vatText = (settings.vatNo || "").trim();
   document.getElementById("ftVatNo").textContent =
-    vatText ? `VAT reg. no: ${vatText}` : "";
+    vatText ? `VAT reg. no.: ${vatText}` : "";
 
   // Godkänd för F-skatt
   document.getElementById("ftFtax").textContent =
@@ -723,7 +724,7 @@
     .map(([accId, min]) => ({
       accId,
       min,
-      name: accNameById.get(accId) || (accId ? accId : "not selected)")
+      name: accNameById.get(accId) || (accId ? accId : "(not selected)")
     }))
     .sort((a, b) => b.min - a.min);
 
