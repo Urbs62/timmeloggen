@@ -123,7 +123,7 @@
 <body>
 
   <div class="actions noPrint">
-    <button type="button" id="printBtn">Print/Export PDF</button>
+    <button type="button" id="printBtn">Print / Export as DF</button>
     <button type="button" id="backBtn">Back</button>
   </div>
 
@@ -143,10 +143,11 @@
         return {};
       }
     }
-
+    
     const settings = loadSettings();
+    const companyName = (settings.companyName || "Company name").trim();
     const invNo = (settings.invoiceNo || "26-000").trim();
-    document.title = `Invoice timesheet ${invNo} Jubrion AB`;
+    document.title = `Invoice timesheet ${invNo} ${companyName}`;
     
     function escapeHtml(s){
       return String(s ?? "")
@@ -198,8 +199,8 @@
       const invNoClean = (invNo || "").trim();
 
       const base = invNoClean
-      ? `Invoice timesheet ${safeFilePart(invNoClean)} Jubrion AB`
-      : `Invoice timesheet ${safeFilePart(month)} ${safeFilePart(account)} Jubrion AB`;
+      ? `Invoice timesheet ${safeFilePart(invNoClean)} ${safeFilePart(companyName)}`
+      : `Invoice timesheet ${safeFilePart(month)} ${safeFilePart(account)} ${safeFilePart(companyName)}`;
 
       setTitleHard(base);
     }
@@ -270,7 +271,7 @@
         </div>
       </div>
     
-      <table aria-label="Underlag">
+      <table aria-label="Invoice timesheet">
         <thead>
           <tr>
             <th class="col-date">Date</th>
