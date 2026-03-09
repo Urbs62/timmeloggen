@@ -459,19 +459,9 @@
     const btn = document.getElementById("printBtn");
     if (!btn) return;
   
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-  
-      const oldTitle = document.title;
-  
-      // skriv ut / spara PDF direkt
+    btn.addEventListener("click", () => {
       window.print();
-  
-      // återställ titel efteråt
-      setTimeout(() => {
-        document.title = oldTitle;
-      }, 1000);
-    }, { passive: false });
+    });
   })();
 
   // ========= Query helpers =========
