@@ -299,36 +299,16 @@
     (function(){
       const btn = document.getElementById("printBtn");
       const backBtn = document.getElementById("backBtn");
-
+    
       if (backBtn){
         backBtn.addEventListener("click", () => history.back());
       }
-
+    
       if (!btn) return;
-
-      let printing = false;
-
-      const doPrint = (e) => {
-        if (e) e.preventDefault();
-        if (printing) return;
-        printing = true;
-
-        const payload = loadPayload();
-        const oldTitle = document.querySelector("title")?.textContent || document.title;
-
-        // Sätt title och print DIREKT (viktigt på mobil)
-        setPdfTitleForUnderlag(payload);
+    
+      btn.addEventListener("click", () => {
         window.print();
-
-        // återställ title efteråt
-        setTimeout(() => {
-          setTitleHard(oldTitle);
-          printing = false;
-        }, 900);
-      };
-
-      // Bind bara EN gång
-      btn.addEventListener("click", doPrint, { passive: false });
+      });
     })();
 
     render();
