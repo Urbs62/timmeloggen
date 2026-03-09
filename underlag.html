@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fakturaunderlag</title>
+  <title>Invoice timesheet</title>
   <style>
     :root{
       --text:#111; --muted:#555; --line:#ddd; --bg:#fff;
@@ -146,7 +146,7 @@
 
     const settings = loadSettings();
     const invNo = (settings.invoiceNo || "26-000").trim();
-    document.title = `Underlag faktura ${invNo} Jubrion AB`;
+    document.title = `Invoice timesheet ${invNo} Jubrion AB`;
     
     function escapeHtml(s){
       return String(s ?? "")
@@ -198,8 +198,8 @@
       const invNoClean = (invNo || "").trim();
 
       const base = invNoClean
-      ? `Underlag faktura ${safeFilePart(invNoClean)} Jubrion AB`
-      : `Underlag faktura ${safeFilePart(month)} ${safeFilePart(account)} Jubrion AB`;
+      ? `Invoice timesheet ${safeFilePart(invNoClean)} Jubrion AB`
+      : `Invoice timesheet ${safeFilePart(month)} ${safeFilePart(account)} Jubrion AB`;
 
       setTitleHard(base);
     }
@@ -257,15 +257,15 @@
             src="icons/Jubrion_AB_logo_horizontal_192.png"
             alt="Jubrion AB"
             class="invoice-logo"
-            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
+            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'Logo missing'}))"
           />
         </div>
     
         <div class="titleCol">
-          <h1>Underlag faktura<span class="invoiceNo"></span></h1>
+          <h1>Invoice timesheet<span class="invoiceNo"></span></h1>
           <div class="kv">
-            <div><b>Månad:</b> ${escapeHtml(month)}</div>
-            <div><b>Konto:</b> ${escapeHtml(account)}</div>
+            <div><b>Month:</b> ${escapeHtml(month)}</div>
+            <div><b>Account:</b> ${escapeHtml(account)}</div>
           </div>
         </div>
       </div>
@@ -273,16 +273,16 @@
       <table aria-label="Underlag">
         <thead>
           <tr>
-            <th class="col-date">Datum</th>
-            <th class="nowrap">Tid</th>
-            <th class="right nowrap">Timmar</th>
-            <th>Konto / Aktivitet</th>
+            <th class="col-date">Date</th>
+            <th class="nowrap">Time</th>
+            <th class="right nowrap">Hours</th>
+            <th>Account / Activity</th>
           </tr>
         </thead>
         <tbody>
           ${tr}
           <tr class="sumrow">
-            <td colspan="2">SUMMA</td>
+            <td colspan="2">TOTAL</td>
             <td class="right nowrap">${escapeHtml(formatHoursSv(total))}</td>
             <td></td>
           </tr>
