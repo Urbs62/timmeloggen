@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
   <link rel="stylesheet" href="styles.css" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Faktura</title>
+  <title>Invoice</title>
 
   <style>
     :root{
@@ -299,20 +299,20 @@
           alt=""
           id="companyLogo"
           class="invoice-logo"
-          onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'LOGGA saknas'}))"
+          onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'Logo missing'}))"
         />
       </div>
 
       <div class="metaCol">
-        <h1 class="invTitle">Faktura</h1>
+        <h1 class="invTitle">Invoice</h1>
         <div class="metaList">
-          <div class="metaRow"><span class="k">Fakturadatum:</span> <span class="v" id="invoiceDate">—</span></div>
-          <div class="metaRow"><span class="k">Fakturanummer:</span> <span class="v" id="invoiceNo">—</span></div>
+          <div class="metaRow"><span class="k">Invoice date:</span> <span class="v" id="invoiceDate">—</span></div>
+          <div class="metaRow"><span class="k">Invoice number:</span> <span class="v" id="invoiceNo">—</span></div>
           <div class="metaRow"><span class="k">Period:</span> <span class="v" id="periodLabel">—</span></div>
-          <div class="metaRow"><span class="k">Betalningsvillkor:</span> <span class="v" id="paymentTerms">—</span></div>
-          <div class="metaRow"><span class="k">Er referens:</span> <span class="v" id="yourRef">—</span></div>
+          <div class="metaRow"><span class="k">Payment terms:</span> <span class="v" id="paymentTerms">—</span></div>
+          <div class="metaRow"><span class="k">Your reference:</span> <span class="v" id="yourRef">—</span></div>
           <div class="metaRow">
-            <span class="k">Contract / PO Reference:</span>
+            <span class="k">Contract/PO reference:</span>
           </div>
           <div class="metaRow">
             <span class="v" id="contractRef">—</span>
@@ -325,7 +325,7 @@
     <div class="box addrBox">
       <div class="addrGrid">
         <div class="addrCol">
-          <h3>Kund</h3>
+          <h3>Customer</h3>
           <p class="small">
             <span id="invCustomerName"></span><br/>
             <span id="invCustomerStreet"></span><br/>
@@ -334,7 +334,7 @@
       </div>
 
       <div class="addrCol">
-        <h3>Fakturadress</h3>
+        <h3>Invoice address</h3>
         <p class="small">
           <span id="invInvoiceEmail"></span>
         </p>
@@ -345,10 +345,10 @@
     <table aria-label="Fakturarader">
       <thead>
         <tr>
-          <th>Konto/Projekt</th>
-          <th class="right nowrap">Antal timmar</th>
-          <th class="right nowrap">Á-pris</th>
-          <th class="right nowrap">Belopp</th>
+          <th>Account/Project</th>
+          <th class="right nowrap">Hours</th>
+          <th class="right nowrap">Rate</th>
+          <th class="right nowrap">Amount</th>
         </tr>
       </thead>
       <tbody id="rows"></tbody>
@@ -356,18 +356,18 @@
 
     <div class="sum">
       <div class="sumBox">
-        <div class="sumRow"><span>Summa exkl. moms</span><span id="sumEx">0 SEK</span></div>
-        <div class="sumRow"><span>Moms</span><span id="vat">0 SEK</span></div>
-        <div class="sumRow"><strong>Att betala</strong><strong id="total">0 SEK</strong></div>
+        <div class="sumRow"><span>Subtotal excl. VAT</span><span id="sumEx">0 SEK</span></div>
+        <div class="sumRow"><span>VAT</span><span id="vat">0 SEK</span></div>
+        <div class="sumRow"><strong>Amount due</strong><strong id="total">0 SEK</strong></div>
 
         <div class="small muted" style="margin-top:6px;font-size:12px;font-style:italic">
-          Fakturaunderlag kan tillhandahållas på begäran.
+          Detailed timesheet can be provided upon request.
         </div>
       </div>
     </div>
         
     <div class="payment-note small" style="margin-top:10px;">
-      <strong>Betalningsinformation</strong><br/>
+      <strong>Payment information</strong><br/>
       <span id="paymentNote">—</span>
     </div>
     
@@ -521,7 +521,7 @@
   const ptd = Number(settings.paymentTermsDays);
 
   document.getElementById("paymentTerms").textContent =
-    Number.isFinite(ptd) ? `${ptd} dagar` : "";
+    Number.isFinite(ptd) ? `${ptd} days` : "";
 
   document.getElementById("yourRef").textContent =
     (settings.yourReference || "").trim();
@@ -547,26 +547,26 @@
   // Organisationsnummer
   const orgText = (settings.orgNo || "").trim();
   document.getElementById("ftOrgNo").textContent =
-    orgText ? `Org.nr: ${orgText}` : "";
+    orgText ? `Company reg. no: ${orgText}` : "";
 
   // Momsregistreringsnummer (VAT)
   const vatText = (settings.vatNo || "").trim();
   document.getElementById("ftVatNo").textContent =
-    vatText ? `Momsreg.nr: ${vatText}` : "";
+    vatText ? `VAT reg. no: ${vatText}` : "";
 
   // Godkänd för F-skatt
   document.getElementById("ftFtax").textContent =
-    "Godkänd för F-skatt";
+    "Approved for F-tax";
 
   // Email
   const emailText = (settings.companyEmail || "").trim();
   document.getElementById("ftEmail").textContent =
-    emailText ? `E-post: ${emailText}` : "";
+    emailText ? `Email: ${emailText}` : "";
   
   // Contact
   const contactText = (settings.contactLine || "").trim();
   document.getElementById("ftContact").textContent =
-    contactText ? `Kontakt: ${contactText}` : "";
+    contactText ? `Contact: ${contactText}` : "";
 
   document.getElementById("ftCompany").textContent = ftCompany;
   document.getElementById("ftStreet").textContent = ftStreet;
@@ -723,7 +723,7 @@
     .map(([accId, min]) => ({
       accId,
       min,
-      name: accNameById.get(accId) || (accId ? accId : "(ej valt)")
+      name: accNameById.get(accId) || (accId ? accId : "not selected)")
     }))
     .sort((a, b) => b.min - a.min);
 
@@ -757,7 +757,7 @@
     const trTot = document.createElement("tr");
     trTot.className = "total-hours";
     trTot.innerHTML = `
-      <td>Totalt antal timmar</td>
+      <td>Total hours</td>
       <td class="right nowrap">${formatHours(totalHours)}</td>
       <td></td>
       <td></td>
