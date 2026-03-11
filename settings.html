@@ -115,7 +115,7 @@
         </div>
         <div class="grow">
           <label>Customer organization number</label>
-          <input id="customerOrgNo" type="text" placeholder="556123-4567" />
+          <input id="s_customerOrgNo" type="text" placeholder="556123-4567" />
         </div>
         
         <!-- ===== Fakturaadress (PDF via e-post) ===== -->
@@ -162,6 +162,7 @@
     const elCustomerStreet = document.getElementById("s_customerStreet");
     const elCustomerPostalCode = document.getElementById("s_customerPostalCode");
     const elCustomerCity = document.getElementById("s_customerCity");
+    const elCustomerOrgNo = document.getElementById("s_customerOrgNo");
     const elInvoiceEmail = document.getElementById("s_invoiceEmail");
 
     function hydrate(){
@@ -187,6 +188,7 @@
       elCustomerStreet.value = s.customerStreet ?? "";
       elCustomerPostalCode.value = s.customerPostalCode ?? "";
       elCustomerCity.value = s.customerCity ?? "";
+      elCustomerOrgNo.value = s.customerOrgNo ?? "";
       elInvoiceEmail.value = s.invoiceEmail ?? "";
     }
 
@@ -212,6 +214,7 @@
       const customerStreet = (elCustomerStreet.value || "").trim();
       const customerPostalCode = (elCustomerPostalCode.value || "").trim();
       const customerCity = (elCustomerCity.value || "").trim();
+      const customerOrgNo = (elCustomerOrgNo.value || "").trim();
       const invoiceEmail = (elInvoiceEmail.value || "").trim();
 
       if (!Number.isFinite(hourlyRate) || hourlyRate <= 0){
@@ -249,6 +252,7 @@
         customerStreet,
         customerPostalCode,
         customerCity,
+        customerOrgNo,
         invoiceEmail
       });
 
