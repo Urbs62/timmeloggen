@@ -341,6 +341,7 @@
             <span id="invCustomerName"></span><br/>
             <span id="invCustomerStreet"></span><br/>
             <span id="invCustomerCity"></span>
+            <span id="invCustomerOrgNo"></span>
           </p>
       </div>
 
@@ -563,6 +564,10 @@
     settings.customerPostalCode && settings.customerCity
       ? `${settings.customerPostalCode} ${settings.customerCity}`
       : "";
+  const custOrg = (settings.customerOrgNo || "").trim();
+
+  document.getElementById("invCustomerOrgNo").textContent =
+  custOrg ? `Org. no: ${custOrg}` : "";
   
   // Invoice email
   document.getElementById("invInvoiceEmail").textContent =
