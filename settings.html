@@ -167,7 +167,7 @@
 
     function hydrate(){
       const s = loadSettings();
-      elCompany.value = s.companyName ?? "Jubrion AB";
+      elCompany.value = s.companyName ?? "";
       elCompanyStreet.value = s.companyStreet ?? "";
       elCompanyPostalCode.value = s.companyPostalCode ?? "";
       elCompanyCity.value = s.companyCity ?? "";
@@ -176,12 +176,12 @@
       elBankgiro.value = s.bankgiro ?? "";
       elOrgNo.value = s.orgNo ?? "";
       elVatNo.value = s.vatNo ?? "";
-      elNo.value = s.invoiceNo ?? "26-001";
-      elPaymentTermsDays.value = s.paymentTermsDays ?? 30;
+      elNo.value = s.invoiceNo ?? "";
+      elPaymentTermsDays.value = s.paymentTermsDays ?? "";
       elPaymentNote.value = s.paymentNote ?? "";
       elYourReference.value = s.yourReference ?? "";
       elContractRef.value = s.contractRef ?? "";
-      elRate.value = s.hourlyRate ?? 650;
+      elRate.value = s.hourlyRate ?? "";
       elTaxLine.value = s.taxLine ?? "";
       elVat.value = typeof s.vatRate === "number" ? Math.round(s.vatRate * 100) : 25;
       elCustomerName.value = s.customerName ?? "";
