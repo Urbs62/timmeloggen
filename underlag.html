@@ -263,9 +263,11 @@
         </div>
     
         <div class="titleCol">
-          <h1>Invoice timesheet<span class="invoiceNo"></span></h1>
+          <h1 class="docTitle">INVOICE TIMESHEET</h1>
+          <div class="invNumber"># <span class="invoiceNo"></span></div>
           <div class="kv">
-            <div><b>Month:</b> ${escapeHtml(month)}</div>
+            <div><b>Invoice no.:</b> <span class="invoiceNoValue"></span></div>
+            <div><b>Period:</b> ${escapeHtml(month)}</div>
             <div><b>Account:</b> ${escapeHtml(account)}</div>
           </div>
         </div>
