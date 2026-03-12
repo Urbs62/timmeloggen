@@ -117,7 +117,7 @@
       font-size:13px;              /* lite mindre */
       table-layout:auto;
     }
-    th,td{ border-bottom:1px solid var(--line); padding:10px 8px; text-align:left; vertical-align:top; }
+    th,td{ border-bottom:1px solid var(--line); padding:8px 8px; text-align:left; vertical-align:top; }
     th{ font-size:12px; color:var(--muted); font-weight:700; }
     td.right, th.right{ text-align:right; }
     td.nowrap, th.nowrap{ white-space:nowrap; }
@@ -141,7 +141,7 @@
 <body>
 
   <div class="actions noPrint">
-    <button type="button" id="printBtn">Print / Export as PDF</button>
+    <button type="button" id="printBtn">Print / Save as PDF</button>
     <button type="button" id="backBtn">Back</button>
   </div>
 
@@ -303,7 +303,7 @@
         <tbody>
           ${tr}
           <tr class="sumrow">
-            <td colspan="2">TOTAL</td>
+            <td colspan="2">Total hours</td>
             <td class="right nowrap">${escapeHtml(formatHoursSv(total))}</td>
             <td></td>
           </tr>
@@ -312,7 +312,10 @@
     `;
     
     const invEl = document.querySelector(".invoiceNo");
-    if (invEl) invEl.textContent = invNo ? (" " + invNo) : "";
+    if (invEl) invEl.textContent = invNo || "";
+
+    const invValEl = document.querySelector(".invoiceNoValue");
+    if (invValEl) invValEl.textContent = invNo || "—";
     }
 
     // ===== Print: EN binding, mobilvänlig, ingen dubbelprint =====
