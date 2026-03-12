@@ -222,54 +222,53 @@
 
       setTitleHard(base);
     }
-
     function render(){
       const payload = loadPayload();
       const warn = document.getElementById("warn");
       const content = document.getElementById("content");
-
-      let periodLabel = month;
-
-      if (month && month.includes("-")) {
-        const [y, m] = month.split("-").map(Number);
-      
-        const from = new Date(y, m - 1, 1);
-        const to = new Date(y, m, 0);
-      
-        const fmt = (d) =>
-          `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-      
-        periodLabel = `${fmt(from)} – ${fmt(to)}`;
-      }
-
+    
       if (!payload){
         warn.style.display = "block";
         warn.textContent = "No invoice data found. Please reopen the invoice from the app.";
         content.innerHTML = "";
         return;
       }
-      // NYTT:
+    
       setPdfTitleForUnderlag(payload);
-      
+    
       const month = payload.month || "";
       const account = payload.account || "";
       const rows = payload.rows || [];
-
+    
+      let periodLabel = month;
+    
+      if (month && month.includes("-")) {
+        const [y, m] = month.split("-").map(Number);
+    
+        const from = new Date(y, m - 1, 1);
+        const to = new Date(y, m, 0);
+    
+        const fmt = (d) =>
+          `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    
+        periodLabel = `${fmt(from)} – ${fmt(to)}`;
+      }
+    
       let tr = "";
       let total = 0;
-
+    
       for (const r of rows){
         const h = Number(r.hours) || 0;
         total += h;
-
+    
         const kontoNr = r.konto ?? r.account ?? r.accountNo ?? "";
         const kontoNamn = r.kontonamn ?? r.account_name ?? r.accountName ?? "";
         const kontoText = (kontoNr || kontoNamn)
           ? `${kontoNr}${(kontoNr && kontoNamn) ? " – " : ""}${kontoNamn}`
           : "";
-
+    
         const aktivitetText = r.text || "";
-
+    
         tr += `
           <tr>
             <td class="col-date">${escapeHtml(r.date)}</td>
@@ -282,50 +281,51 @@
           </tr>
         `;
       }
-
-     content.innerHTML = `
-      <div class="header">
-        <div class="logoCol">
-          <img
-            src="icons/Jubrion_AB_logo_horizontal_192.png"
-            alt="Jubrion AB"
-            class="invoice-logo"
-            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'Logo missing'}))"
-          />
-        </div>
     
-        <div class="titleCol">
-          <h1 class="docTitle">INVOICE TIMESHEET</h1>
-          <div class="invNumber"># <span class="invoiceNo"></span></div>
-          <div class="kv">
-            <div><b>Period:</b> ${escapeHtml(periodLabel)}</div>
-            <div><b>Account:</b> ${escapeHtml(account)}</div>
+      content.innerHTML = `
+        <div class="header">
+          <div class="logoCol">
+            <img
+              src="icons/Jubrion_AB_logo_horizontal_192.png"
+              alt="Jubrion AB"
+              class="invoice-logo"
+              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'Logo missing'}))"
+            />
+          </div>
+    
+          <div class="titleCol">
+            <h1 class="docTitle">INVOICE TIMESHEET</h1>
+            <div class="invNumber"># <span class="invoiceNo"></span></div>
+            <div class="kv">
+              <div><b>Period:</b> ${escapeHtml(periodLabel)}</div>
+              <div><b>Account:</b> ${escapeHtml(account)}</div>
+            </div>
           </div>
         </div>
-      </div>
     
-      <table aria-label="Invoice timesheet">
-        <thead>
-          <tr>
-            <th class="col-date">Date</th>
-            <th class="nowrap">Time</th>
-            <th class="right nowrap">Hours</th>
-            <th>Account / Activity</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${tr}
-          <tr class="sumrow">
-            <td colspan="2">Total hours</td>
-            <td class="right nowrap">${escapeHtml(formatHoursSv(total))}</td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-    `;
+        <table aria-label="Invoice timesheet">
+          <thead>
+            <tr>
+              <th class="col-date">Date</th>
+              <th class="nowrap">Time</th>
+              <th class="right nowrap">Hours</th>
+              <th>Account / Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tr}
+            <tr class="sumrow">
+              <td colspan="2">Total hours</td>
+              <td class="right nowrap">${escapeHtml(formatHoursSv(total))}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      `;
     
-    const invEl = document.querySelector(".invoiceNo");
-    if (invEl) invEl.textContent = invNo || "";
+      const invEl = document.querySelector(".invoiceNo");
+      if (invEl) invEl.textContent = invNo || "";
+    }
 
     // ===== Print: EN binding, mobilvänlig, ingen dubbelprint =====
     (function(){
