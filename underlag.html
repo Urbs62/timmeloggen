@@ -213,6 +213,20 @@
       const month = payload?.month || "";
       const account = payload?.account || "";
 
+      let periodLabel = month;
+
+      if (month && month.includes("-")) {
+        const [y, m] = month.split("-").map(Number);
+      
+        const from = new Date(y, m - 1, 1);
+        const to = new Date(y, m, 0);
+      
+        const fmt = (d) =>
+          `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      
+        periodLabel = `${fmt(from)} – ${fmt(to)}`;
+      }
+
       // Prioritet: invNo om det finns, annars månad+konto
       const invNoClean = (invNo || "").trim();
 
@@ -284,8 +298,7 @@
           <h1 class="docTitle">INVOICE TIMESHEET</h1>
           <div class="invNumber"># <span class="invoiceNo"></span></div>
           <div class="kv">
-            <div><b>Invoice no.:</b> <span class="invoiceNoValue"></span></div>
-            <div><b>Period:</b> ${escapeHtml(month)}</div>
+            <div><b>Period:</b> ${escapeHtml(periodLabel)}</div>
             <div><b>Account:</b> ${escapeHtml(account)}</div>
           </div>
         </div>
