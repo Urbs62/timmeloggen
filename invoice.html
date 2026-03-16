@@ -98,18 +98,16 @@
     }
     .logoFallback{
       width:180px;
-      padding:10px;
-      border:1px dashed var(--line);
-      border-radius: var(--r);
-      color: var(--muted);
+      max-width:180px;
+      padding:10px 0;
       font-size:24px;
       font-weight:700;
       letter-spacing:0.08em;
       text-transform:uppercase;
       color:var(--text);
       text-align:center;
-      max-width:180px;
     }
+    
     #invoiceLogoSlot{
       min-height: 40px;
     }
@@ -641,14 +639,9 @@
       `;
       return;
     }
-  
+      
     slot.innerHTML = `
-      <img
-        src="icons/Jubrion_AB_logo_horizontal_192.png"
-        alt="${escapeHtml(companyName)}"
-        class="invoice-logo"
-        onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'${escapeHtml(companyName)}'}))"
-      />
+      <div class="logoFallback">${escapeHtml(companyName)}</div>
     `;
   }
   
