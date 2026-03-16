@@ -95,6 +95,32 @@
             <input id="s_vat" type="number" inputmode="decimal" placeholder="25" />
           </div>
         </div>
+
+        <div class="card">
+          <h2>Company logo</h2>
+        
+          <div class="row">
+            <div class="grow">
+              <label for="logoFile">Upload logo</label>
+              <input id="logoFile" type="file" accept="image/*" />
+              <div class="sub">PNG or JPG. Stored locally in your browser.</div>
+            </div>
+          </div>
+        
+          <div class="row" style="margin-top:12px;">
+            <div class="grow">
+              <label>Preview</label>
+              <div id="logoPreviewWrap" class="logoPreviewWrap">
+                <div id="logoPreviewFallback" class="logoPreviewFallback">No logo uploaded</div>
+                <img id="logoPreview" alt="Logo preview" style="display:none;" />
+              </div>
+            </div>
+          </div>
+        
+          <div class="row" style="margin-top:12px;">
+            <button type="button" id="removeLogoBtn">Remove logo</button>
+          </div>
+        </div>    
         
         <!-- ===== Kund: Leveransadress ===== -->
         <div class="grow">
