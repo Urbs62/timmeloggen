@@ -298,6 +298,18 @@
 
     hydrate();
 
+    function loadSettings(){
+      try{
+        return JSON.parse(localStorage.getItem("tl_settings_v1") || "{}");
+      }catch{
+        return {};
+      }
+    }
+    
+    function saveSettings(settings){
+      localStorage.setItem("tl_settings_v1", JSON.stringify(settings));
+    }
+    
     function updateLogoPreview(){
       const settings = loadSettings();
       const img = document.getElementById("logoPreview");
