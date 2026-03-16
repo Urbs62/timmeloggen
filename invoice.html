@@ -625,7 +625,7 @@
     const slot = document.getElementById("invoiceLogoSlot");
     if (!slot) return;
   
-    const settings = loadJSON("tl_settings", {});
+    const settings = loadJSON("tl_settings_v1", {});
     const logoDataUrl = (settings.logoDataUrl || "").trim();
     const companyName = (settings.companyName || "Jubrion AB").trim();
   
