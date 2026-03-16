@@ -346,10 +346,33 @@
           </tbody>
         </table>
       `;
-      
-      renderSpecificationLogo(content);
-      
-      const invEl = document.querySelector(".invoiceNo");
+
+      const settings = loadJSON("tl_settings_v1", {});
+      const logoDataUrl = (settings.logoDataUrl || "").trim();
+      const companyName = (settings.companyName || "Jubrion AB").trim();
+
+      const logoSlot = content.querySelector(".specLogoSlot");
+      if (logoSlot){
+        if (logoDataUrl){
+          logoSlot.innerHTML = `
+            <img src="${logoDataUrl}" alt="${escapeHtml(companyName)}" class="invoice-logo" />
+          `;
+        } else {
+          logoSlot.innerHTML = `
+            <img
+              src="icons/Jubrion_AB_logo_horizontal_192.png"
+              alt="${escapeHtml(companyName)}"
+              class="invoice-logo"
+              onerror="this.replaceWith(Object.assign(document.createElement('div'),{
+                className:'logoFallback',
+                textContent:'${escapeHtml(companyName)}'
+              }))"
+            />
+          `;
+        }
+      }
+
+      const invEl = content.querySelector(".invoiceNo");
       if (invEl) invEl.textContent = invNo || "";
     }
 
