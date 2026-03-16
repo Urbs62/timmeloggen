@@ -95,6 +95,37 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   font-size:14px;
 }
 
+/* ===== Logo preview card ===== */
+
+.logoPreviewCard{
+  border:1px dashed #ddd;
+  border-radius:12px;
+  padding:18px;
+  background:#fafafa;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  min-height:110px;
+}
+
+.logoPreviewImage{
+  max-height:100px;
+  max-width:100%;
+  width:auto;
+  height:auto;
+  display:none;
+}
+.logoPreviewFallback{
+  color:#888;
+  font-size:13px;
+  text-align:center;
+}
+.logoPreviewCard:hover{
+  background:#f3f6fb;
+}
+
 .title{
   font-weight:600;
   letter-spacing:.2px;
