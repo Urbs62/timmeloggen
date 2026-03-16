@@ -70,6 +70,31 @@ h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: 1.55rem; }
   font-weight:900;
   letter-spacing:.6px;
 }
+
+.logoPreviewWrap{
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:12px;
+  background:#fff;
+  min-height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+}
+
+.logoPreview{
+  max-width:220px;
+  max-height:80px;
+  height:auto;
+  width:auto;
+  display:block;
+}
+
+.logoPreviewFallback{
+  color:#777;
+  font-size:14px;
+}
+
 .title{
   font-weight:600;
   letter-spacing:.2px;
