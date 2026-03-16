@@ -326,8 +326,6 @@
             </div>
           </div>
         </div>
-        `;
-        renderSpecificationLogo(content);    
         
         <table aria-label="Invoice timesheet">
           <thead>
@@ -348,7 +346,9 @@
           </tbody>
         </table>
       `;
-    
+      
+      renderSpecificationLogo(content);
+      
       const invEl = document.querySelector(".invoiceNo");
       if (invEl) invEl.textContent = invNo || "";
     }
