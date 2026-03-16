@@ -325,15 +325,7 @@
           `;
         } else {
           logoSlot.innerHTML = `
-            <img
-              src="icons/Jubrion_AB_logo_horizontal_192.png"
-              alt="${escapeHtml(companyName)}"
-              class="invoice-logo"
-              onerror="this.replaceWith(Object.assign(document.createElement('div'),{
-                className:'logoFallback',
-                textContent:'${escapeHtml(companyName)}'
-              }))"
-            />
+            <div class="logoFallback">${escapeHtml(companyName)}</div>
           `;
         }
       }
