@@ -104,6 +104,9 @@
       font-size:12px;
       text-align:center;
     }
+    #invoiceLogoSlot{
+      min-height: 40px;
+    }
 
     /* ===== Boxes + table ===== */
     .box{ border:1px solid var(--line); border-radius:var(--r); padding:12px; background:#fff; }
@@ -319,13 +322,7 @@
   <div class="page">
     <div class="top">
       <div class="logoCol">
-        <img
-          src="icons/Jubrion_AB_logo_horizontal_192.png"
-          alt=""
-          id="companyLogo"
-          class="invoice-logo"
-          onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'Logo missing'}))"
-        />
+        <div id="invoiceLogoSlot"></div>
       </div>
 
       <div class="metaCol">
@@ -512,6 +509,8 @@
   document.getElementById("invoiceNoTitle").textContent = invNo;
   document.getElementById("invoiceDate").textContent = invDate;
 
+  renderInvoiceLogo();
+  
   const ptd = Number(settings.paymentTermsDays);
 
   document.getElementById("paymentTerms").textContent =
@@ -622,6 +621,31 @@
       .replaceAll('"', "&quot;");
   }
 
+  function renderInvoiceLogo(){
+    const slot = document.getElementById("invoiceLogoSlot");
+    if (!slot) return;
+  
+    const settings = loadJSON("tl_settings", {});
+    const logoDataUrl = (settings.logoDataUrl || "").trim();
+    const companyName = (settings.companyName || "Jubrion AB").trim();
+  
+    if (logoDataUrl){
+      slot.innerHTML = `
+        <img src="${logoDataUrl}" alt="${escapeHtml(companyName)}" class="invoice-logo" />
+      `;
+      return;
+    }
+  
+    slot.innerHTML = `
+      <img
+        src="icons/Jubrion_AB_logo_horizontal_192.png"
+        alt="${escapeHtml(companyName)}"
+        class="invoice-logo"
+        onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logoFallback',textContent:'${escapeHtml(companyName)}'}))"
+      />
+    `;
+  }
+  
   // ========= Read TimeLedger data =========
   function loadJSON(key, fallback) {
     try {
