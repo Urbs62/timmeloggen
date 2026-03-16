@@ -297,6 +297,59 @@
     document.getElementById("btnBack").addEventListener("click", () => history.back());
 
     hydrate();
+
+    function updateLogoPreview(){
+      const settings = loadSettings();
+      const img = document.getElementById("logoPreview");
+      const fallback = document.getElementById("logoPreviewFallback");
+    
+      if (!img || !fallback) return;
+    
+      if (settings.logoDataUrl){
+        img.src = settings.logoDataUrl;
+        img.style.display = "block";
+        fallback.style.display = "none";
+      } else {
+        img.removeAttribute("src");
+        img.style.display = "none";
+        fallback.style.display = "block";
+      }
+    }
+
+    (function initLogoUpload(){
+      const input = document.getElementById("logoFile");
+      const removeBtn = document.getElementById("removeLogoBtn");
+    
+      if (input){
+        input.addEventListener("change", (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+    
+          const reader = new FileReader();
+          reader.onload = () => {
+            const settings = loadSettings();
+            settings.logoDataUrl = String(reader.result || "");
+            saveSettings(settings);
+            updateLogoPreview();
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    
+      if (removeBtn){
+        removeBtn.addEventListener("click", () => {
+          const settings = loadSettings();
+          delete settings.logoDataUrl;
+          saveSettings(settings);
+    
+          if (input) input.value = "";
+          updateLogoPreview();
+        });
+      }
+    
+      updateLogoPreview();
+    })(); 
+    
   </script>
 </body>
 </html>
