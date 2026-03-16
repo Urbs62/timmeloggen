@@ -205,36 +205,7 @@
         return null;
       }
     }
-
-    function renderSpecificationLogo(root){
-      const slot = root.querySelector(".specLogoSlot");
-      if (!slot) return;
-    
-      const settings = loadJSON("tl_settings_v1", {});
-      const logoDataUrl = (settings.logoDataUrl || "").trim();
-      const companyName = (settings.companyName || "Jubrion AB").trim();
-    
-      if (logoDataUrl){
-        slot.innerHTML = `
-          <img src="${logoDataUrl}" alt="${escapeHtml(companyName)}" class="invoice-logo" />
-        `;
-        return;
-      }
-    
-      slot.innerHTML = `
-        <img
-          src="icons/Jubrion_AB_logo_horizontal_192.png"
-          alt="${escapeHtml(companyName)}"
-          class="invoice-logo"
-          onerror="this.replaceWith(Object.assign(document.createElement('div'),{
-            className:'logoFallback',
-            textContent:'${escapeHtml(companyName)}'
-          }))"
-        />
-      `;
-    }
-
-    
+   
     // Sätter title för "så bra det går" filnamn.
     // Mobil kan fortfarande ignorera, men detta är stabilt för desktop + vissa mobiler.
     function setPdfTitleForUnderlag(payload){
@@ -347,7 +318,7 @@
         </table>
       `;
 
-      const settings = loadJSON("tl_settings_v1", {});
+      const settings = loadSettings();
       const logoDataUrl = (settings.logoDataUrl || "").trim();
       const companyName = (settings.companyName || "Jubrion AB").trim();
 
