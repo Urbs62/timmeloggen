@@ -382,10 +382,9 @@
 
     <div class="sum">
       <div class="sumBox">
-        <div class="sumRow"><span>Subtotal excl. VAT</span><span id="sumEx">0 SEK</span></div>
-        <div class="sumRow"><span>VAT</span><span id="vat">0 SEK</span></div>
-        <div class="sumRow"><strong>Amount due</strong><strong id="total">0 SEK</strong></div>
-
+        <div class="sumRow"><span>Subtotal excl. VAT</span><span id="sumEx">0</span></div>
+        <div class="sumRow"><span>VAT</span><span id="vat">0</span></div>
+        <div class="sumRow"><strong>Amount due</strong><strong id="total">0</strong></div>
         <div class="small muted" style="margin-top:6px;font-size:12px;font-style:italic">
           Detailed timesheet can be provided upon request.
         </div>
@@ -439,6 +438,7 @@
   }
   
   const settings = loadSettings();
+  const currency = settings.currency ?? "SEK";
 
   const companyName = (settings.companyName || "Jubrion AB").trim();
   const logo = document.getElementById("companyLogo");
@@ -609,7 +609,7 @@
   function formatSEK(amount){
     const rounded = Math.round(Number(amount) || 0);
     const spaced = String(rounded).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return `${spaced} SEK`;
+    return `${spaced} ${currency}`;
   }
 
   function formatHours(h) {
@@ -767,8 +767,8 @@
       tr.innerHTML = `
         <td>${escapeHtml(e.name)}</td>
         <td class="right nowrap">${formatHours(hours)}</td>
-        <td class="right nowrap">${formatSEK(price)}</td>
-        <td class="right nowrap">${formatSEK(amount)}</td>
+        <td class="right nowrap">${formatMoney(price)}</td>
+        <td class="right nowrap">${formatMoney(amount)}</td>
       `;
       rowsEl.appendChild(tr);
     }
@@ -789,9 +789,9 @@
   const vat = Math.round(sumEx * vatRate);
   const total = sumEx + vat;
 
-  document.getElementById("sumEx").textContent = formatSEK(sumEx);
-  document.getElementById("vat").textContent = `${formatSEK(vat)} (${Math.round(vatRate * 100)}%)`;
-  document.getElementById("total").textContent = formatSEK(total);
+  document.getElementById("sumEx").textContent = formatMoney(sumEx);
+  document.getElementById("vat").textContent = `${formatMoney(vat)} (${Math.round(vatRate * 100)}%)`;
+  document.getElementById("total").textContent = formatMoney(total);
 </script>
 </body>
 </html>
