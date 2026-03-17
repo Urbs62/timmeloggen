@@ -195,6 +195,7 @@
     const elBankgiro = document.getElementById("s_bankgiro");
     const elOrgNo = document.getElementById("s_orgNo");
     const elVatNo = document.getElementById("s_vatNo");
+    const elCurrency = document.getElementById("s_currency");
     const elNo = document.getElementById("s_invoiceNo");
     const elPaymentTermsDays = document.getElementById("s_paymentTermsDays");
     const elPaymentNote = document.getElementById("s_paymentNote");
@@ -222,6 +223,7 @@
       elBankgiro.value = s.bankgiro ?? "";
       elOrgNo.value = s.orgNo ?? "";
       elVatNo.value = s.vatNo ?? "";
+      elCurrency.value = s.currency ?? "SEK";
       elNo.value = s.invoiceNo ?? "";
       elPaymentTermsDays.value = s.paymentTermsDays ?? "";
       elPaymentNote.value = s.paymentNote ?? "";
@@ -293,6 +295,7 @@
         yourReference,
         contractRef,
         hourlyRate,
+        currency,
         vatRate: vatPercent / 100,
         customerName,
         customerStreet,
@@ -309,7 +312,7 @@
       status.textContent =
         `Sparat: ${s.companyName || "Jubrion AB"} • ` +
         `Faktura ${s.invoiceNo} • ` +
-        `${s.hourlyRate} SEK/h • ` +
+        `${s.hourlyRate} ${(s.currency ?? "SEK")}/h • ` +
         `Moms ${Math.round(s.vatRate*100)}%` +
         (addr ? ` • ${addr}` : "");
     });
