@@ -9,6 +9,7 @@
 const STORE = {
   accounts: "tl_accounts_v1",
   days: "tl_days_v1",
+  monthTargets: "tl_month_targets_v1",
 };
 
 function getInvoiceNo(){
@@ -230,6 +231,7 @@ accounts = [{id,name}]
 
 let accounts = loadJSON(STORE.accounts, []);
 let days = loadJSON(STORE.days, {});
+let monthTargets = loadJSON(STORE.monthTargets, {});
 
 // Aktiv  (för bakåtredigering)
 let activeDayKey = todayKey();
@@ -283,6 +285,8 @@ const overviewBox = document.getElementById("overviewBox");
 const perAccountBox = document.getElementById("perAccountBox");
 const historyList = document.getElementById("historyList");
 const forecastBox = document.getElementById("forecastBox");
+const targetHours = document.getElementById("targetHours");
+const saveTargetBtn = document.getElementById("saveTargetBtn");
 
 const invoiceAccount = document.getElementById("invoiceAccount");
 const invoiceMonth = document.getElementById("invoiceMonth");
@@ -735,6 +739,24 @@ function monthKeyFromDate(dateObj) {
   return `${dateObj.getFullYear()}-${pad2(dateObj.getMonth() + 1)}`;
 }
 
+function getMonthTargetHours(yyyyMm){
+  const v = monthTargets?.[yyyyMm]?.targetHours;
+  return Number.isFinite(Number(v)) ? Number(v) : "";
+}
+
+function saveMonthTargetHours(yyyyMm, hours){
+  const n = Number(hours);
+  if (!Number.isFinite(n) || n < 0) return false;
+
+  monthTargets[yyyyMm] = {
+    ...(monthTargets[yyyyMm] || {}),
+    targetHours: n
+  };
+
+  saveJSON(STORE.monthTargets, monthTargets);
+  return true;
+}
+
 function dayKeyFromDate(dateObj) {
   return `${dateObj.getFullYear()}-${pad2(dateObj.getMonth() + 1)}-${pad2(dateObj.getDate())}`;
 }
@@ -790,6 +812,10 @@ function aggregateForKeys(keys) {
 function renderHistory() {
   const type = periodType.value;
   const dateStr = periodDate.value || todayKey();
+   const yyyyMm = dateStr.slice(0, 7);
+   if (targetHours) {
+     targetHours.value = getMonthTargetHours(yyyyMm);
+   }
   if (!periodDate.value) periodDate.value = todayKey();
 
   const keys = periodKeys(type, dateStr);
@@ -908,6 +934,21 @@ function renderHistory() {
 refreshHistoryBtn.addEventListener("click", renderHistory);
 periodType.addEventListener("change", renderHistory);
 periodDate.addEventListener("change", renderHistory);
+
+if (saveTargetBtn) {
+  saveTargetBtn.addEventListener("click", () => {
+    const dateStr = periodDate.value || todayKey();
+    const yyyyMm = dateStr.slice(0, 7);
+
+    const ok = saveMonthTargetHours(yyyyMm, targetHours.value);
+    if (!ok) {
+      alert("Enter a valid monthly target in hours.");
+      return;
+    }
+
+    renderHistory();
+  });
+}
 
 // ---------- Active day selector ----------
 if (activeDate) {
