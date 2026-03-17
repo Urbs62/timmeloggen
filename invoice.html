@@ -606,7 +606,7 @@
   })();
 
   // =========  =========
-  function formatSEK(amount){
+  function formatMoney(amount){
     const rounded = Math.round(Number(amount) || 0);
     const spaced = String(rounded).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     return `${spaced} ${currency}`;
