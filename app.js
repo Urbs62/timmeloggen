@@ -116,6 +116,10 @@ function formatHoursSv(hours){
   return s.replace(".", ",");
 }
 
+function formatMoney(n){
+  return Math.round(n).toLocaleString("sv-SE");
+}
+
 function formatDateSv(dayKey){
   // "2026-01-03" -> "2026-01-03" (du kan byta till "3/1" om du vill senare)
   return dayKey;
@@ -947,9 +951,9 @@ function renderHistory() {
           <div><span class="k">Remaining target:</span> <span class="v">${f.targetRemaining.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Required average per remaining day:</span> <span class="v strong">${f.requiredPerDayToReachTarget.toFixed(2).replace(".", ",")} h</span></div>
           
-          <div><span class="k">Value so far:</span> <span class="v">${Math.round(valueSoFar)} ${currency}</span></div>
-          <div><span class="k">Target value:</span> <span class="v">${Math.round(targetValue)} ${currency}</span></div>
-          <div><span class="k">Remaining value:</span> <span class="v strong">${Math.round(remainingValue)} ${currency}</span></div>
+          <div><span class="k">Value so far:</span> <span class="v">${formatMoney(valueSoFar)} ${currency}</span></div>
+          <div><span class="k">Target value:</span> <span class="v">${formatMoney(targetValue)} ${currency}</span></div>
+          <div><span class="k">Remaining value:</span> <span class="v strong">${formatMoney(remainingValue)} ${currency}</span></div>
           <hr class="sep" />
       
           <div><span class="k">Projected month total:</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
