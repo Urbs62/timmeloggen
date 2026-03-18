@@ -32,7 +32,8 @@ function getSettings(){
   return {
     invoiceNo: (s?.invoiceNo || "26-001").trim(),
     hourlyRate: Number.isFinite(Number(s?.hourlyRate)) ? Number(s.hourlyRate) : 650,
-    vatRate: Number.isFinite(Number(s?.vatRate)) ? Number(s.vatRate) : 0.25
+    vatRate: Number.isFinite(Number(s?.vatRate)) ? Number(s.vatRate) : 0.25,
+    currency: (s?.currency || "SEK").trim()
   };
 }
 
@@ -827,6 +828,9 @@ function renderHistory() {
 
   const keys = periodKeys(type, dateStr);
   const { totalWorkMin, totalBreakMin, perAccMin, rows } = aggregateForKeys(keys);
+   const settings = getSettings();
+   const rate = settings.hourlyRate || 0;
+   const currency = settings.currency || "SEK";
 
   const periodLabel =
      type === "day"
@@ -913,6 +917,11 @@ function renderHistory() {
     } else {
       const yyyyMm = (dateStr || todayKey()).slice(0, 7);
       const f = monthForecast(days, yyyyMm);
+       
+      const valueSoFar = f.workedSoFar * rate;
+      const targetValue = f.targetMonth * rate;
+      const remainingValue = Math.max(0, f.targetRemaining * rate);
+       
       let statusLabel = "";
       if (f.deltaNow > 0) {
         statusLabel = "Ahead of plan";
@@ -932,12 +941,15 @@ function renderHistory() {
           <div><span class="k">Target hours to date:</span> <span class="v">${f.targetSoFar.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Actual hours to date:</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Variance to date:</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
-      
+
           <hr class="sep" />
       
           <div><span class="k">Remaining target:</span> <span class="v">${f.targetRemaining.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Required average per remaining day:</span> <span class="v strong">${f.requiredPerDayToReachTarget.toFixed(2).replace(".", ",")} h</span></div>
-      
+          
+          <div><span class="k">Value so far:</span> <span class="v">${Math.round(valueSoFar)} ${currency}</span></div>
+          <div><span class="k">Target value:</span> <span class="v">${Math.round(targetValue)} ${currency}</span></div>
+          <div><span class="k">Remaining value:</span> <span class="v strong">${Math.round(remainingValue)} ${currency}</span></div>
           <hr class="sep" />
       
           <div><span class="k">Projected month total:</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
