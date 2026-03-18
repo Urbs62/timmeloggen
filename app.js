@@ -179,38 +179,45 @@ function monthForecast(daysObj, yyyyMm){
   const elapsedEnd = isCurrentMonth ? today : end;
   const elapsedWorkdays = countWeekdaysInRange(start, elapsedEnd);
 
-  const budgetMonth = workdaysInMonth * DAILY_BUDGET_HOURS;
-  const budgetSoFar = elapsedWorkdays * DAILY_BUDGET_HOURS;
+  const targetMonthRaw = getMonthTargetHours(yyyyMm);
+  const targetMonth =
+    Number.isFinite(Number(targetMonthRaw)) && Number(targetMonthRaw) >= 0
+      ? Number(targetMonthRaw)
+      : workdaysInMonth * DAILY_BUDGET_HOURS;
+
+  const targetPerWorkday =
+    workdaysInMonth > 0 ? targetMonth / workdaysInMonth : 0;
+
+  const targetSoFar = elapsedWorkdays * targetPerWorkday;
 
   const workedSoFar = hoursWorkedInMonth(daysObj, yyyyMm);
 
   const remainingWorkdays = Math.max(0, workdaysInMonth - elapsedWorkdays);
-  const budgetRemaining = Math.max(0, budgetMonth - workedSoFar);
+  const targetRemaining = Math.max(0, targetMonth - workedSoFar);
 
-  // Prognos om du fortsätter i budget-takt resten av månaden:
-  const forecast = workedSoFar + remainingWorkdays * DAILY_BUDGET_HOURS;
-  const forecastDelta = forecast - budgetMonth;
+  const forecast = workedSoFar + remainingWorkdays * targetPerWorkday;
+  const forecastDelta = forecast - targetMonth;
 
-  // Krävs för att nå exakt budget (om du vill "komma ikapp"):
-  const requiredPerDayToReachBudget =
-    remainingWorkdays > 0 ? budgetRemaining / remainingWorkdays : 0;
+  const requiredPerDayToReachTarget =
+    remainingWorkdays > 0 ? targetRemaining / remainingWorkdays : 0;
 
   return {
     workdaysInMonth,
     elapsedWorkdays,
     remainingWorkdays,
 
-    budgetMonth,
-    budgetSoFar,
+    targetMonth,
+    targetSoFar,
+    targetPerWorkday,
     workedSoFar,
 
-    deltaNow: workedSoFar - budgetSoFar,
+    deltaNow: workedSoFar - targetSoFar,
 
     forecast,
     forecastDelta,
 
-    budgetRemaining,
-    requiredPerDayToReachBudget
+    targetRemaining,
+    requiredPerDayToReachTarget
   };
 }
 
@@ -911,17 +918,18 @@ function renderHistory() {
         <div class="kv">
           <div><span class="k">Working days (month):</span> <span class="v">${f.workdaysInMonth}</span></div>
           <div><span class="k">Working days elapsed:</span> <span class="v">${f.elapsedWorkdays}</span></div>
-          <div><span class="k">Target hours to date:</span> <span class="v">${f.budgetSoFar.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Monthly target:</span> <span class="v strong">${f.targetMonth.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Target hours to date:</span> <span class="v">${f.targetSoFar.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Actual hours to date:</span> <span class="v strong">${f.workedSoFar.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Variance to date:</span> <span class="v">${f.deltaNow.toFixed(1).replace(".", ",")} h</span></div>
-
+      
           <hr class="sep" />
-
-          <div><span class="k">Remaining target:</span> <span class="v">${f.budgetRemaining.toFixed(1).replace(".", ",")} h</span></div>
-          <div><span class="k">Remaining average per remaining day:</span> <span class="v strong">${f.requiredPerDayToReachBudget.toFixed(2).replace(".", ",")} h</span></div>
-
+      
+          <div><span class="k">Remaining target:</span> <span class="v">${f.targetRemaining.toFixed(1).replace(".", ",")} h</span></div>
+          <div><span class="k">Required average per remaining day:</span> <span class="v strong">${f.requiredPerDayToReachTarget.toFixed(2).replace(".", ",")} h</span></div>
+      
           <hr class="sep" />
-
+      
           <div><span class="k">Projected month total:</span> <span class="v strong">${f.forecast.toFixed(1).replace(".", ",")} h</span></div>
           <div><span class="k">Projected variance:</span> <span class="v">${f.forecastDelta.toFixed(1).replace(".", ",")} h</span></div>
         </div>
