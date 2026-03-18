@@ -16,6 +16,28 @@ function getInvoiceNo(){
   return getSettings().invoiceNo; // t.ex. "26-002"
 }
 
+function incrementInvoiceNo(current) {
+  const s = String(current || "").trim();
+  const m = s.match(/^(.*?)(\d+)$/);
+  if (!m) return s || "1";
+
+  const prefix = m[1];
+  const numStr = m[2];
+  const nextNum = String(Number(numStr) + 1).padStart(numStr.length, "0");
+  return prefix + nextNum;
+}
+
+function saveNextInvoiceNo() {
+  const s = loadSettings();
+  const current = (s?.invoiceNo || "26-001").trim();
+  const next = incrementInvoiceNo(current);
+
+  s.invoiceNo = next;
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+
+  updateGenerateInvoiceBtnLabel();
+}
+
 const SETTINGS_KEY = "tl_settings_v1";
 
 function loadSettings(){
@@ -425,10 +447,22 @@ function renderAccounts() {
    renderInvoiceAccountSelect();
 }
 
+function updateGenerateInvoiceBtnLabel(){
+  const btn = document.getElementById("openInvoiceHtmlBtn");
+  if (!btn) return;
+
+  const invNo = getInvoiceNo();
+  btn.textContent = invNo
+    ? `Generate invoice (${invNo})`
+    : "Generate invoice";
+}
+
 addAccountBtn.addEventListener("click", () => addAccount(accountName.value));
 accountName.addEventListener("keydown", (e) => {
   if (e.key === "Enter") addAccount(accountName.value);
 });
+
+
 
 // ---------- Slots + Start/Slut (endast i) ----------
 function startDay() {
@@ -1189,7 +1223,8 @@ function init() {
 
    // : init
    if (invoiceMonth) invoiceMonth.value = todayKey().slice(0,7);
-      renderInvoiceAccountSelect();
+   renderInvoiceAccountSelect();
+   updateGenerateInvoiceBtnLabel();
 
    if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
 
@@ -1226,7 +1261,8 @@ function init() {
          `&no=${encodeURIComponent(invNo)}`;
 
        // PWA / mobil: öppna i samma flik
-       location.href = url;
+        saveNextInvoiceNo();
+        location.href = url;
      });
    }
 
