@@ -1150,8 +1150,8 @@ function safeFilePart(s){
 }
 
 function setPdfTitleForUnderlag(){
-  const invNoRaw = getInvoiceNo();
-  const invNo = safeFilePart(invNoRaw || "").trim() || "26-000"; // fallback
+  const invNoRaw = localStorage.getItem("tl_last_invoice_no") || getInvoiceNo();
+  const invNo = safeFilePart(invNoRaw || "").trim() || "26-000";
   setTitleHard(`Fakturaunderlag ${invNo} Jubrion AB`);
 }
 
