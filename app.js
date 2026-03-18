@@ -1250,7 +1250,8 @@ function init() {
        const dd = String(d.getDate()).padStart(2, "0");
        const invDate = `${yyyy}-${mm}-${dd}`;
 
-      const invNo = s.invoiceNo;
+       const invNo = s.invoiceNo;
+        localStorage.setItem("tl_last_invoice_no", invNo);
         
        const url =
          `invoice.html?month=${encodeURIComponent(month)}` +
@@ -1292,7 +1293,7 @@ function init() {
            kontonamn: r.kontonamn ?? r.account_name ?? r.accountName ?? ""
       }));
 
-       const invNo = getInvoiceNo();
+      const invNo = localStorage.getItem("tl_last_invoice_no") || getInvoiceNo();
 
        const payload = { v:1, createdAt:Date.now(), invNo, month:monthVal, account:accLabel, rows:compactRows };
        localStorage.setItem("tl_underlag_payload_v1", JSON.stringify(payload));
