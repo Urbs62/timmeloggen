@@ -913,9 +913,19 @@ function renderHistory() {
     } else {
       const yyyyMm = (dateStr || todayKey()).slice(0, 7);
       const f = monthForecast(days, yyyyMm);
-
+      let statusLabel = "";
+      if (f.deltaNow > 0) {
+        statusLabel = "Ahead of plan";
+      } else if (f.deltaNow < 0) {
+        statusLabel = "Behind plan";
+      } else {
+        statusLabel = "On track";
+      }
+       
       forecastBox.innerHTML = `
         <div class="kv">
+          <div><span class="k">Status:</span> <span class="v strong">${statusLabel}</span></div>
+          
           <div><span class="k">Working days (month):</span> <span class="v">${f.workdaysInMonth}</span></div>
           <div><span class="k">Working days elapsed:</span> <span class="v">${f.elapsedWorkdays}</span></div>
           <div><span class="k">Monthly target:</span> <span class="v strong">${f.targetMonth.toFixed(1).replace(".", ",")} h</span></div>
