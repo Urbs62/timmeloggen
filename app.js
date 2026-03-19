@@ -51,10 +51,13 @@ function loadSettings(){
 
 function getSettings(){
   const s = loadSettings();
+  const hourlyRate = parseNumber(s?.hourlyRate);
+  const vatRate = parseNumber(s?.vatRate);
+
   return {
     invoiceNo: (s?.invoiceNo || "26-001").trim(),
-    hourlyRate: Number.isFinite(Number(s?.hourlyRate)) ? Number(s.hourlyRate) : 650,
-    vatRate: Number.isFinite(Number(s?.vatRate)) ? Number(s.vatRate) : 0.25,
+    hourlyRate: Number.isFinite(hourlyRate) ? hourlyRate : 650,
+    vatRate: Number.isFinite(vatRate) ? vatRate : 0.25,
     currency: (s?.currency || "SEK").trim()
   };
 }
