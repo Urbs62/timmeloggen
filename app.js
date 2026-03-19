@@ -98,12 +98,13 @@ function nowTimeHHMM() {
 }
 
 function parseNumber(val) {
-  if (val == null || val === "") return 0;
+  if (val == null) return NaN;
+
+  const s = val.toString().trim();
+  if (!s) return NaN;
+
   return parseFloat(
-    val.toString()
-      .trim()
-      .replace(",", ".")
-      .replace(/\s/g, "")
+    s.replace(",", ".").replace(/\s/g, "")
   );
 }
 
