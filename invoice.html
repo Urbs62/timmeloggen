@@ -240,31 +240,29 @@
     /* ===== PRINT / PDF ===== */
     @media print{
       @page{ margin:12mm; }
-
+    
       body{
         background:#fff !important;
         color:#000 !important;
-        display:block !important;
-        min-height:auto !important;
       }
-
+    
       .page{
         max-width:none;
         padding:12mm;
-        display:block !important;
       }
-
+    
       .top{
         grid-template-columns: 1fr 1fr;
         margin-bottom:4mm;
         padding-bottom:8px;
       }
-
+    
       .metaCol{ padding-right:0; }
-
+    
       .addrGrid{
         grid-template-columns: 1fr 1fr !important;
       }
+    
       .addrCol + .addrCol{
         border-left:1px solid var(--line) !important;
         border-top:0 !important;
@@ -272,41 +270,34 @@
         padding-top:0 !important;
         margin-top:0 !important;
       }
-
+    
       .addrBox{
         break-inside: avoid;
         page-break-inside: avoid;
         margin: 0 0 4mm;
       }
-
+    
       table{ margin-top:0; }
-      .footer{ margin-top:10mm; }
-
-      /* ===== FIXED FOOTER I PRINT ===== */
-      .page{
-        padding-bottom: 28mm;
-      }
-
+    
+      /* VIKTIG FIX */
       .footer{
-        position: fixed;
-        left: 12mm;
-        right: 12mm;
-        bottom: 12mm;
-        border-top:0;          /* <-- viktigt: ingen dubbel-linje */
-        padding-top:0;         /* <-- bort med extra luft */
-        background:#fff;
-        margin: 0;
+        position: static;
+        margin-top: 10mm;
+        border-top:0;
+        padding-top:0;
       }
+    
       .footer::before{
         border-top:1px solid var(--line);
-        margin: 0 0 4mm 0;     /* <-- tight i print, justera 3–6mm om du vill */
+        margin: 0 0 4mm 0;
       }
+    
       .footerInner{
         max-width: none;
         margin: 0;
-         width: 100%;
+        width: 100%;
       }
-
+    
       .footerCol.rightCol{
         padding-right: 0;
       }
