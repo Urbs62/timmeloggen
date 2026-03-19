@@ -249,57 +249,24 @@
       .page{
         max-width:none;
         padding:12mm;
+        padding-bottom: 40mm; /* 🔥 ger plats för footer */
       }
     
-      .top{
-        grid-template-columns: 1fr 1fr;
-        margin-bottom:4mm;
-        padding-bottom:8px;
-      }
-    
-      .metaCol{ padding-right:0; }
-    
-      .addrGrid{
-        grid-template-columns: 1fr 1fr !important;
-      }
-    
-      .addrCol + .addrCol{
-        border-left:1px solid var(--line) !important;
-        border-top:0 !important;
-        padding-left:14px !important;
-        padding-top:0 !important;
-        margin-top:0 !important;
-      }
-    
-      .addrBox{
-        break-inside: avoid;
-        page-break-inside: avoid;
-        margin: 0 0 4mm;
-      }
-    
-      table{ margin-top:0; }
-    
-      /* VIKTIG FIX */
+      /* FOOTER RIKTIGT LÄNGST NER */
       .footer{
-        position: static;
-        margin-top: 10mm;
+        position: fixed;
+        left: 12mm;
+        right: 12mm;
+        bottom: 12mm;
+        background:#fff;
         border-top:0;
         padding-top:0;
+        margin:0;
       }
     
       .footer::before{
         border-top:1px solid var(--line);
         margin: 0 0 4mm 0;
-      }
-    
-      .footerInner{
-        max-width: none;
-        margin: 0;
-        width: 100%;
-      }
-    
-      .footerCol.rightCol{
-        padding-right: 0;
       }
     }
   </style>
