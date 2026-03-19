@@ -94,6 +94,16 @@ function nowTimeHHMM() {
   return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 }
 
+function parseNumber(val) {
+  if (val == null || val === "") return 0;
+  return parseFloat(
+    val.toString()
+      .trim()
+      .replace(",", ".")
+      .replace(/\s/g, "")
+  );
+}
+
 function setText(el, text) {
   if (el) el.textContent = text;
 }
@@ -794,7 +804,7 @@ function getMonthTargetHours(yyyyMm){
 }
 
 function saveMonthTargetHours(yyyyMm, hours){
-  const n = Number(hours);
+  const n = parseNumber(hours);
   if (!Number.isFinite(n) || n < 0) return false;
 
   monthTargets[yyyyMm] = {
