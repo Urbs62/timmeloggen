@@ -311,7 +311,22 @@
         padding-right: 0;
       }
     }
-  </style>
+    @media print and (-webkit-min-device-pixel-ratio: 0){
+      @supports (-webkit-touch-callout: none) {
+        .page{
+          padding-bottom: 12mm !important;
+        }
+    
+        .footer{
+          position: static !important;
+          margin-top: 10mm !important;
+          left: auto !important;
+          right: auto !important;
+          bottom: auto !important;
+        }
+      }
+    }
+  style>
 </head>
 
 <body>
