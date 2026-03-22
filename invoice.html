@@ -239,162 +239,76 @@
 
     /* ===== PRINT / PDF ===== */
     @media print{
-      @page{
-        margin: 10mm 12mm;
-        size: auto;
-      }
+      @page{ margin:12mm; }
     
-      html, body{
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #fff !important;
-        color: #000 !important;
-      }
-    
-      .noPrint{
-        display: none !important;
+      body{
+        background:#fff !important;
+        color:#000 !important;
+        display:block !important;
+        min-height:auto !important;
       }
     
       .page{
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        max-width:none;
+        padding:12mm;
+        display:block !important;
+        padding-bottom: 28mm;
       }
     
       .top{
-        display: grid !important;
-        grid-template-columns: 1fr 320px !important;
-        gap: 14px !important;
-        align-items: start !important;
-        border-bottom: 2px solid var(--line);
-        padding-bottom: 8px;
-        margin-bottom: 6px;
+        grid-template-columns: 1fr 1fr;
+        margin-bottom:4mm;
+        padding-bottom:8px;
       }
     
-      .metaCol{
-        text-align: right !important;
-        padding-right: 0 !important;
-      }
-    
-      .metaRow{
-        justify-content: flex-end !important;
-      }
-    
-      .invoice-logo{
-        width: 160px !important;
-        max-height: 72px !important;
-        height: auto !important;
-      }
-    
-      .logoFallback{
-        width: 160px !important;
-        max-width: 160px !important;
-        font-size: 22px !important;
-        padding: 6px 0 !important;
-      }
+      .metaCol{ padding-right:0; }
     
       .addrGrid{
-        display: grid !important;
         grid-template-columns: 1fr 1fr !important;
-        gap: 14px !important;
       }
     
       .addrCol + .addrCol{
-        border-left: 1px solid var(--line) !important;
-        border-top: 0 !important;
-        padding-left: 14px !important;
-        padding-top: 0 !important;
-        margin-top: 0 !important;
+        border-left:1px solid var(--line) !important;
+        border-top:0 !important;
+        padding-left:14px !important;
+        padding-top:0 !important;
+        margin-top:0 !important;
       }
     
       .addrBox{
-        margin: 0 0 8px !important;
         break-inside: avoid;
         page-break-inside: avoid;
+        margin: 0 0 4mm;
       }
     
-      table{
-        width: 100% !important;
-        border-collapse: collapse !important;
-        margin-top: 4px !important;
-        font-size: 11px !important;
-      }
+      table{ margin-top:0; }
     
-      th, td{
-        padding: 5px 4px !important;
-        line-height: 1.1 !important;
-      }
-    
-      th{
-        font-size: 10px !important;
-      }
-    
-      .sum{
-        margin-top: 10px !important;
-        display: flex !important;
-        justify-content: flex-end !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-    
-      .sumBox{
-        width: 340px !important;
-        padding: 10px !important;
-      }
-    
-      .sumRow{
-        margin: 5px 0 !important;
-        font-size: 13px !important;
-      }
-    
-      .sumRow strong{
-        font-size: 15px !important;
-      }
-    
-      .payment-note{
-        margin-top: 8px !important;
-        font-size: 12px !important;
-        line-height: 1.2 !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
+      .footer{ margin-top:10mm; }
     
       .footer{
-        position: static !important;
-        margin-top: 8px !important;
-        border-top: 0 !important;
-        padding-top: 0 !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
+        position: fixed;
+        left: 12mm;
+        right: 12mm;
+        bottom: 12mm;
+        border-top:0;
+        padding-top:0;
+        background:#fff;
+        margin: 0;
       }
     
       .footer::before{
-        content: "" !important;
-        display: block !important;
-        border-top: 1px solid var(--line) !important;
-        margin: 0 0 4px 0 !important;
+        border-top:1px solid var(--line);
+        margin: 0 0 4mm 0;
       }
     
       .footerInner{
-        max-width: none !important;
-        margin: 0 !important;
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 18px !important;
+        max-width: none;
+        margin: 0;
+        width: 100%;
       }
     
       .footerCol.rightCol{
-        text-align: right !important;
-        padding-right: 0 !important;
-      }
-    
-      .footerCol > div{
-        margin: 1px 0 !important;
-      }
-    
-      #warn{
-        break-inside: avoid;
-        page-break-inside: avoid;
+        padding-right: 0;
       }
     }
   </style>
