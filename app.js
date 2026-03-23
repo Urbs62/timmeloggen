@@ -292,6 +292,7 @@ const panels = {
   accounts: document.getElementById("tab-accounts"),
   log: document.getElementById("tab-log"),
   history: document.getElementById("tab-history"),
+  documents: document.getElementById("tab-documents"),
   settings: document.getElementById("tab-settings"),
   instructions: document.getElementById("tab-instructions"),
 };
