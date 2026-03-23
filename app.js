@@ -350,10 +350,14 @@ tabBtns.forEach((btn) => {
     const key = btn.dataset.tab;
     Object.values(panels).forEach((p) => p.classList.remove("active"));
     if (panels[key]) panels[key].classList.add("active");
-    if (key === "history") {
-      updateGenerateInvoiceBtnLabel();
-      renderHistory();
-    }
+      if (key === "history") {
+        renderHistory();
+      }
+      
+      if (key === "documents") {
+        updateGenerateInvoiceBtnLabel();
+        renderInvoiceAccountSelect();
+      }
   });
 });
 
