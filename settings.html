@@ -239,6 +239,11 @@
       elCustomerCity.value = s.customerCity ?? "";
       elCustomerOrgNo.value = s.customerOrgNo ?? "";
       elInvoiceEmail.value = s.invoiceEmail ?? "";
+
+      const last = localStorage.getItem("tl_last_backup_at");
+      if (!last) {
+        status.textContent = "No backup created yet.";
+      }
     }
 
     document.getElementById("btnSave").addEventListener("click", () => {
