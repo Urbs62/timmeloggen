@@ -1374,6 +1374,10 @@ function init() {
        try {
          const text = await file.text();
          const backup = JSON.parse(text);
+
+         if (backup.app !== "TimeLedger") {
+           throw new Error("This file is not a TimeLedger backup.");
+         }
    
          if (!backup?.data || typeof backup.data !== "object") {
            throw new Error("Invalid backup file (missing data).");
@@ -1394,7 +1398,7 @@ function init() {
          const okPreview = confirm(
            `Backup found:\n` +
            `App: ${backup.app ?? "unknown"}\n` +
-            `Exported: ${backup.exportedAt ?? backup.exported ?? "unknown"}\n\n` +
+           `Exported: ${backup.exportedAt ?? backup.exported ?? "unknown"}\n\n` +
            `Contents:\n${info}\n\n` +
            `Press OK to continue with RESTORE (this will replace local data).`
          );
