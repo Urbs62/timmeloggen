@@ -240,23 +240,6 @@
       elCustomerCity.value = s.customerCity ?? "";
       elCustomerOrgNo.value = s.customerOrgNo ?? "";
       elInvoiceEmail.value = s.invoiceEmail ?? "";
-
-      const last = localStorage.getItem("tl_last_backup_at");
-      
-      if (!last) {
-        status.textContent = "No backup created yet.";
-      } else {
-        const d = new Date(last);
-      
-        const formatted =
-          d.getFullYear() + "-" +
-          String(d.getMonth() + 1).padStart(2, "0") + "-" +
-          String(d.getDate()).padStart(2, "0") + " " +
-          String(d.getHours()).padStart(2, "0") + ":" +
-          String(d.getMinutes()).padStart(2, "0");
-      
-        status.textContent = `Last backup: ${formatted}`;
-      }
     }
 
     document.getElementById("btnSave").addEventListener("click", () => {
