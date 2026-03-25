@@ -1324,7 +1324,22 @@ function init() {
        location.href = "underlag.html?from=ls";
      });
    }
-
+   const lastBackup = localStorage.getItem("tl_last_backup_at");
+   if (backupStatus) {
+     if (!lastBackup) {
+       backupStatus.textContent = "No backup created yet.";
+     } else {
+       const d = new Date(lastBackup);
+       const formatted =
+         d.getFullYear() + "-" +
+         String(d.getMonth() + 1).padStart(2, "0") + "-" +
+         String(d.getDate()).padStart(2, "0") + " " +
+         String(d.getHours()).padStart(2, "0") + ":" +
+         String(d.getMinutes()).padStart(2, "0");
+   
+       backupStatus.textContent = `Last backup: ${formatted}`;
+     }
+   }
    // ===== Backup Export (SAFE) =====
    const btnBackupExport = document.getElementById("btnBackupExport");
    if (btnBackupExport) {
