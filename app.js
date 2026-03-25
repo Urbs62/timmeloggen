@@ -341,6 +341,7 @@ const invoiceAccount = document.getElementById("invoiceAccount");
 const invoiceMonth = document.getElementById("invoiceMonth");
 const printInvoiceBtn = document.getElementById("printInvoiceBtn");
 const printArea = document.getElementById("printArea");
+const backupStatus = document.getElementById("backupStatus");
 
 // ---------- Tabs ----------
 tabBtns.forEach((btn) => {
@@ -1353,7 +1354,7 @@ function init() {
        a.download = `timeledger-backup-${exported}.json`;
        document.body.appendChild(a);
        a.click();
-        status.textContent = "Backup exported successfully.";
+         if (backupStatus) backupStatus.textContent = "Backup exported successfully.";
         localStorage.setItem("tl_last_backup_at", new Date().toISOString());
        a.remove();
        URL.revokeObjectURL(url);
