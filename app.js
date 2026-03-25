@@ -1380,7 +1380,11 @@ function init() {
          }
    
          const keys = Object.keys(backup.data).filter(k => k.startsWith("tl_"));
-
+          
+         if (keys.length === 0) {
+           throw new Error("No TimeLedger data found in backup file.");
+         }
+          
          const info = keys.map(k => {
            const raw = backup.data[k];
            const chars = typeof raw === "string" ? raw.length : 0;
@@ -1390,21 +1394,23 @@ function init() {
          const okPreview = confirm(
            `Backup found:\n` +
            `App: ${backup.app ?? "unknown"}\n` +
-           `Exported: ${backup.exported ?? "unknown"}\n\n` +
+            `Exported: ${backup.exportedAt ?? backup.exported ?? "unknown"}\n\n` +
            `Contents:\n${info}\n\n` +
            `Press OK to continue with RESTORE (this will replace local data).`
          );
          if (!okPreview) return;
    
          const before = Object.fromEntries(
-           TL_KEYS.map(k => [k, localStorage.getItem(k)])
+           Object.keys(localStorage)
+             .filter(k => k.startsWith("tl_"))
+             .map(k => [k, localStorage.getItem(k)])
          );
          sessionStorage.setItem("tl_backup_before_import", JSON.stringify(before));
    
          const okReplace = confirm(
            `RESTORE (REPLACE)\n\n` +
            `This will replace local data for:\n` +
-           `${TL_KEYS.join(", ")}\n\n` +
+           `${keys.join(", ")}\n\n` +
            `You can undo this using "Undo restore".\n\n` +
            `Proceed?`
          );
