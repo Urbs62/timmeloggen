@@ -1336,7 +1336,9 @@ function init() {
          exported,
          schema: 1,
          data: Object.fromEntries(
-           TL_KEYS.map(k => [k, localStorage.getItem(k)])
+            Object.keys(localStorage)
+              .filter(k => k.startsWith("tl_"))
+              .map(k => [k, localStorage.getItem(k)])
          )
        };
    
@@ -1377,7 +1379,9 @@ function init() {
            throw new Error("Invalid backup file (missing data).");
          }
    
-         const info = TL_KEYS.map(k => {
+         const keys = Object.keys(backup.data).filter(k => k.startsWith("tl_"));
+
+         const info = keys.map(k => {
            const raw = backup.data[k];
            const chars = typeof raw === "string" ? raw.length : 0;
            return `${k}: ${chars} chars`;
@@ -1406,7 +1410,7 @@ function init() {
          );
          if (!okReplace) return;
    
-         for (const k of TL_KEYS) {
+         for (const k of keys) {
            const v = backup.data[k];
            if (typeof v === "string") {
              localStorage.setItem(k, v);
@@ -1436,7 +1440,7 @@ function init() {
    
        try {
          const before = JSON.parse(s);
-         for (const k of TL_KEYS) {
+         for (const k of Object.keys(before)) {
            const v = before[k];
            if (typeof v === "string") localStorage.setItem(k, v);
            else localStorage.removeItem(k);
