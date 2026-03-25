@@ -1353,6 +1353,8 @@ function init() {
        a.download = `timeledger-backup-${exported}.json`;
        document.body.appendChild(a);
        a.click();
+        status.textContent = "Backup exported successfully.";
+        localStorage.setItem("tl_last_backup_at", new Date().toISOString());
        a.remove();
        URL.revokeObjectURL(url);
      });
