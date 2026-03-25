@@ -214,6 +214,7 @@
     const elInvoiceEmail = document.getElementById("s_invoiceEmail");
 
     function hydrate(){
+      console.log("hydrate körs");
       const s = loadSettings();
       elCompany.value = s.companyName ?? "";
       elCompanyStreet.value = s.companyStreet ?? "";
