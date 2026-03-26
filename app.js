@@ -468,6 +468,7 @@ function renderAccounts() {
       accountList.appendChild(el);
     });
    renderInvoiceAccountSelect();
+   renderCsvExportAccountSelect();
 }
 
 function updateGenerateInvoiceBtnLabel(){
@@ -1185,92 +1186,6 @@ function csvEscapeSemicolon(value) {
   return s;
 }
 
-function exportCsvAllData() {
-  const csvExportAccount = document.getElementById("csvExportAccount");
-  const accountFilter = csvExportAccount?.value || "ALL";
-
-  const keys = Object.keys(days).sort();
-
-  const rows = [];
-  rows.push([
-    "date",
-    "month",
-    "week",
-    "day_start_time",
-    "day_end_time",
-    "entry_start",
-    "entry_end",
-    "duration_minutes",
-    "duration_hours_decimal",
-    "account_name",
-    "activity",
-    "is_billable"
-  ]);
-
-  keys.forEach((dayKey) => {
-    const day = days[dayKey] || {};
-    const slots = Array.isArray(day.slots) ? day.slots : [];
-
-    slots
-      .slice()
-      .sort((a, b) => (a.startMin ?? 0) - (b.startMin ?? 0))
-      .filter((slot) => {
-        if (accountFilter === "ALL") return true;
-        return (slot.accountId || "") === accountFilter;
-      })
-      .forEach((slot) => {
-        const durationMin = slotDurationMin(slot);
-        const isBreak = !!slot.isBreak;
-
-        rows.push([
-          dayKey,
-          monthKeyFromDayKey(dayKey),
-          getISOWeek(dayKey),
-          dateToLocalHHMM(day.startTs),
-          dateToLocalHHMM(day.endTs),
-          minutesToTime(slot.startMin ?? 0),
-          minutesToTime(slot.endMin ?? 0),
-          durationMin,
-          minutesToDecimalHours(durationMin).toFixed(2),
-          accountNameById(slot.accountId) || "",
-          slot.text || "",
-          isBreak ? "false" : "true"
-        ]);
-      });
-  });
-
-  if (rows.length === 1) {
-    alert("No time entries found.");
-    return;
-  }
-
-  const csv = rows
-    .map((row) => row.map(csvEscapeSemicolon).join(";"))
-    .join("\r\n");
-
-  const accountPart =
-    accountFilter === "ALL"
-      ? "all-accounts"
-      : safeFilePart(accountNameById(accountFilter) || "account");
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `timeledger-all-data-${accountPart}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
-
-  if (backupStatus) {
-    backupStatus.textContent = `CSV exported successfully for all data.`;
-  }
-}
-
-
 function dateToLocalHHMM(ts) {
   if (!ts) return "";
   const d = new Date(ts);
@@ -1397,6 +1312,91 @@ function exportCsvSelected() {
 
   if (backupStatus) {
     backupStatus.textContent = `CSV exported successfully for ${type} ${datePart}.`;
+  }
+}
+
+function exportCsvAllData() {
+  const csvExportAccount = document.getElementById("csvExportAccount");
+  const accountFilter = csvExportAccount?.value || "ALL";
+
+  const keys = Object.keys(days).sort();
+
+  const rows = [];
+  rows.push([
+    "date",
+    "month",
+    "week",
+    "day_start_time",
+    "day_end_time",
+    "entry_start",
+    "entry_end",
+    "duration_minutes",
+    "duration_hours_decimal",
+    "account_name",
+    "activity",
+    "is_billable"
+  ]);
+
+  keys.forEach((dayKey) => {
+    const day = days[dayKey] || {};
+    const slots = Array.isArray(day.slots) ? day.slots : [];
+
+    slots
+      .slice()
+      .sort((a, b) => (a.startMin ?? 0) - (b.startMin ?? 0))
+      .filter((slot) => {
+        if (accountFilter === "ALL") return true;
+        return (slot.accountId || "") === accountFilter;
+      })
+      .forEach((slot) => {
+        const durationMin = slotDurationMin(slot);
+        const isBreak = !!slot.isBreak;
+
+        rows.push([
+          dayKey,
+          monthKeyFromDayKey(dayKey),
+          getISOWeek(dayKey),
+          dateToLocalHHMM(day.startTs),
+          dateToLocalHHMM(day.endTs),
+          minutesToTime(slot.startMin ?? 0),
+          minutesToTime(slot.endMin ?? 0),
+          durationMin,
+          minutesToDecimalHours(durationMin).toFixed(2),
+          accountNameById(slot.accountId) || "",
+          slot.text || "",
+          isBreak ? "false" : "true"
+        ]);
+      });
+  });
+
+  if (rows.length === 1) {
+    alert("No time entries found.");
+    return;
+  }
+
+  const csv = rows
+    .map((row) => row.map(csvEscapeSemicolon).join(";"))
+    .join("\r\n");
+
+  const accountPart =
+    accountFilter === "ALL"
+      ? "all-accounts"
+      : safeFilePart(accountNameById(accountFilter) || "account");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `timeledger-all-data-${accountPart}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+
+  if (backupStatus) {
+    backupStatus.textContent = `CSV exported successfully for all data.`;
   }
 }
 
