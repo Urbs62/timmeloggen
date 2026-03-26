@@ -265,7 +265,14 @@
           <button id="btnBackupExport" type="button">Backup</button>
           <button id="btnBackupImport" type="button">Restore</button>
           <button id="btnUndoRestore" class="secondary" type="button">Undo restore</button>
-          <button id="btnCsvExport" type="button">Export CSV</button>
+        
+          <div style="margin-top:12px;">
+            <label>CSV account filter</label>
+            <select id="csvExportAccount"></select>
+          </div>
+        
+          <button id="btnCsvExport" type="button" style="margin-top:10px;">Export CSV</button>
+        
           <input id="backupFileInput" type="file" accept="application/json" hidden />
         </section>
     
