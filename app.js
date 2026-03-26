@@ -1172,6 +1172,160 @@ function safeFilePart(s){
     .trim();
 }
 
+function csvEscapeSemicolon(value) {
+  const s = String(value ?? "");
+  if (
+    s.includes('"') ||
+    s.includes(";") ||
+    s.includes("\n") ||
+    s.includes("\r")
+  ) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
+function dateToLocalHHMM(ts) {
+  if (!ts) return "";
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+function getISOWeek(dateStr) {
+  const d = new Date(dateStr + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return "";
+  return isoWeekKeyFromDate(d);
+}
+
+function renderCsvExportAccountSelect() {
+  const csvExportAccount = document.getElementById("csvExportAccount");
+  if (!csvExportAccount) return;
+
+  csvExportAccount.innerHTML = "";
+
+  const optAll = document.createElement("option");
+  optAll.value = "ALL";
+  optAll.textContent = "All accounts";
+  csvExportAccount.appendChild(optAll);
+
+  accounts
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name, "sv"))
+    .forEach((a) => {
+      const opt = document.createElement("option");
+      opt.value = a.id;
+      opt.textContent = a.name;
+      csvExportAccount.appendChild(opt);
+    });
+}
+
+function exportCsvSelected() {
+  const type = periodType?.value || "month";
+  const dateStr = periodDate?.value || todayKey();
+  const csvExportAccount = document.getElementById("csvExportAccount");
+  const accountFilter = csvExportAccount?.value || "ALL";
+
+  const keys = periodKeys(type, dateStr).sort();
+
+  const rows = [];
+  rows.push([
+    "date",
+    "month",
+    "week",
+    "day_start_ts",
+    "day_end_ts",
+    "day_start_time",
+    "day_end_time",
+    "entry_id",
+    "entry_start",
+    "entry_end",
+    "duration_minutes",
+    "duration_hhmm",
+    "duration_hours_decimal",
+    "account_id",
+    "account_name",
+    "activity",
+    "is_break",
+    "is_billable"
+  ]);
+
+  keys.forEach((dayKey) => {
+    const day = days[dayKey] || {};
+    const slots = Array.isArray(day.slots) ? day.slots : [];
+
+    slots
+      .slice()
+      .sort((a, b) => (a.startMin ?? 0) - (b.startMin ?? 0))
+      .filter((slot) => {
+        if (accountFilter === "ALL") return true;
+        return (slot.accountId || "") === accountFilter;
+      })
+      .forEach((slot) => {
+        const durationMin = slotDurationMin(slot);
+        const isBreak = !!slot.isBreak;
+
+        rows.push([
+          dayKey,
+          monthKeyFromDayKey(dayKey),
+          getISOWeek(dayKey),
+          day.startTs ?? "",
+          day.endTs ?? "",
+          dateToLocalHHMM(day.startTs),
+          dateToLocalHHMM(day.endTs),
+          slot.id ?? "",
+          minutesToTime(slot.startMin ?? 0),
+          minutesToTime(slot.endMin ?? 0),
+          durationMin,
+          fmtHM(durationMin),
+          minutesToDecimalHours(durationMin).toFixed(2),
+          slot.accountId ?? "",
+          accountNameById(slot.accountId) || "",
+          slot.text || "",
+          isBreak ? "true" : "false",
+          isBreak ? "false" : "true"
+        ]);
+      });
+  });
+
+  if (rows.length === 1) {
+    alert("No time entries found for the selected period/account.");
+    return;
+  }
+
+  const csv = rows
+    .map((row) => row.map(csvEscapeSemicolon).join(";"))
+    .join("\r\n");
+
+  const datePart =
+    type === "day"
+      ? dateStr
+      : type === "month"
+      ? dateStr.slice(0, 7)
+      : isoWeekKeyFromDate(new Date(dateStr + "T12:00:00"));
+
+  const accountPart =
+    accountFilter === "ALL"
+      ? "all-accounts"
+      : safeFilePart(accountNameById(accountFilter) || "account");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `timeledger-${type}-${safeFilePart(datePart)}-${accountPart}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+
+  if (backupStatus) {
+    backupStatus.textContent = `CSV exported successfully for ${type} ${datePart}.`;
+  }
+}
+
 function csvEscape(value) {
   const s = String(value ?? "");
   if (s.includes('"') || s.includes(",") || s.includes("\n") || s.includes("\r")) {
@@ -1338,6 +1492,13 @@ function init() {
      btnCsvExport.addEventListener("click", exportCsvAllEntries);
    }
    
+   renderCsvExportAccountSelect();
+   
+   const btnCsvExport = document.getElementById("btnCsvExport");
+   if (btnCsvExport) {
+     btnCsvExport.addEventListener("click", exportCsvSelected);
+   }
+
   periodDate.value = todayKey();
   // Default: Month när sidan öppnas
    periodType.value = "month";
@@ -1362,6 +1523,7 @@ function init() {
    // : init
    if (invoiceMonth) invoiceMonth.value = todayKey().slice(0,7);
    renderInvoiceAccountSelect();
+   renderCsvExportAccountSelect();
    updateGenerateInvoiceBtnLabel();
 
    if (printInvoiceBtn) printInvoiceBtn.addEventListener("click", printInvoicePdf);
