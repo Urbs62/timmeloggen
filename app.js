@@ -1233,20 +1233,14 @@ function exportCsvSelected() {
     "date",
     "month",
     "week",
-    "day_start_ts",
-    "day_end_ts",
     "day_start_time",
     "day_end_time",
-    "entry_id",
     "entry_start",
     "entry_end",
     "duration_minutes",
-    "duration_hhmm",
     "duration_hours_decimal",
-    "account_id",
     "account_name",
     "activity",
-    "is_break",
     "is_billable"
   ]);
 
@@ -1269,20 +1263,14 @@ function exportCsvSelected() {
           dayKey,
           monthKeyFromDayKey(dayKey),
           getISOWeek(dayKey),
-          day.startTs ?? "",
-          day.endTs ?? "",
           dateToLocalHHMM(day.startTs),
           dateToLocalHHMM(day.endTs),
-          slot.id ?? "",
           minutesToTime(slot.startMin ?? 0),
           minutesToTime(slot.endMin ?? 0),
           durationMin,
-          fmtHM(durationMin),
           minutesToDecimalHours(durationMin).toFixed(2),
-          slot.accountId ?? "",
           accountNameById(slot.accountId) || "",
           slot.text || "",
-          isBreak ? "true" : "false",
           isBreak ? "false" : "true"
         ]);
       });
