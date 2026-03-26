@@ -1172,6 +1172,116 @@ function safeFilePart(s){
     .trim();
 }
 
+function csvEscape(value) {
+  const s = String(value ?? "");
+  if (s.includes('"') || s.includes(",") || s.includes("\n") || s.includes("\r")) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
+function dateToLocalHHMM(ts) {
+  if (!ts) return "";
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+function getISOWeek(dateStr) {
+  const d = new Date(dateStr + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return "";
+  return isoWeekKeyFromDate(d);
+}
+
+function exportCsvAllEntries() {
+  const rows = [];
+  const keys = Object.keys(days).sort();
+
+  rows.push([
+    "date",
+    "month",
+    "week",
+    "day_start_ts",
+    "day_end_ts",
+    "day_start_time",
+    "day_end_time",
+    "entry_id",
+    "entry_start",
+    "entry_end",
+    "duration_minutes",
+    "duration_hhmm",
+    "duration_hours_decimal",
+    "account_id",
+    "account_name",
+    "activity",
+    "is_break",
+    "is_billable"
+  ]);
+
+  keys.forEach((dayKey) => {
+    const day = days[dayKey] || {};
+    const slots = Array.isArray(day.slots) ? day.slots : [];
+
+    slots
+      .slice()
+      .sort((a, b) => (a.startMin ?? 0) - (b.startMin ?? 0))
+      .forEach((slot) => {
+        const durationMin = slotDurationMin(slot);
+        const isBreak = !!slot.isBreak;
+
+        rows.push([
+          dayKey,
+          monthKeyFromDayKey(dayKey),
+          getISOWeek(dayKey),
+          day.startTs ?? "",
+          day.endTs ?? "",
+          dateToLocalHHMM(day.startTs),
+          dateToLocalHHMM(day.endTs),
+          slot.id ?? "",
+          minutesToTime(slot.startMin ?? 0),
+          minutesToTime(slot.endMin ?? 0),
+          durationMin,
+          fmtHM(durationMin),
+          minutesToDecimalHours(durationMin).toFixed(2),
+          slot.accountId ?? "",
+          accountNameById(slot.accountId) || "",
+          slot.text || "",
+          isBreak ? "true" : "false",
+          isBreak ? "false" : "true"
+        ]);
+      });
+  });
+
+  if (rows.length === 1) {
+    alert("No time entries to export.");
+    return;
+  }
+
+  const csv = rows
+    .map(row => row.map(csvEscape).join(","))
+    .join("\r\n");
+
+  const today = new Date();
+  const fileDate =
+    `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `timeledger-export-${fileDate}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+
+  if (backupStatus) {
+    backupStatus.textContent = `CSV exported successfully (${fileDate}).`;
+  }
+}
+
 function setPdfTitleForUnderlag(){
   const invNoRaw = localStorage.getItem("tl_last_invoice_no") || getInvoiceNo();
   const invNo = safeFilePart(invNoRaw || "").trim() || "26-000";
@@ -1223,6 +1333,11 @@ function init() {
   renderAccountSelect();
   renderDay();
 
+   const btnCsvExport = document.getElementById("btnCsvExport");
+   if (btnCsvExport) {
+     btnCsvExport.addEventListener("click", exportCsvAllEntries);
+   }
+   
   periodDate.value = todayKey();
   // Default: Month när sidan öppnas
    periodType.value = "month";
