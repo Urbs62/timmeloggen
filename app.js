@@ -1475,11 +1475,6 @@ function init() {
   renderAccountSelect();
   renderDay();
 
-   const btnCsvExport = document.getElementById("btnCsvExport");
-   if (btnCsvExport) {
-     btnCsvExport.addEventListener("click", exportCsvAllEntries);
-   }
-   
    renderCsvExportAccountSelect();
    
    const btnCsvExport = document.getElementById("btnCsvExport");
