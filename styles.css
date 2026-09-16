@@ -382,6 +382,13 @@ button.secondary{
 .item .meta{ color: var(--muted); font-size:13px; margin-top:4px; white-space:pre-wrap; }
 .item .title{ font-weight:800; }
 .item .left{ min-width:0; }
+.expense-item .left{ flex:1; overflow-wrap:anywhere; }
+.expense-actions{ display:flex; gap:6px; flex-shrink:0; }
+@media (max-width: 520px){
+  .expense-item{ align-items:stretch; flex-direction:column; }
+  .expense-actions button{ flex:1; }
+  #expenseForm .row .grow{ min-width:0; flex-basis:100%; }
+}
 
 /* kv (nyckel/värde) – mappa till gymapp */
 .kv{

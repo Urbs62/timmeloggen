@@ -10,6 +10,7 @@ const STORE = {
   accounts: "tl_accounts_v1",
   days: "tl_days_v1",
   monthTargets: "tl_month_targets_v1",
+  expenses: "tl_expenses_v1",
 };
 
 function getInvoiceNo(){
@@ -280,6 +281,8 @@ accounts = [{id,name}]
 let accounts = loadJSON(STORE.accounts, []);
 let days = loadJSON(STORE.days, {});
 let monthTargets = loadJSON(STORE.monthTargets, {});
+let expenses = loadJSON(STORE.expenses, []);
+if (!Array.isArray(expenses)) expenses = [];
 
 // Aktiv  (för bakåtredigering)
 let activeDayKey = todayKey();
@@ -291,6 +294,7 @@ const tabBtns = [...document.querySelectorAll(".tab")];
 const panels = {
   accounts: document.getElementById("tab-accounts"),
   log: document.getElementById("tab-log"),
+  expenses: document.getElementById("tab-expenses"),
   history: document.getElementById("tab-history"),
   documents: document.getElementById("tab-documents"),
   settings: document.getElementById("tab-settings"),
@@ -303,6 +307,16 @@ const activeDate = document.getElementById("activeDate");
 const accountName = document.getElementById("accountName");
 const addAccountBtn = document.getElementById("addAccountBtn");
 const accountList = document.getElementById("accountList");
+const expenseForm = document.getElementById("expenseForm");
+const expenseDate = document.getElementById("expenseDate");
+const expenseAccount = document.getElementById("expenseAccount");
+const expenseDescription = document.getElementById("expenseDescription");
+const expenseNet = document.getElementById("expenseNet");
+const expenseVat = document.getElementById("expenseVat");
+const expenseSave = document.getElementById("expenseSave");
+const expenseCancel = document.getElementById("expenseCancel");
+const expenseList = document.getElementById("expenseList");
+let editingExpenseId = null;
 
 // Log
 const startDayBtn = document.getElementById("startDayBtn");
@@ -359,6 +373,7 @@ tabBtns.forEach((btn) => {
         updateGenerateInvoiceBtnLabel();
         renderInvoiceAccountSelect();
       }
+      if (key === "expenses") renderExpenses();
   });
 });
 
@@ -387,6 +402,7 @@ function addAccount(name) {
   saveJSON(STORE.accounts, accounts);
   renderAccounts();
   renderAccountSelect();
+  renderExpenseAccountSelect();
    
    accountName.value = "";
    accountName.focus(); // valfritt men trevligt
@@ -397,6 +413,8 @@ function deleteAccount(id) {
   saveJSON(STORE.accounts, accounts);
   renderAccounts();
   renderAccountSelect();
+  renderExpenseAccountSelect();
+  renderExpenses();
 }
 
 function updateAccountName(id, newName) {
@@ -415,6 +433,8 @@ function updateAccountName(id, newName) {
   a.name = n;
   saveJSON(STORE.accounts, accounts);
   renderAccountSelect();
+  renderExpenseAccountSelect();
+  renderExpenses();
 }
 
 function renderAccounts() {
@@ -458,7 +478,9 @@ function renderAccounts() {
       `;
 
       el.querySelector(`[data-del="${a.id}"]`).addEventListener("click", () => {
-        if (confirm(`Delete account "${a.name}"?`)) deleteAccount(a.id);
+        const expenseCount = expenses.filter((e) => e.accountId === a.id).length;
+        const warning = expenseCount ? `\n${expenseCount} expense(s) will lose their account name.` : "";
+        if (confirm(`Delete account "${a.name}"?${warning}`)) deleteAccount(a.id);
       });
 
       el.querySelector(".account-edit").addEventListener("change", (e) => {
@@ -470,6 +492,128 @@ function renderAccounts() {
    renderInvoiceAccountSelect();
    renderCsvExportAccountSelect();
 }
+
+// ---------- Expenses (separate from time entries and invoice data) ----------
+function parseExpenseMinor(value) {
+  const normalized = String(value ?? "").trim().replace(/\s/g, "").replace(",", ".");
+  if (!/^\d+(?:\.\d{1,2})?$/.test(normalized)) return null;
+  const [whole, fraction = ""] = normalized.split(".");
+  const minor = Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
+  return Number.isSafeInteger(minor) ? minor : null;
+}
+
+function formatExpenseMinor(minor) {
+  return (minor / 100).toLocaleString("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function expenseDateIsValid(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T12:00:00`);
+  return !Number.isNaN(date.getTime()) && dayKeyFromDate(date) === value;
+}
+
+function renderExpenseAccountSelect() {
+  const selected = expenseAccount.value;
+  expenseAccount.replaceChildren(new Option("Select account", ""));
+  accounts.slice().sort((a, b) => a.name.localeCompare(b.name, "sv"))
+    .forEach((a) => expenseAccount.add(new Option(a.name, a.id)));
+  expenseAccount.value = accounts.some((a) => a.id === selected) ? selected : "";
+}
+
+function resetExpenseForm() {
+  editingExpenseId = null;
+  expenseForm.reset();
+  expenseDate.value = todayKey();
+  expenseSave.textContent = "Add expense";
+  expenseCancel.hidden = true;
+}
+
+function renderExpenses() {
+  expenseList.replaceChildren();
+  if (!expenses.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No expenses yet.";
+    expenseList.appendChild(empty);
+    return;
+  }
+  const currency = getSettings().currency;
+  expenses.slice().sort((a, b) => b.date.localeCompare(a.date)).forEach((expense) => {
+    const item = document.createElement("div");
+    item.className = "item expense-item";
+    const details = document.createElement("div");
+    details.className = "left";
+    const title = document.createElement("div");
+    title.className = "title";
+    title.textContent = expense.description;
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const account = accounts.find((a) => a.id === expense.accountId);
+    meta.textContent = `${expense.date} · ${account?.name || `Missing account (${expense.accountId})`}\nNet ${formatExpenseMinor(expense.netAmountMinor)} ${currency} · VAT paid ${formatExpenseMinor(expense.vatAmountMinor)} ${currency}\nTotal ${formatExpenseMinor(expense.netAmountMinor + expense.vatAmountMinor)} ${currency}`;
+    details.append(title, meta);
+    const actions = document.createElement("div");
+    actions.className = "expense-actions";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.textContent = "Edit";
+    edit.addEventListener("click", () => {
+      editingExpenseId = expense.id;
+      expenseDate.value = expense.date;
+      expenseAccount.value = expense.accountId;
+      expenseDescription.value = expense.description;
+      expenseNet.value = formatExpenseMinor(expense.netAmountMinor);
+      expenseVat.value = formatExpenseMinor(expense.vatAmountMinor);
+      expenseSave.textContent = "Save expense";
+      expenseCancel.hidden = false;
+      expenseForm.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "danger";
+    del.textContent = "Delete";
+    del.addEventListener("click", () => {
+      if (!confirm(`Delete expense "${expense.description}"?`)) return;
+      const next = expenses.filter((e) => e.id !== expense.id);
+      try { saveJSON(STORE.expenses, next); }
+      catch { alert("Could not save expenses. No expense was deleted."); return; }
+      expenses = next;
+      if (editingExpenseId === expense.id) resetExpenseForm();
+      renderExpenses();
+    });
+    actions.append(edit, del);
+    item.append(details, actions);
+    expenseList.appendChild(item);
+  });
+}
+
+expenseForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const date = expenseDate.value;
+  const accountId = expenseAccount.value;
+  const description = expenseDescription.value.trim();
+  const netAmountMinor = parseExpenseMinor(expenseNet.value);
+  const vatAmountMinor = parseExpenseMinor(expenseVat.value);
+  if (!expenseDateIsValid(date)) return alert("Enter a valid date.");
+  if (!accounts.some((a) => a.id === accountId)) return alert("Select an existing account.");
+  if (!description) return alert("Enter a description.");
+  if (netAmountMinor === null || vatAmountMinor === null ||
+      !Number.isSafeInteger(netAmountMinor + vatAmountMinor)) {
+    return alert("Enter nonnegative amounts with no more than two decimal places.");
+  }
+  const existing = editingExpenseId ? expenses.find((e) => e.id === editingExpenseId) : null;
+  if (editingExpenseId && !existing) return alert("This expense is no longer available. Cancel the edit and try again.");
+  const record = { id: existing?.id || uid(), date, accountId, description, netAmountMinor, vatAmountMinor };
+  const next = existing ? expenses.map((e) => e.id === existing.id ? record : e) : [...expenses, record];
+  try { saveJSON(STORE.expenses, next); }
+  catch { alert("Could not save expenses. Please check available storage."); return; }
+  expenses = next;
+  resetExpenseForm();
+  renderExpenses();
+});
+expenseCancel.addEventListener("click", resetExpenseForm);
+renderExpenseAccountSelect();
+resetExpenseForm();
+renderExpenses();
 
 function updateGenerateInvoiceBtnLabel(){
   const btn = document.getElementById("openInvoiceHtmlBtn");

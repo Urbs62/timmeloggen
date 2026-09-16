@@ -35,6 +35,7 @@
 
   <nav class="tabs">
     <button class="tab active" data-tab="log">Time Log</button>
+    <button class="tab" data-tab="expenses">Expenses</button>
     <button class="tab" data-tab="history">Summary</button>
     <button class="tab" data-tab="documents">Invoice</button>
     <button class="tab" data-tab="settings">Settings</button>
@@ -159,6 +160,33 @@
     </section>
 
     <!-- Sammanställning -->
+    <section class="panel" id="tab-expenses">
+      <div class="card">
+        <h2>Expenses</h2>
+        <p class="muted">Record costs paid for an assignment. VAT here is VAT paid on the original purchase.</p>
+        <form id="expenseForm">
+          <div class="row">
+            <div class="grow"><label for="expenseDate">Date</label><input id="expenseDate" type="date" required /></div>
+            <div class="grow"><label for="expenseAccount">Account</label><select id="expenseAccount" required></select></div>
+          </div>
+          <label for="expenseDescription">Description</label>
+          <input id="expenseDescription" type="text" maxlength="300" required placeholder="E.g. train ticket" />
+          <div class="row">
+            <div class="grow"><label for="expenseNet">Net amount</label><input id="expenseNet" type="text" inputmode="decimal" required placeholder="0,00" /></div>
+            <div class="grow"><label for="expenseVat">VAT paid</label><input id="expenseVat" type="text" inputmode="decimal" required placeholder="0,00" /></div>
+          </div>
+          <div class="row">
+            <button id="expenseSave" type="submit" class="primary">Add expense</button>
+            <button id="expenseCancel" type="button" class="secondary" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Registered expenses</h2>
+        <div class="list" id="expenseList"></div>
+      </div>
+    </section>
+
     <section class="panel" id="tab-history">
       <div class="card">
         <h2>Summary</h2>
