@@ -122,6 +122,14 @@
     th{ font-size:12px; color:var(--muted); font-weight:700; }
     td.right, th.right{ text-align:right; }
     td.nowrap, th.nowrap{ white-space:nowrap; }
+    .expense-section{ margin-top:18px; }
+    .expense-section h2{ font-size:16px; margin:0 0 6px; }
+    .expense-section table{ table-layout:fixed; font-size:11px; }
+    .expense-section th:first-child{ width:68px; }
+    .expense-section th:nth-child(n+4){ width:90px; }
+    .expense-description{ overflow-wrap:anywhere; }
+    .expense-section thead{ display:table-header-group; }
+    .expense-section tr{ break-inside:avoid; page-break-inside:avoid; }
 
     /* Datum ska aldrig wrappa */
     td.col-date, th.col-date{ white-space:nowrap; width: 9.5em; }
@@ -179,6 +187,11 @@
     function formatHoursSv(hours){
       const n = Number(hours) || 0;
       return n.toFixed(2).replace(".", ",");
+    }
+    function formatExpenseMoney(minor, currency){
+      const whole = Math.floor(Math.abs(minor) / 100);
+      const cents = String(Math.abs(minor) % 100).padStart(2, "0");
+      return `${minor < 0 ? "-" : ""}${String(whole).replace(/\B(?=(\d{3})+(?!\d))/g, " ")},${cents} ${currency}`;
     }
 
     function safeFilePart(s){
@@ -240,6 +253,10 @@
       const month = payload.month || "";
       const account = payload.account || "";
       const rows = payload.rows || [];
+      const expenses = (Array.isArray(payload.expenses) ? payload.expenses : []).filter(e =>
+        e && Number.isSafeInteger(e.netAmountMinor) && Number.isSafeInteger(e.vatAmountMinor) &&
+        Number.isSafeInteger(e.netAmountMinor + e.vatAmountMinor));
+      const currency = settings.currency || "SEK";
       const invNo = payload.invNo || "";
     
       let periodLabel = month;
@@ -283,6 +300,13 @@
           </tr>
         `;
       }
+      let expenseNet = 0;
+      let expenseVat = 0;
+      const expenseRows = expenses.map(e => {
+        expenseNet += e.netAmountMinor;
+        expenseVat += e.vatAmountMinor;
+        return `<tr><td class="nowrap">${escapeHtml(e.date)}</td><td class="expense-description">${escapeHtml(e.description)}</td><td class="expense-description">${escapeHtml(e.account)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor, currency)}</td><td class="right nowrap">${formatExpenseMoney(e.vatAmountMinor, currency)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor + e.vatAmountMinor, currency)}</td></tr>`;
+      }).join("");
     
       content.innerHTML = `
         <div class="header">
@@ -318,6 +342,7 @@
             </tr>
           </tbody>
         </table>
+        ${expenses.length ? `<section class="expense-section"><h2>Expenses</h2><table aria-label="Invoice timesheet expenses"><thead><tr><th>Date</th><th>Description</th><th>Account</th><th class="right">Net amount</th><th class="right">VAT paid</th><th class="right">Total</th></tr></thead><tbody>${expenseRows}<tr class="sumrow"><td colspan="3">Total expenses</td><td class="right nowrap">${formatExpenseMoney(expenseNet, currency)}</td><td class="right nowrap">${formatExpenseMoney(expenseVat, currency)}</td><td class="right nowrap">${formatExpenseMoney(expenseNet + expenseVat, currency)}</td></tr></tbody></table></section>` : ""}
       `;
 
       const settings = loadSettings();

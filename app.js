@@ -1793,7 +1793,12 @@ function init() {
 
        const accVal = (invoiceAccount?.value || "ALL").trim();
        const { rows } = buildInvoiceRows(monthVal, accVal);
-       if (!rows.length) return alert("No time entries found for the selected month/account.");
+       const selectedExpenses = expenses.filter(e =>
+         e.date?.startsWith(monthVal + "-") &&
+         (accVal.toUpperCase() === "ALL" || e.accountId === accVal) &&
+         Number.isSafeInteger(e.netAmountMinor) && Number.isSafeInteger(e.vatAmountMinor)
+       );
+       if (!rows.length && !selectedExpenses.length) return alert("No time entries or expenses found for the selected month/account.");
 
        const accLabel = accVal === "ALL" ? "Alla konton" : (accountNameById(accVal) || accVal);
        
@@ -1813,7 +1818,10 @@ function init() {
 
       const invNo = localStorage.getItem("tl_last_invoice_no") || getInvoiceNo();
 
-       const payload = { v:1, createdAt:Date.now(), invNo, month:monthVal, account:accLabel, rows:compactRows };
+       const payload = { v:1, createdAt:Date.now(), invNo, month:monthVal, account:accLabel, rows:compactRows,
+         expenses:selectedExpenses.map(e => ({ date:e.date, description:e.description,
+           account:accountNameById(e.accountId) || e.accountId,
+           netAmountMinor:e.netAmountMinor, vatAmountMinor:e.vatAmountMinor })) };
        localStorage.setItem("tl_underlag_payload_v1", JSON.stringify(payload));
 
        location.href = "underlag.html?from=ls";
