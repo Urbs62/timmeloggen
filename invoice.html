@@ -839,9 +839,12 @@
     const expenseRows = document.getElementById("expenseRows");
     for (const e of invoiceExpenses) {
       expenseNetMinor += e.netAmountMinor;
-      expenseVatMinor += e.vatAmountMinor;
+      // Missing rate preserves purchase VAT exactly; an explicit zero is tax-free.
+      const invoiceVatMinor = e.invoiceVatRate === undefined ? e.vatAmountMinor :
+        Number((BigInt(e.netAmountMinor) * BigInt(e.invoiceVatRate) + 50n) / 100n);
+      expenseVatMinor += invoiceVatMinor;
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="nowrap">${escapeHtml(e.date)}</td><td class="expense-description">${escapeHtml(e.description)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor)}</td><td class="right nowrap">${formatExpenseMoney(e.vatAmountMinor)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor + e.vatAmountMinor)}</td>`;
+      tr.innerHTML = `<td class="nowrap">${escapeHtml(e.date)}</td><td class="expense-description">${escapeHtml(e.description)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor)}</td><td class="right nowrap">${formatExpenseMoney(invoiceVatMinor)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor + invoiceVatMinor)}</td>`;
       expenseRows.appendChild(tr);
     }
   }

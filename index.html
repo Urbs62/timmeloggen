@@ -176,6 +176,9 @@
             <div class="grow"><label for="expenseVat">VAT paid</label><input id="expenseVat" type="text" inputmode="decimal" required placeholder="0,00" /></div>
           </div>
           <div class="row">
+            <div class="grow"><label for="expenseInvoiceVat">Invoice VAT</label><select id="expenseInvoiceVat"><option value="">Same as purchase</option><option value="25">25%</option><option value="12">12%</option><option value="6">6%</option><option value="0">0%</option></select></div>
+          </div>
+          <div class="row">
             <button id="expenseSave" type="submit" class="primary">Add expense</button>
             <button id="expenseCancel" type="button" class="secondary" hidden>Cancel edit</button>
           </div>
@@ -352,7 +355,7 @@
     
   </main>
 
-  <script src="app.js?v=28"></script>
+  <script src="app.js?v=29"></script>
   
   <div id="printArea" aria-hidden="true"></div>
   <div class="appVersion">

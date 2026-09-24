@@ -1,11 +1,12 @@
 /* TimeLedger PWA Service Worker (cache-first för app-skalet) */
-const CACHE_NAME = "timmeloggen-v3.6";
+const CACHE_NAME = "timmeloggen-v3.7";
 const ASSETS = [
   "./",
   "./index.html",
   "./underlag.html",
   "./styles.css",
   "./app.js",
+  "./app.js?v=29",
   "./manifest.webmanifest",
   "./invoice.html",
   "./icons/icon-192.png",

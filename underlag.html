@@ -305,7 +305,8 @@
       const expenseRows = expenses.map(e => {
         expenseNet += e.netAmountMinor;
         expenseVat += e.vatAmountMinor;
-        return `<tr><td class="nowrap">${escapeHtml(e.date)}</td><td class="expense-description">${escapeHtml(e.description)}</td><td class="expense-description">${escapeHtml(e.account)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor, currency)}</td><td class="right nowrap">${formatExpenseMoney(e.vatAmountMinor, currency)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor + e.vatAmountMinor, currency)}</td></tr>`;
+        const invoiceVatNote = e.invoiceVatRate === undefined ? "" : `<br><span class="small">Invoice VAT: ${escapeHtml(e.invoiceVatRate)}% of net</span>`;
+        return `<tr><td class="nowrap">${escapeHtml(e.date)}</td><td class="expense-description">${escapeHtml(e.description)}${invoiceVatNote}</td><td class="expense-description">${escapeHtml(e.account)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor, currency)}</td><td class="right nowrap">${formatExpenseMoney(e.vatAmountMinor, currency)}</td><td class="right nowrap">${formatExpenseMoney(e.netAmountMinor + e.vatAmountMinor, currency)}</td></tr>`;
       }).join("");
     
       content.innerHTML = `

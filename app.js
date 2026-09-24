@@ -313,6 +313,7 @@ const expenseAccount = document.getElementById("expenseAccount");
 const expenseDescription = document.getElementById("expenseDescription");
 const expenseNet = document.getElementById("expenseNet");
 const expenseVat = document.getElementById("expenseVat");
+const expenseInvoiceVat = document.getElementById("expenseInvoiceVat");
 const expenseSave = document.getElementById("expenseSave");
 const expenseCancel = document.getElementById("expenseCancel");
 const expenseList = document.getElementById("expenseList");
@@ -550,6 +551,7 @@ function renderExpenses() {
     meta.className = "meta";
     const account = accounts.find((a) => a.id === expense.accountId);
     meta.textContent = `${expense.date} · ${account?.name || `Missing account (${expense.accountId})`}\nNet ${formatExpenseMinor(expense.netAmountMinor)} ${currency} · VAT paid ${formatExpenseMinor(expense.vatAmountMinor)} ${currency}\nTotal ${formatExpenseMinor(expense.netAmountMinor + expense.vatAmountMinor)} ${currency}`;
+    if (expense.invoiceVatRate !== undefined) meta.textContent += ` · Invoice VAT: ${expense.invoiceVatRate}%`;
     details.append(title, meta);
     const actions = document.createElement("div");
     actions.className = "expense-actions";
@@ -563,6 +565,7 @@ function renderExpenses() {
       expenseDescription.value = expense.description;
       expenseNet.value = formatExpenseMinor(expense.netAmountMinor);
       expenseVat.value = formatExpenseMinor(expense.vatAmountMinor);
+      expenseInvoiceVat.value = expense.invoiceVatRate === undefined ? "" : String(expense.invoiceVatRate);
       expenseSave.textContent = "Save expense";
       expenseCancel.hidden = false;
       expenseForm.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -603,6 +606,16 @@ expenseForm.addEventListener("submit", (event) => {
   const existing = editingExpenseId ? expenses.find((e) => e.id === editingExpenseId) : null;
   if (editingExpenseId && !existing) return alert("This expense is no longer available. Cancel the edit and try again.");
   const record = { id: existing?.id || uid(), date, accountId, description, netAmountMinor, vatAmountMinor };
+  if (expenseInvoiceVat.value !== "") {
+    const rate = Number(expenseInvoiceVat.value);
+    if (![25, 12, 6, 0].includes(rate)) return alert("Select a valid invoice VAT rate.");
+    // Integer arithmetic: round half a minor unit up, without intermediate overflow.
+    const invoiceVatMinor = (BigInt(netAmountMinor) * BigInt(rate) + 50n) / 100n;
+    if (BigInt(netAmountMinor) + invoiceVatMinor > BigInt(Number.MAX_SAFE_INTEGER)) {
+      return alert("The customer total is too large. Enter a smaller net amount.");
+    }
+    record.invoiceVatRate = rate;
+  }
   const next = existing ? expenses.map((e) => e.id === existing.id ? record : e) : [...expenses, record];
   try { saveJSON(STORE.expenses, next); }
   catch { alert("Could not save expenses. Please check available storage."); return; }
@@ -1821,7 +1834,8 @@ function init() {
        const payload = { v:1, createdAt:Date.now(), invNo, month:monthVal, account:accLabel, rows:compactRows,
          expenses:selectedExpenses.map(e => ({ date:e.date, description:e.description,
            account:accountNameById(e.accountId) || e.accountId,
-           netAmountMinor:e.netAmountMinor, vatAmountMinor:e.vatAmountMinor })) };
+           netAmountMinor:e.netAmountMinor, vatAmountMinor:e.vatAmountMinor,
+           ...(e.invoiceVatRate !== undefined ? { invoiceVatRate:e.invoiceVatRate } : {}) })) };
        localStorage.setItem("tl_underlag_payload_v1", JSON.stringify(payload));
 
        location.href = "underlag.html?from=ls";
